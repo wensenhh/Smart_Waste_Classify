@@ -1,3 +1,13 @@
+# 智能垃圾分类系统 / Smart Waste Classification System
+
+## 🌐 语言切换 / Language Switch
+
+<div style="display: flex; gap: 10px; margin-bottom: 20px;">
+  <button id="btn-zh" style="padding: 8px 16px; background-color: #42b883; color: white; border: none; border-radius: 4px; cursor: pointer;">中文</button>
+  <button id="btn-en" style="padding: 8px 16px; background-color: #e0e0e0; color: #333; border: none; border-radius: 4px; cursor: pointer;">English</button>
+</div>
+
+<div id="content-zh">
 # 智能垃圾分类系统
 
 基于 Vue 3 构建的智能垃圾分类系统，提供多模态垃圾识别、分类知识普及、互动激励等功能，致力于推动环保事业发展。
@@ -158,3 +168,202 @@ npm run preview
 ## 💡 致谢
 
 感谢所有参与项目开发和测试的团队成员，以及为项目提供宝贵意见和建议的用户。
+</div>
+
+<div id="content-en" style="display: none;">
+# Smart Waste Classification System
+
+A Vue 3-based smart waste classification system providing multi-modal waste recognition, classification knowledge popularization, interactive incentives, and other features to promote environmental protection.
+
+## 🚀 Project Features
+
+### AI Core Recognition Module
+- **Multi-modal Fast Recognition**: Supports image, voice, and text queries for waste classification
+- **Local Cache Optimization**: Caches high-frequency waste features locally for quick response in weak network environments
+- **Dynamic Database**: Real-time synchronization of new waste types and automatic update of recognition rules
+- **Self-learning for Misclassification**: After manual correction by users, the model automatically iterates and optimizes in the background
+
+### User Interaction System
+- **One-click Operation Entry**: Shortcut buttons on the homepage directly access core functions without hierarchical navigation
+- **History Record Reuse**: Automatically saves recent recognition records for quick viewing and sharing
+- **Scenario-based Classification Guide**: Covers various scenarios such as home kitchen, takeaway packaging, holiday waste, etc.
+- **Regional Standard Adaptation**: Automatically matches the waste classification standards of the user's city
+
+### Interactive Incentive System
+- **Points + Achievement System**: Points can be earned through check-in, recognition, and sharing to unlock achievement badges
+- **Social Interaction Functions**: Supports friend PK, community exchange, team challenges, and other interactive methods
+- **Ranking Incentive Mechanism**: Multi-dimensional rankings for weekly classification times, accuracy, etc., to stimulate user participation enthusiasm
+- **Public Welfare Donation Linkage**: Teams that achieve goals can unlock collective environmental certificates and public welfare donations
+
+### Publicity and Education Features
+- **Layered Educational Content**: Provides educational content of different depths for children, adults, and professionals
+- **Interactive Learning Activities**: Various learning methods such as daily quizzes, challenge answering, virtual practice, etc.
+- **Science Popularization Knowledge Dissemination**: Built-in short videos, knowledge cards, expert live broadcasts, and other popular science forms
+- **Social Fission Communication**: Generate personalized classification report cards that support one-click sharing to major social platforms
+
+## 🛠 Technology Stack
+
+- **Frontend Framework**: Vue 3 + Vite
+- **State Management**: Pinia
+- **Routing Management**: Vue Router
+- **HTTP Requests**: Axios
+- **Internationalization Support**: Vue I18n
+- **Style Processing**: Native CSS (responsive design support)
+
+## 📁 Project Structure
+
+```
+src/
+├── assets/           # Static resources
+├── components/       # Common components
+│   ├── BottomNavBar.vue   # Bottom navigation bar
+│   ├── Button.vue         # Button component
+│   ├── CameraCapture.vue  # Camera capture component
+│   ├── Header.vue         # Header component
+│   └── ...
+├── i18n/             # Internationalization configuration
+├── router/           # Routing configuration
+├── services/         # API services
+├── stores/           # Pinia state management
+├── views/            # Page views
+│   ├── Login.vue          # Login page
+│   ├── Register.vue       # Register page
+│   ├── Home.vue           # Home page
+│   ├── RecognitionResult.vue  # Recognition result page
+│   └── ...
+├── App.vue           # Application entry component
+├── main.js           # Program entry
+└── style.css         # Global style
+```
+
+## 🚀 Quick Start
+
+### Environment Requirements
+- Node.js >= 14.0.0
+- npm >= 6.0.0 or yarn >= 1.22.0
+
+### Install Dependencies
+
+```bash
+npm install
+# or
+npm i
+```
+
+### Run in Development Mode
+
+```bash
+npm run dev
+```
+
+The service will start at http://localhost:5173 with hot reloading support.
+
+### Build Production Version
+
+```bash
+npm run build
+```
+
+The build artifacts will be generated in the `dist` directory, which can be used for deployment to production environments.
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## 🌐 Internationalization Support
+
+The project supports multi-language switching, and currently has Chinese, English and other languages configured. Users can switch interface languages through the language switch button in the upper right corner of the page.
+
+Language configuration files are located in `src/i18n/index.js`. Adding new languages or modifying translation content can be done in this file.
+
+## 🔐 User Authentication
+
+The system provides complete user registration and login functions, supporting identity authentication through username and password. User authentication status is managed through Pinia to ensure session consistency between different pages.
+
+- **Login Page**: `/login`
+- **Register Page**: `/register`
+
+## 📊 Core Function Modules
+
+### 1. Waste Recognition Module
+Quickly recognizes waste types and provides classification guidance through photo taking, voice, or text input. Supports multiple recognition methods, and recognition results include detailed classification instructions and processing recommendations.
+
+### 2. Knowledge Popularization Module
+Provides a comprehensive waste classification knowledge base, supporting querying waste information by category and scenario. Contains various forms of popular science content such as graphics, videos, etc., suitable for users of different ages to learn.
+
+### 3. Interaction Center
+Integrates multiple interactive functions such as point tasks, friend PK, community exchanges, and answering challenges to improve user participation and stickiness. Users can earn points by completing tasks, exchange virtual rewards, or participate in public welfare activities.
+
+### 4. Personal Center
+Displays users' classification data statistics, points achievements, and other information, and provides personalized settings and feedback entrances. Users can view their classification reports, modify personal information, set notification preferences, etc.
+
+## 📝 Project Documents
+
+Project documents are located in the `docs/` directory, including requirements analysis, architecture design, task splitting, and other documents that describe the project's development process and technical implementation in detail.
+
+- **Requirements Alignment Document**: `docs/smart_waste_system/ALIGNMENT_smart_waste_system.md`
+- **Consensus Document**: `docs/smart_waste_system/CONSENSUS_smart_waste_system.md`
+- **Design Document**: `docs/smart_waste_system/DESIGN_smart_waste_system.md`
+- **Task Splitting Document**: `docs/smart_waste_system/TASK_smart_waste_system.md`
+
+## 👥 Developer Guide
+
+### Code Specifications
+- Component Naming: Use PascalCase (e.g., `LoginForm.vue`)
+- Variable Naming: Use camelCase (e.g., `userName`)
+- Constant Naming: Use UPPER_SNAKE_CASE (e.g., `API_BASE_URL`)
+- Code Indentation: 2 spaces
+- Comment Style: Use JSDoc to comment functions and important variables
+
+### Development Process
+1. Clone the project code
+2. Install dependencies `npm install`
+3. Start the development server `npm run dev`
+4. Write code and conduct local tests
+5. Run `npm run build` to ensure the build passes before submitting code
+
+## 📄 License
+
+This project is open-sourced under the MIT License.
+
+## 💡 Acknowledgments
+
+Thanks to all team members who participated in project development and testing, as well as users who provided valuable opinions and suggestions for the project.
+</div>
+
+<script>
+// 简单的语言切换功能
+// 注意：此脚本在GitHub预览中不会运行，但在本地打开或支持JavaScript的平台上可用
+(function() {
+  try {
+    const btnZh = document.getElementById('btn-zh');
+    const btnEn = document.getElementById('btn-en');
+    const contentZh = document.getElementById('content-zh');
+    const contentEn = document.getElementById('content-en');
+    
+    if (btnZh && btnEn && contentZh && contentEn) {
+      btnZh.addEventListener('click', function() {
+        contentZh.style.display = 'block';
+        contentEn.style.display = 'none';
+        btnZh.style.backgroundColor = '#42b883';
+        btnZh.style.color = 'white';
+        btnEn.style.backgroundColor = '#e0e0e0';
+        btnEn.style.color = '#333';
+      });
+      
+      btnEn.addEventListener('click', function() {
+        contentZh.style.display = 'none';
+        contentEn.style.display = 'block';
+        btnZh.style.backgroundColor = '#e0e0e0';
+        btnZh.style.color = '#333';
+        btnEn.style.backgroundColor = '#42b883';
+        btnEn.style.color = 'white';
+      });
+    }
+  } catch (e) {
+    // 忽略错误，因为GitHub可能不支持脚本运行
+  }
+})();
+</script>
