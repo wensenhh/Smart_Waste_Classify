@@ -2,12 +2,6 @@
 
 ## 🌐 语言切换 / Language Switch
 
-<div style="display: flex; gap: 10px; margin-bottom: 20px;">
-  <button id="btn-zh" style="padding: 8px 16px; background-color: #42b883; color: white; border: none; border-radius: 4px; cursor: pointer;">中文</button>
-  <button id="btn-en" style="padding: 8px 16px; background-color: #e0e0e0; color: #333; border: none; border-radius: 4px; cursor: pointer;">English</button>
-</div>
-
-<div id="content-zh">
 # 智能垃圾分类系统
 
 基于 Vue 3 构建的智能垃圾分类系统，提供多模态垃圾识别、分类知识普及、互动激励等功能，致力于推动环保事业发展。
@@ -168,9 +162,7 @@ npm run preview
 ## 💡 致谢
 
 感谢所有参与项目开发和测试的团队成员，以及为项目提供宝贵意见和建议的用户。
-</div>
 
-<div id="content-en" style="display: none;">
 # Smart Waste Classification System
 
 A Vue 3-based smart waste classification system providing multi-modal waste recognition, classification knowledge popularization, interactive incentives, and other features to promote environmental protection.
@@ -331,47 +323,4 @@ This project is open-sourced under the MIT License.
 ## 💡 Acknowledgments
 
 Thanks to all team members who participated in project development and testing, as well as users who provided valuable opinions and suggestions for the project.
-</div>
 
-<script>
-// 简单的语言切换功能
-// 注意：此脚本在GitHub预览中不会运行，但在本地打开或支持JavaScript的平台上可用
-
-// 等待DOM内容加载完成后执行脚本
-document.addEventListener('DOMContentLoaded', function() {
-  try {
-    const btnZh = document.getElementById('btn-zh');
-    const btnEn = document.getElementById('btn-en');
-    const contentZh = document.getElementById('content-zh');
-    const contentEn = document.getElementById('content-en');
-    
-    // 检查是否找到了所有必要的元素
-    if (btnZh && btnEn && contentZh && contentEn) {
-      // 中文按钮点击事件
-      btnZh.addEventListener('click', function() {
-        contentZh.style.display = 'block';
-        contentEn.style.display = 'none';
-        btnZh.style.backgroundColor = '#42b883';
-        btnZh.style.color = 'white';
-        btnEn.style.backgroundColor = '#e0e0e0';
-        btnEn.style.color = '#333';
-      });
-      
-      // 英文按钮点击事件
-      btnEn.addEventListener('click', function() {
-        contentZh.style.display = 'none';
-        contentEn.style.display = 'block';
-        btnZh.style.backgroundColor = '#e0e0e0';
-        btnZh.style.color = '#333';
-        btnEn.style.backgroundColor = '#42b883';
-        btnEn.style.color = 'white';
-      });
-    } else {
-      console.log('未找到语言切换所需的元素，可能在不支持的环境中运行');
-    }
-  } catch (e) {
-    console.error('语言切换脚本执行错误:', e);
-    // 忽略错误，因为GitHub可能不支持脚本运行
-  }
-});
-</script>
