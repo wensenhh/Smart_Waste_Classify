@@ -336,14 +336,18 @@ Thanks to all team members who participated in project development and testing, 
 <script>
 // 简单的语言切换功能
 // 注意：此脚本在GitHub预览中不会运行，但在本地打开或支持JavaScript的平台上可用
-(function() {
+
+// 等待DOM内容加载完成后执行脚本
+document.addEventListener('DOMContentLoaded', function() {
   try {
     const btnZh = document.getElementById('btn-zh');
     const btnEn = document.getElementById('btn-en');
     const contentZh = document.getElementById('content-zh');
     const contentEn = document.getElementById('content-en');
     
+    // 检查是否找到了所有必要的元素
     if (btnZh && btnEn && contentZh && contentEn) {
+      // 中文按钮点击事件
       btnZh.addEventListener('click', function() {
         contentZh.style.display = 'block';
         contentEn.style.display = 'none';
@@ -353,6 +357,7 @@ Thanks to all team members who participated in project development and testing, 
         btnEn.style.color = '#333';
       });
       
+      // 英文按钮点击事件
       btnEn.addEventListener('click', function() {
         contentZh.style.display = 'none';
         contentEn.style.display = 'block';
@@ -361,9 +366,12 @@ Thanks to all team members who participated in project development and testing, 
         btnEn.style.backgroundColor = '#42b883';
         btnEn.style.color = 'white';
       });
+    } else {
+      console.log('未找到语言切换所需的元素，可能在不支持的环境中运行');
     }
   } catch (e) {
+    console.error('语言切换脚本执行错误:', e);
     // 忽略错误，因为GitHub可能不支持脚本运行
   }
-})();
+});
 </script>
