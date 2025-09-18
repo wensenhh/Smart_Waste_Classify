@@ -88,26 +88,10 @@ api.interceptors.response.use(
   }
 );
 
-// API接口定义
-export const wasteApi = {
-  // 垃圾识别
-  recognizeWaste: (data) => api.post('/recognition', data),
-  // 获取分类知识
-  getKnowledgeBase: (params) => api.get('/knowledge', { params }),
-  // 获取分类列表
-  getCategories: () => api.get('/categories'),
-  // 获取用户积分
-  getUserPoints: () => api.get('/user/points'),
-  // 获取用户成就
-  getUserAchievements: () => api.get('/user/achievements'),
-  // 获取每日一题
-  getDailyQuestion: () => api.get('/questions/daily'),
-  // 获取闯关题目
-  getChallengeQuestions: (level) => api.get(`/questions/challenge/${level}`),
-  // 提交答案
-  submitAnswer: (data) => api.post('/questions/submit', data),
-  // 获取宣传教育内容
-  getEducationContent: (type) => api.get(`/education/${type}`)
-};
+// 从单独的文件导入API接口定义
+import { wasteApi } from './wasteApi';
+
+// 重新导出，保持向后兼容性
+export { wasteApi };
 
 export default api;

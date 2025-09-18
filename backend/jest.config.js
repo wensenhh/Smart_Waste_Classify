@@ -3,12 +3,8 @@ module.exports = {
   testEnvironment: 'node',
   // 测试文件匹配模式
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
-  // 忽略的目录
-  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
-  // 模块名称映射
-  moduleNameMapping: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
+  // 忽略的目录和文件
+  testPathIgnorePatterns: ['/node_modules/', '/dist/', 'src/test.js'],
   // 测试运行器配置
   runner: 'jest-runner',
   // 覆盖率报告配置

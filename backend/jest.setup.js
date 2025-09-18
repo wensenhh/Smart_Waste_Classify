@@ -3,11 +3,11 @@
 // 设置测试环境变量
 process.env.NODE_ENV = 'test';
 process.env.JWT_SECRET = 'test-jwt-secret';
-process.env.DB_HOST = 'localhost';
+process.env.DB_HOST = '43.217.144.41';
 process.env.DB_PORT = '3306';
-process.env.DB_USER = 'testuser';
-process.env.DB_PASSWORD = 'testpassword';
-process.env.DB_NAME = 'testdb';
+process.env.DB_USER = 'smart_waste';
+process.env.DB_PASSWORD = 'injZ34rWYiZMm7xG';
+process.env.DB_NAME = 'smart_waste';
 process.env.UPLOAD_DIR = './uploads/test';
 process.env.MAX_FILE_SIZE = '5242880';
 process.env.RATE_LIMIT_WINDOW_MS = '60000';
@@ -24,38 +24,49 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // 模拟文件上传
-jest.mock('./src/utils/fileUpload', () => ({
-  uploadFile: jest.fn(async (file, options = {}) => ({
-    filename: 'test-file.jpg',
-    path: path.resolve(uploadDir, 'test-file.jpg'),
-    url: '/uploads/test/test-file.jpg',
-    size: 1024,
-    mimetype: 'image/jpeg',
-  })),
-  deleteFile: jest.fn(async (filename) => true),
-  getFileInfo: jest.fn(async (filename) => ({
-    filename: 'test-file.jpg',
-    path: path.resolve(uploadDir, 'test-file.jpg'),
-    size: 1024,
-    mimetype: 'image/jpeg',
-    createdAt: new Date(),
-  })),
-  cleanExpiredFiles: jest.fn(async () => 0),
-}));
+jest.mock('./src/utils/fileUpload', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const uploadDir = path.resolve(__dirname, process.env.UPLOAD_DIR || './uploads/test');
+  
+  return {
+    uploadFile: jest.fn(async (file, options = {}) => ({
+      filename: 'test-file.jpg',
+      path: path.resolve(uploadDir, 'test-file.jpg'),
+      url: '/uploads/test/test-file.jpg',
+      size: 1024,
+      mimetype: 'image/jpeg',
+    })),
+    deleteFile: jest.fn(async (filename) => true),
+    getFileInfo: jest.fn(async (filename) => ({
+      filename: 'test-file.jpg',
+      path: path.resolve(uploadDir, 'test-file.jpg'),
+      size: 1024,
+      mimetype: 'image/jpeg',
+      createdAt: new Date(),
+    })),
+    cleanExpiredFiles: jest.fn(async () => 0),
+  };
+});
 
 // 模拟数据库连接
 jest.mock('./src/utils/db', () => {
-  const { createPool } = jest.requireActual('mysql2/promise');
-  const pool = {
-    query: jest.fn(),
-    execute: jest.fn(),
-    close: jest.fn(),
-  };
-  
   return {
-    createPool: jest.fn(() => pool),
-    pool: pool,
+    initPool: jest.fn(async () => {
+      return {
+        query: jest.fn(),
+        execute: jest.fn(),
+        close: jest.fn(),
+      };
+    }),
+    testConnection: jest.fn(async () => true),
+    query: jest.fn(),
+    insert: jest.fn(),
+    update: jest.fn(),
+    del: jest.fn(),
+    transaction: jest.fn(),
     closePool: jest.fn(async () => true),
+    getPoolStatus: jest.fn(() => ({ status: 'initialized' }))
   };
 });
 

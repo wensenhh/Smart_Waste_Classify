@@ -1,6 +1,5 @@
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
-const cors = require('@koa/cors');
 const dotenv = require('dotenv');
 const path = require('path');
 
@@ -8,8 +7,8 @@ const path = require('path');
 dotenv.config();
 
 // 导入中间件
-const errorHandler = require('./middlewares/errorHandler');
-const logger = require('./middlewares/logger');
+const { errorHandler } = require('./middlewares/errorHandler');
+const { logger } = require('./middlewares/logger');
 const security = require('./middlewares/security'); // 导入安全中间件
 const db = require('./utils/db');
 
@@ -167,8 +166,8 @@ async function startServer() {
       httpServer.close(() => {
         console.log('HTTP服务器已关闭');
         // 关闭数据库连接
-        if (db.close) {
-          db.close();
+        if (db.closePool) {
+          db.closePool();
         }
         process.exit(0);
       });
@@ -179,8 +178,8 @@ async function startServer() {
       httpServer.close(() => {
         console.log('HTTP服务器已关闭');
         // 关闭数据库连接
-        if (db.close) {
-          db.close();
+        if (db.closePool) {
+          db.closePool();
         }
         process.exit(0);
       });

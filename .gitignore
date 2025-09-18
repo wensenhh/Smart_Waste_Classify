@@ -10,7 +10,9 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+backend/.jest-cache
 *.local
+hackathon.pem
 
 # Editor directories and files
 .vscode/*

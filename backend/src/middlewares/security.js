@@ -189,9 +189,22 @@ exports.cors = cors({
 /**
  * 限流中间件 - Koa版本
  */
+// 创建一个简单的内存存储实现，适配测试环境
 exports.rateLimiter = RateLimit({
-  // 配置存储（使用内存存储）
-  store: new RateLimit.MemoryStore(),
+  // 配置存储
+  store: {
+    // 内存存储实现
+    _rateLimiters: new Map(),
+    get: function (key) {
+      return this._rateLimiters.get(key);
+    },
+    set: function (key, value, duration) {
+      this._rateLimiters.set(key, value);
+      setTimeout(() => {
+        this._rateLimiters.delete(key);
+      }, duration);
+    }
+  },
   // 配置时间窗口（毫秒）
   duration: securityConfig.rateLimit.windowMs || 15 * 60 * 1000,
   // 最大请求数

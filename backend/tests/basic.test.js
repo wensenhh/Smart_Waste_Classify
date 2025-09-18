@@ -17,24 +17,14 @@ let authToken = '';
 describe('智能垃圾分类系统基本功能测试', () => {
   // 测试前的准备
   beforeAll(async () => {
-    // 确保应用已经启动
-    if (!app.server || !app.server.listening) {
-      await new Promise((resolve) => {
-        app.server = app.listen(0, 'localhost', resolve);
-      });
-    }
+    // 初始化数据库连接
+    await db.initPool();
   });
 
   // 测试后的清理
   afterAll(async () => {
     // 关闭数据库连接池
     await closePool();
-    // 关闭服务器
-    if (app.server && app.server.listening) {
-      await new Promise((resolve) => {
-        app.server.close(resolve);
-      });
-    }
   });
 
   // 测试健康检查接口

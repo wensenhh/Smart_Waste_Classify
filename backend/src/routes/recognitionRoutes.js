@@ -17,7 +17,7 @@ router.post('/identify',
   validateRequest({ 
     file: 'required|file'
   }),
-  recognitionController.identifyWaste
+  recognitionController.recognizeWaste
 );
 
 // 公开路由 - 搜索垃圾信息
@@ -91,7 +91,7 @@ router.get('/admin/records',
     page: 'number|min:1',
     limit: 'number|min:1|max:100'
   }),
-  recognitionController.getAdminRecords
+  recognitionController.getAllRecognitionRecords
 );
 
 // 删除用户的识别记录（管理员）
@@ -100,12 +100,12 @@ router.delete('/admin/users/:userId/records/:recordId',
     userId: 'required|string',
     recordId: 'required|string'
   }),
-  recognitionController.deleteUserRecordByAdmin
+  recognitionController.deleteUserAllRecords
 );
 
 // 获取系统统计数据（管理员）
 router.get('/admin/system-stats', 
-  recognitionController.getSystemStats
+  recognitionController.getSystemRecognitionStats
 );
 
 module.exports = router;

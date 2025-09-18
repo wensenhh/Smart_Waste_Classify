@@ -55,7 +55,7 @@ npm run dev
 
 ## 后端项目说明
 
-后端项目使用 Node.js 和 Express 构建，为前端提供API接口和数据服务，主要功能包括：
+后端项目使用 Node.js 和 koa 构建，为前端提供API接口和数据服务，主要功能包括：
 - 用户认证
 - 垃圾识别接口
 - 知识库数据管理
@@ -119,7 +119,7 @@ mysql -u root -p < backend/database/smart_waste_db.sql
 
 ### 后端技术栈
 - Node.js
-- Express.js
+- koa.js
 - MySQL (使用mysql2库连接)
 
 ## 开发注意事项
