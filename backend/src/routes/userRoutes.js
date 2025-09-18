@@ -31,8 +31,6 @@ router
   .delete('/favorites/:itemId', userController.removeFavorite)
   
   // 用户历史记录
-  .get('/history/recognition', userController.getRecognitionHistory)
-  .delete('/history/recognition/:recordId', userController.deleteRecognitionRecord)
   .get('/history/quiz', userController.getQuizHistory)
   
   // 管理员路由 - 需要管理员权限

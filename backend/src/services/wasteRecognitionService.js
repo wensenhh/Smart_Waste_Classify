@@ -245,7 +245,7 @@ class WasteRecognitionService {
    */
   async getUserRecognitionHistory(userId, options = {}) {
     try {
-      const { lang = 'zh', page = 1, pageSize = 10, sortBy = 'createdAt', sortOrder = 'DESC' } = options;
+      const { lang = 'zh', page = 1, pageSize = 10, sortBy = 'recognized_at', sortOrder = 'DESC' } = options;
       
       const offset = (page - 1) * pageSize;
       

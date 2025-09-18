@@ -1,5 +1,5 @@
 const Koa = require('koa');
-const bodyParser = require('koa-bodyparser');
+const koaBody = require('koa-body').default;
 const dotenv = require('dotenv');
 const path = require('path');
 
@@ -68,11 +68,14 @@ function configureMiddlewares() {
   // 国际化中间件
   // app.use(i18n);
   
-  // 请求解析中间件
-  app.use(bodyParser({
-    enableTypes: ['json', 'form'],
-    formLimit: '10mb',
-    jsonLimit: '10mb'
+  // 请求解析中间件 - 支持JSON、表单和multipart/form-data
+  app.use(koaBody({
+    multipart: true,
+    formidable: {
+      maxFileSize: 10 * 1024 * 1024 // 10MB
+    },
+    jsonLimit: '10mb',
+    formLimit: '10mb'
   }));
 
   // 限流中间件（暂时移除，等待修复配置）

@@ -137,7 +137,7 @@ class RecognitionController {
   async getUserRecognitionHistory(ctx) {
     try {
       const userId = ctx.state.user.id;
-      const { page = 1, pageSize = 10, sortBy = 'createdAt', sortOrder = 'DESC' } = ctx.query;
+      const { page = 1, pageSize = 10, sortBy = 'recognized_at', sortOrder = 'DESC' } = ctx.query;
       const lang = ctx.query.lang || 'zh';
 
       // 获取用户识别历史

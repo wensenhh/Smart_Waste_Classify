@@ -2,7 +2,7 @@
 const db = require('../utils/db');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { ValidationError, UnauthorizedError, NotFoundError } = require('../middlewares/errorHandler');
+const { ValidationError, UnauthorizedError, NotFoundError, DatabaseError } = require('../middlewares/errorHandler');
 const securityConfig = require('../config/security');
 
 /**
@@ -11,7 +11,7 @@ const securityConfig = require('../config/security');
 const register = async (ctx) => {
   const { phone, password, name } = ctx.request.body;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
-  
+  console.log('注册请求体参数:', ctx.request.body);
   try {
     // 验证输入 - 只需要phone和password
     if (!phone || !password) {
@@ -59,7 +59,6 @@ const login = async (ctx) => {
   const phone = ctx.request.body.phone || ctx.query.phone;
   const password = ctx.request.body.password || ctx.query.password;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
-  console.log('登录请求参数:', { phone, password });
   try {
     // 验证输入
     if (!phone || !password) {
@@ -192,7 +191,7 @@ const getProfile = async (ctx) => {
  * 更新用户个人资料
  */
 const updateProfile = async (ctx) => {
-  const { id } = ctx.user;
+  const { id } = ctx.state.user;
   const { name, avatar, city } = ctx.request.body;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
   
@@ -244,7 +243,7 @@ const updateProfile = async (ctx) => {
  * 更新密码
  */
 const updatePassword = async (ctx) => {
-  const { id } = ctx.user;
+  const { id } = ctx.state.user;
   const { oldPassword, newPassword } = ctx.request.body;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
   
@@ -293,7 +292,7 @@ const updatePassword = async (ctx) => {
  * 上传头像
  */
 const uploadAvatar = async (ctx) => {
-  const { id } = ctx.user;
+  const { id } = ctx.state.user;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
   
   try {
@@ -324,7 +323,7 @@ const uploadAvatar = async (ctx) => {
  * 删除头像
  */
 const deleteAvatar = async (ctx) => {
-  const { id } = ctx.user;
+  const { id } = ctx.state.user;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
   
   try {
@@ -348,7 +347,7 @@ const deleteAvatar = async (ctx) => {
  * 获取用户收藏
  */
 const getFavorites = async (ctx) => {
-  const { id } = ctx.user;
+  const { id } = ctx.state.user;
   const { page = 1, limit = 10 } = ctx.query;
   const offset = (page - 1) * limit;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
@@ -394,7 +393,7 @@ const getFavorites = async (ctx) => {
  * 添加收藏
  */
 const addFavorite = async (ctx) => {
-  const { id } = ctx.user;
+  const { id } = ctx.state.user;
   const { itemId } = ctx.params;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
   
@@ -428,7 +427,7 @@ const addFavorite = async (ctx) => {
  * 移除收藏
  */
 const removeFavorite = async (ctx) => {
-  const { id } = ctx.user;
+  const { id } = ctx.state.user;
   const { itemId } = ctx.params;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
   
@@ -452,89 +451,13 @@ const removeFavorite = async (ctx) => {
   }
 };
 
-/**
- * 获取识别历史
- */
-const getRecognitionHistory = async (ctx) => {
-  const { id } = ctx.user;
-  const { page = 1, limit = 10 } = ctx.query;
-  const offset = (page - 1) * limit;
-  const t = ctx.i18n ? ctx.i18n.t : (key) => key;
-  
-  try {
-    // 查询识别历史
-    const history = await db.query(
-      `SELECT r.id, r.image_url, r.waste_type, r.confidence, r.created_at, 
-              w.name, w.description 
-       FROM recognition_records r 
-       LEFT JOIN waste_items w ON r.item_id = w.id 
-       WHERE r.user_id = ? 
-       ORDER BY r.created_at DESC 
-       LIMIT ? OFFSET ?`,
-      [id, parseInt(limit), parseInt(offset)]
-    );
-    
-    // 查询总数量
-    const totalResult = await db.query(
-      'SELECT COUNT(*) as total FROM recognition_records WHERE user_id = ?',
-      [id]
-    );
-    const total = totalResult[0].total;
-    
-    ctx.status = 200;
-    ctx.body = {
-      success: true,
-      message: t('success'),
-      data: {
-        items: history,
-        pagination: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total,
-          totalPages: Math.ceil(total / limit)
-        }
-      }
-    };
-  } catch (error) {
-    ctx.throw(error.status || 500, error.message);
-  }
-};
 
-/**
- * 删除识别记录
- */
-const deleteRecognitionRecord = async (ctx) => {
-  const { id } = ctx.user;
-  const { recordId } = ctx.params;
-  const t = ctx.i18n ? ctx.i18n.t : (key) => key;
-  
-  try {
-    // 检查记录是否存在且属于当前用户
-    const records = await db.query('SELECT id FROM recognition_records WHERE id = ? AND user_id = ?', [recordId, id]);
-    if (records.length === 0) {
-      throw new NotFoundError(t('not_found'));
-    }
-    
-    // TODO: 删除相关的图片文件
-    
-    // 删除记录
-    await db.del('DELETE FROM recognition_records WHERE id = ? AND user_id = ?', [recordId, id]);
-    
-    ctx.status = 200;
-    ctx.body = {
-      success: true,
-      message: t('success')
-    };
-  } catch (error) {
-    ctx.throw(error.status || 500, error.message);
-  }
-};
 
 /**
  * 获取答题历史
  */
 const getQuizHistory = async (ctx) => {
-  const { id } = ctx.user;
+  const { id } = ctx.state.user;
   const { page = 1, limit = 10 } = ctx.query;
   const offset = (page - 1) * limit;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
@@ -844,8 +767,6 @@ module.exports = {
   getFavorites,
   addFavorite,
   removeFavorite,
-  getRecognitionHistory,
-  deleteRecognitionRecord,
   getQuizHistory,
   getAllUsers,
   getUserById,

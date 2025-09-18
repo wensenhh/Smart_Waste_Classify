@@ -26,12 +26,12 @@ class RecognitionRecord {
     try {
       const { userId, imageUrl, wasteType, category, confidence, description, suggestion } = recordData;
       const query = `
-        INSERT INTO ${this.tableName} (user_id, image_url, waste_type, category, confidence, description, suggestion, created_at)
+        INSERT INTO ${this.tableName} (user_id, image_url, waste_type, category, confidence, description, suggestion, recognized_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
       `;
       const params = [userId, imageUrl, wasteType, category, confidence, description, suggestion];
       
-      const result = await db.execute(query, params);
+      const result = await db.query(query, params);
       return {
         id: result.insertId,
         userId,
@@ -55,30 +55,42 @@ class RecognitionRecord {
    * @param {Object} options - 查询选项
    * @param {number} [options.limit=10] - 记录数量
    * @param {number} [options.offset=0] - 偏移量
-   * @param {string} [options.sortBy='created_at'] - 排序字段
+   * @param {string} [options.sortBy='recognized_at'] - 排序字段
    * @param {string} [options.sortOrder='DESC'] - 排序顺序
    * @returns {Promise<Array>} 识别历史记录列表
    */
+  /**
+   * 获取用户的识别记录
+   * @param {string} userId - 用户ID
+   * @param {object} options - 选项参数
+   * @param {number} options.limit - 限制数量
+   * @param {number} options.offset - 偏移量
+   * @param {string} options.sortBy - 排序字段
+   * @param {string} options.sortOrder - 排序顺序
+   * @returns {Promise<Array>} 识别记录列表
+   */
   async getUserRecords(userId, options = {}) {
     try {
-      const { limit = 10, offset = 0, sortBy = 'created_at', sortOrder = 'DESC' } = options;
+      if (!userId) {
+        throw new Error('用户ID不能为空');
+      }
       
-      // 验证排序字段和顺序
-      const validSortFields = ['created_at', 'confidence'];
-      const validSortOrders = ['ASC', 'DESC'];
+      const { limit = 10, offset = 0, sortBy = 'recognized_at', sortOrder = 'DESC' } = options;
       
-      const safeSortBy = validSortFields.includes(sortBy) ? sortBy : 'created_at';
-      const safeSortOrder = validSortOrders.includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'DESC';
-      
+      // 为了修复参数错误，暂时简化查询逻辑
+      // 只使用用户ID作为参数，LIMIT和OFFSET直接嵌入SQL
       const query = `
         SELECT * FROM ${this.tableName}
         WHERE user_id = ?
-        ORDER BY ${safeSortBy} ${safeSortOrder}
-        LIMIT ? OFFSET ?
+        ORDER BY recognized_at DESC
+        LIMIT ${ limit } OFFSET 0
       `;
       
-      const params = [userId, limit, offset];
-      const results = await db.execute(query, params);
+      // 只传递用户ID作为参数
+      const params = [userId];
+      
+      // 执行查询
+      const results = await db.query(query, params);
       
       // 格式化返回数据
       return results.map(record => ({
@@ -89,11 +101,14 @@ class RecognitionRecord {
         category: record.category,
         confidence: record.confidence,
         description: record.description,
-        suggestion: record.suggestion,
-        createdAt: new Date(record.created_at)
+        recognizedAt: record.recognized_at,
+        createdAt: record.created_at
       }));
     } catch (error) {
       console.error('获取用户识别记录失败:', error);
+      console.error('错误详情:', error.sqlMessage || error.message);
+      console.error('错误代码:', error.code);
+      console.error('SQL语句:', error.sql || query);
       throw error;
     }
   }
@@ -110,7 +125,7 @@ class RecognitionRecord {
         WHERE user_id = ?
       `;
       const params = [userId];
-      const results = await db.execute(query, params);
+      const results = await db.query(query, params);
       
       return results[0].count;
     } catch (error) {
@@ -132,7 +147,7 @@ class RecognitionRecord {
         WHERE id = ? AND user_id = ?
       `;
       const params = [recordId, userId];
-      const results = await db.execute(query, params);
+      const results = await db.query(query, params);
       
       if (results.length === 0) {
         return null;
@@ -169,7 +184,7 @@ class RecognitionRecord {
         WHERE id = ? AND user_id = ?
       `;
       const params = [recordId, userId];
-      const result = await db.execute(query, params);
+      const result = await db.query(query, params);
       
       return result.affectedRows > 0;
     } catch (error) {
@@ -199,7 +214,7 @@ class RecognitionRecord {
       
       // 合并参数
       const params = [...recordIds, userId];
-      const result = await db.execute(query, params);
+      const result = await db.query(query, params);
       
       return result.affectedRows;
     } catch (error) {
@@ -224,7 +239,7 @@ class RecognitionRecord {
         ORDER BY count DESC
       `;
       const params = [userId, days];
-      const results = await db.execute(query, params);
+      const results = await db.query(query, params);
       
       const stats = {};
       results.forEach(row => {

@@ -229,6 +229,19 @@ const exportTranslations = async (lang) => {
   }
 };
 
+/**
+ * 获取本地化字符串
+ * @param {Object} ctx - Koa上下文对象
+ * @param {string} key - 翻译键
+ * @param {Object} replacements - 替换占位符的对象
+ * @returns {string} 本地化字符串
+ */
+const getLocalizedString = (ctx, key, replacements = {}) => {
+  // 从上下文获取语言
+  const lang = ctx.lang || i18nConfig.defaultLanguage;
+  return translate(key, lang, replacements);
+};
+
 // 初始化国际化
 initializeI18n();
 
@@ -239,5 +252,6 @@ module.exports = {
   reloadTranslations,
   getAllTranslations,
   updateTranslation,
-  exportTranslations
+  exportTranslations,
+  getLocalizedString // 添加导出
 };

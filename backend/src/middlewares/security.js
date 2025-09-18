@@ -32,15 +32,15 @@ exports.jwtAuth = async (ctx, next) => {
   const { secret = securityConfig.jwt.secret } = securityConfig.jwt;
   // 从请求头、查询参数或Cookie中获取Token
   let token = ctx.headers.authorization;
-
+  console.log('token1:', token?.slice(-10));
   if (!token) {
     token = ctx.query.token;
   }
-  
+  console.log('token2:', token?.slice(-10));
   if (!token && ctx.cookies && ctx.cookies.get('token')) {
     token = ctx.cookies.get('token');
   }
-  
+  console.log('token3:', token?.slice(-10));
   // 如果没有Token且不是公开路由，则返回未授权错误
   if (!token) {
     console.log('当前请求路径:', ctx.path);
@@ -57,7 +57,7 @@ exports.jwtAuth = async (ctx, next) => {
     };
     return;
   }
-  
+  console.log('token4:', token?.slice(-10));
   // 移除Bearer前缀
   if (token.startsWith('Bearer ')) {
     token = token.slice(7);
