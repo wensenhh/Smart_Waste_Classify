@@ -4,12 +4,27 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const securityConfig = {
+  // 公开路由配置
+  publicRoutes: [
+    '/api/v1/users/login',
+    '/api/v1/users/register',
+    '/api/v1/users/logout',
+    '/api/v1/users/forgot-password',
+    '/api/v1/users/reset-password',
+    '/api/v1/recognition/search',
+    '/api/v1/recognition/identify-waste',
+    '/api/v1/health',
+    '/health'
+  ],
+  
   // JWT配置
   jwt: {
     secret: process.env.JWT_SECRET || 'your-secret-key',
     expiresIn: process.env.JWT_EXPIRES_IN || '24h',
     refreshSecret: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key',
-    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d'
+    refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    cookieEnabled: process.env.JWT_COOKIE_ENABLED === 'true' || true,
+    cookieSameSite: process.env.JWT_COOKIE_SAMESITE || 'lax'
   },
   
   // CSRF配置
@@ -98,8 +113,10 @@ const securityConfig = {
     phone: { start: 3, end: 4 },
     idCard: { start: 6, end: 4 },
     bankCard: { start: 4, end: 4 },
-    email: { start: 2, end: 4 }
-  }
+      email: { start: 2, end: 4 }
+    },
+  
+
 };
 
 module.exports = securityConfig;

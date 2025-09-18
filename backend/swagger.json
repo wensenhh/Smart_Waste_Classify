@@ -11,45 +11,47 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api",
+      "url": "http://localhost:3000/api/v1",
       "description": "开发环境"
     },
     {
-      "url": "https://api.example.com/api",
+      "url": "https://api.example.com/api/v1",
       "description": "生产环境"
     }
   ],
   "paths": {
-    "/health": {
+    "/": {
       "get": {
-        "summary": "健康检查",
-        "description": "检查服务器是否正常运行",
+        "summary": "API根路径",
+        "description": "获取系统版本和可用路由信息",
         "responses": {
           "200": {
-            "description": "服务器正常运行",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
                     },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "status": {
-                          "type": "string",
-                          "example": "ok"
-                        },
-                        "timestamp": {
-                          "type": "string",
-                          "format": "date-time"
-                        },
                         "version": {
                           "type": "string",
                           "example": "1.0.0"
+                        },
+                        "availableRoutes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
                         }
                       }
                     }
@@ -61,38 +63,1898 @@
         }
       }
     },
-    "/welcome": {
-      "get": {
-        "summary": "欢迎信息",
-        "description": "获取系统欢迎信息",
-        "parameters": [
-          {
-            "name": "lang",
-            "in": "query",
-            "description": "语言偏好",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["zh", "en", "ja", "ko"],
-              "default": "zh"
+    "/users/register": {
+      "post": {
+        "summary": "用户注册",
+        "description": "创建新用户账号",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "email", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "用户名",
+                    "example": "user123"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "电子邮箱",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "密码",
+                    "example": "Password123!",
+                    "format": "password"
+                  }
+                }
+              }
             }
           }
-        ],
+        },
         "responses": {
-          "200": {
-            "description": "欢迎信息",
+          "201": {
+            "description": "注册成功",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
+                    "code": {
+                      "type": "integer",
+                      "example": 201
                     },
                     "message": {
                       "type": "string",
-                      "example": "欢迎使用智能垃圾分类系统！"
+                      "example": "User registered successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "example": "5f8d0d55b54764421b7156cd"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "user123"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "user@example.com"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Validation error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "用户登录",
+        "description": "用户登录获取访问令牌",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "电子邮箱",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "密码",
+                    "example": "Password123!",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "登录成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Login successful"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "5f8d0d55b54764421b7156cd"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "email": {
+                              "type": "string",
+                              "example": "user@example.com"
+                            },
+                            "role": {
+                              "type": "string",
+                              "example": "user"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid credentials"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "summary": "用户登出",
+        "description": "用户退出登录",
+        "responses": {
+          "200": {
+            "description": "登出成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Logout successful"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/forgot-password": {
+      "post": {
+        "summary": "忘记密码",
+        "description": "发送密码重置邮件",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "注册时使用的电子邮箱",
+                    "example": "user@example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "重置邮件已发送",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset email sent"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "用户不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/reset-password": {
+      "post": {
+        "summary": "重置密码",
+        "description": "使用验证码重置密码",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "code", "newPassword"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "注册时使用的电子邮箱",
+                    "example": "user@example.com"
+                  },
+                  "code": {
+                    "type": "string",
+                    "description": "重置验证码",
+                    "example": "123456"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "description": "新密码",
+                    "example": "NewPassword123!",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "密码重置成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password reset successful"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "无效的验证码",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid or expired verification code"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/profile": {
+      "get": {
+        "summary": "获取用户资料",
+        "description": "获取当前登录用户的个人资料信息",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取用户资料",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "5f8d0d55b54764421b7156cd"
+                        },
+                        "username": {
+                          "type": "string",
+                          "example": "user123"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "user@example.com"
+                        },
+                        "nickname": {
+                          "type": "string",
+                          "example": "用户昵称"
+                        },
+                        "phone": {
+                          "type": "string",
+                          "example": "13812345678"
+                        },
+                        "avatar": {
+                          "type": "string",
+                          "example": "https://example.com/avatars/user123.jpg"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2020-10-19T10:00:00Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2020-10-20T15:30:00Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新用户资料",
+        "description": "更新当前登录用户的个人资料信息",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nickname": {
+                    "type": "string",
+                    "description": "用户昵称",
+                    "example": "新的昵称"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "description": "手机号码",
+                    "example": "13987654321"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "用户资料更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Profile updated successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "5f8d0d55b54764421b7156cd"
+                        },
+                        "nickname": {
+                          "type": "string",
+                          "example": "新的昵称"
+                        },
+                        "phone": {
+                          "type": "string",
+                          "example": "13987654321"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid parameters"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/password": {
+      "put": {
+        "summary": "修改密码",
+        "description": "修改当前登录用户的密码",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["currentPassword", "newPassword"],
+                "properties": {
+                  "currentPassword": {
+                    "type": "string",
+                    "description": "当前密码",
+                    "example": "OldPassword123!",
+                    "format": "password"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "description": "新密码",
+                    "example": "NewPassword456!",
+                    "format": "password"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "密码修改成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "参数错误或当前密码不正确",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid current password or new password format"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/avatar": {
+      "post": {
+        "summary": "上传头像",
+        "description": "上传用户头像",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "头像文件"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "头像上传成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Avatar uploaded successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "avatarUrl": {
+                          "type": "string",
+                          "example": "https://example.com/avatars/new-avatar.jpg"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "文件上传失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to upload avatar"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除头像",
+        "description": "删除用户头像",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "头像删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Avatar deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/favorites": {
+      "get": {
+        "summary": "获取用户收藏",
+        "description": "获取当前登录用户的所有收藏项",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取收藏列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "5f8d0d55b54764421b7156ce"
+                          },
+                          "itemId": {
+                            "type": "string",
+                            "example": "60a1b2c3d4e5f6a7b8c9d0e1"
+                          },
+                          "itemType": {
+                            "type": "string",
+                            "example": "waste_category"
+                          },
+                          "itemName": {
+                            "type": "string",
+                            "example": "塑料瓶"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2020-10-21T08:00:00Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/favorites/{itemId}": {
+      "post": {
+        "summary": "添加收藏",
+        "description": "添加项目到用户收藏",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "description": "收藏项ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "收藏成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 201
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Item added to favorites"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "5f8d0d55b54764421b7156ce"
+                        },
+                        "itemId": {
+                          "type": "string",
+                          "example": "60a1b2c3d4e5f6a7b8c9d0e1"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "项目已收藏",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Item already in favorites"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "移除收藏",
+        "description": "从用户收藏中移除项目",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "itemId",
+            "in": "path",
+            "required": true,
+            "description": "收藏项ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "移除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Item removed from favorites"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "收藏项不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Favorite item not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/history/recognition": {
+      "get": {
+        "summary": "获取识别历史",
+        "description": "获取当前登录用户的垃圾识别历史记录",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取识别历史",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "records": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "5f8d0d55b54764421b7156cf"
+                              },
+                              "wasteName": {
+                                "type": "string",
+                                "example": "塑料瓶"
+                              },
+                              "category": {
+                                "type": "string",
+                                "example": "recyclable"
+                              },
+                              "categoryName": {
+                                "type": "string",
+                                "example": "可回收物"
+                              },
+                              "imageUrl": {
+                                "type": "string",
+                                "example": "https://example.com/uploads/plastic-bottle.jpg"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2020-10-22T14:30:00Z"
+                              }
+                            }
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 50
+                            },
+                            "pages": {
+                              "type": "integer",
+                              "example": 5
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/history/recognition/{recordId}": {
+      "delete": {
+        "summary": "删除识别记录",
+        "description": "删除指定的垃圾识别历史记录",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "description": "识别记录ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "记录删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "记录不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/history/quiz": {
+      "get": {
+        "summary": "获取测验历史",
+        "description": "获取当前登录用户的垃圾分类测验历史记录",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取测验历史",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "records": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "5f8d0d55b54764421b7156d0"
+                              },
+                              "quizId": {
+                                "type": "string",
+                                "example": "60a1b2c3d4e5f6a7b8c9d0e2"
+                              },
+                              "score": {
+                                "type": "integer",
+                                "example": 85
+                              },
+                              "totalQuestions": {
+                                "type": "integer",
+                                "example": 10
+                              },
+                              "duration": {
+                                "type": "integer",
+                                "example": 120,
+                                "description": "测验用时（秒）"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2020-10-23T09:15:00Z"
+                              }
+                            }
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 25
+                            },
+                            "pages": {
+                              "type": "integer",
+                              "example": 3
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+      "/recognition": {
+        "post": {
+          "summary": "垃圾识别",
+          "description": "上传图片进行垃圾分类识别",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "image": {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "待识别的垃圾图片"
+                    }
+                  },
+                  "required": ["image"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "识别成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "example": 200
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Recognition successful"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "wasteName": {
+                            "type": "string",
+                            "example": "塑料瓶"
+                          },
+                          "category": {
+                            "type": "string",
+                            "example": "recyclable"
+                          },
+                          "categoryName": {
+                            "type": "string",
+                            "example": "可回收物"
+                          },
+                          "confidence": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 0.98
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "塑料瓶属于可回收物，请投入蓝色垃圾桶。"
+                          },
+                          "imageUrl": {
+                            "type": "string",
+                            "example": "https://example.com/uploads/2023/10/15/123456.jpg"
+                          },
+                          "tips": {
+                            "type": "string",
+                            "example": "塑料瓶在投放前请尽量压扁，以节省空间。"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "example": 400
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "No image file uploaded"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务器内部错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "example": 500
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Recognition service error"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/recognition/search": {
+        "get": {
+          "summary": "搜索垃圾信息",
+          "description": "根据关键词搜索垃圾信息",
+          "parameters": [
+            {
+              "name": "keyword",
+              "in": "query",
+              "required": true,
+              "description": "搜索关键词",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "description": "页码",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 1,
+                "minimum": 1
+              }
+            },
+            {
+              "name": "limit",
+              "in": "query",
+              "description": "每页数量",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 10,
+                "minimum": 1,
+                "maximum": 100
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "搜索成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "example": 200
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Search successful"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "string",
+                                  "example": "60a1b2c3d4e5f6a7b8c9d0e2"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "example": "塑料瓶"
+                                },
+                                "category": {
+                                  "type": "string",
+                                  "example": "recyclable"
+                                },
+                                "categoryName": {
+                                  "type": "string",
+                                  "example": "可回收物"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "example": "塑料瓶属于可回收物，请投入蓝色垃圾桶。"
+                                },
+                                "imageUrl": {
+                                  "type": "string",
+                                  "example": "https://example.com/images/plastic-bottle.jpg"
+                                }
+                              }
+                            }
+                          },
+                          "pagination": {
+                            "type": "object",
+                            "properties": {
+                              "page": {
+                                "type": "integer",
+                                "example": 1
+                              },
+                              "limit": {
+                                "type": "integer",
+                                "example": 10
+                              },
+                              "total": {
+                                "type": "integer",
+                                "example": 25
+                              },
+                              "pages": {
+                                "type": "integer",
+                                "example": 3
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "example": 400
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Keyword parameter is required"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/recognition/categories": {
+        "get": {
+          "summary": "获取垃圾类别",
+          "description": "获取所有垃圾类别信息",
+          "responses": {
+            "200": {
+              "description": "获取成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "example": 200
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Success"
+                      },
+                      "data": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "60a1b2c3d4e5f6a7b8c9d0e3"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "可回收物"
+                            },
+                            "slug": {
+                              "type": "string",
+                              "example": "recyclable"
+                            },
+                            "color": {
+                              "type": "string",
+                              "example": "#0052CC"
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "可回收物是指适宜回收和可循环再利用的废弃物。"
+                            },
+                            "icon": {
+                              "type": "string",
+                              "example": "https://example.com/icons/recyclable.png"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/recognition/category/{slug}": {
+        "get": {
+          "summary": "获取垃圾类别详情",
+          "description": "获取指定垃圾类别的详细信息",
+          "parameters": [
+            {
+              "name": "slug",
+              "in": "path",
+              "required": true,
+              "description": "垃圾类别标识",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "获取成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "example": 200
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Success"
+                      },
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "60a1b2c3d4e5f6a7b8c9d0e3"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "可回收物"
+                          },
+                          "slug": {
+                            "type": "string",
+                            "example": "recyclable"
+                          },
+                          "color": {
+                            "type": "string",
+                            "example": "#0052CC"
+                          },
+                          "description": {
+                            "type": "string",
+                            "example": "可回收物是指适宜回收和可循环再利用的废弃物。"
+                          },
+                          "icon": {
+                            "type": "string",
+                            "example": "https://example.com/icons/recyclable.png"
+                          },
+                          "examples": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "example": "塑料瓶、纸箱、金属罐、玻璃制品"
+                            }
+                          },
+                          "tips": {
+                            "type": "string",
+                            "example": "可回收物应保持清洁干燥，避免污染。"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "类别不存在",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "integer",
+                        "example": 404
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Category not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/health": {
+      "get": {
+        "summary": "健康检查",
+        "description": "检查服务器是否正常运行",
+        "responses": {
+          "200": {
+            "description": "服务器正常运行",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "example": "OK"
+                        },
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "environment": {
+                          "type": "string",
+                          "example": "development"
+                        }
+                      }
                     }
                   }
                 }
@@ -113,33 +1975,23 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "username": {
+                  "phone": {
                     "type": "string",
-                    "description": "用户名",
-                    "example": "user123"
-                  },
-                  "email": {
-                    "type": "string",
-                    "description": "电子邮箱",
-                    "example": "user@example.com"
+                    "description": "手机号码（作为登录凭证）",
+                    "example": "13800138000"
                   },
                   "password": {
                     "type": "string",
                     "description": "密码",
-                    "example": "Password@123"
+                    "example": "123456"
                   },
-                  "nickname": {
+                  "name": {
                     "type": "string",
-                    "description": "昵称",
-                    "example": "用户昵称"
-                  },
-                  "phone": {
-                    "type": "string",
-                    "description": "手机号码",
-                    "example": "13800138000"
+                    "description": "用户姓名（可选）",
+                    "example": "测试用户"
                   }
                 },
-                "required": ["username", "email", "password"]
+                "required": ["phone", "password"]
               }
             }
           }
@@ -156,36 +2008,28 @@
                       "type": "boolean",
                       "example": true
                     },
+                    "message": {
+                      "type": "string",
+                      "example": "user.register_success"
+                    },
                     "data": {
                       "type": "object",
                       "properties": {
-                        "id": {
+                        "userId": {
                           "type": "string",
-                          "example": "1"
-                        },
-                        "username": {
-                          "type": "string",
-                          "example": "user123"
-                        },
-                        "email": {
-                          "type": "string",
-                          "example": "user@example.com"
-                        },
-                        "nickname": {
-                          "type": "string",
-                          "example": "用户昵称"
+                          "example": "user_17581870429221ym17n4el"
                         },
                         "phone": {
                           "type": "string",
                           "example": "13800138000"
                         },
+                        "name": {
+                          "type": "string",
+                          "example": "测试用户"
+                        },
                         "role": {
                           "type": "string",
                           "example": "user"
-                        },
-                        "createdAt": {
-                          "type": "string",
-                          "format": "date-time"
                         }
                       }
                     }
@@ -873,6 +2717,231 @@
                           }
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/categories/{categoryId}": {
+      "get": {
+        "summary": "获取单个垃圾类别详情",
+        "description": "获取指定ID的垃圾类别详细信息",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "description": "垃圾类别ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["recyclable", "kitchen", "hazardous", "other"],
+              "example": "recyclable"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "description": "语言偏好",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["zh", "en", "ja", "ko"],
+              "default": "zh"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "垃圾类别详情",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "recyclable"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "可回收物"
+                        },
+                        "color": {
+                          "type": "string",
+                          "example": "blue"
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "可回收物包括纸类、塑料、金属、玻璃、织物等"
+                        },
+                        "examples": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": ["矿泉水瓶", "报纸", "铝合金罐", "玻璃瓶"]
+                        },
+                        "tips": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": ["请将物品清洗干净后投放", "纸类应尽量平整", "塑料瓶应去掉瓶盖"]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "无效的类别ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "无效的垃圾类别ID"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/identify": {
+      "post": {
+        "summary": "垃圾识别",
+        "description": "上传图片进行垃圾识别",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "垃圾图片文件"
+                  }
+                },
+                "required": ["file"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "识别成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "abc123"
+                        },
+                        "category": {
+                          "type": "string",
+                          "example": "recyclable"
+                        },
+                        "categoryName": {
+                          "type": "string",
+                          "example": "可回收物"
+                        },
+                        "confidence": {
+                          "type": "number",
+                          "example": 0.95
+                        },
+                        "description": {
+                          "type": "string",
+                          "example": "这是一个塑料瓶，属于可回收物"
+                        },
+                        "tips": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": ["请将瓶内液体倒净", "拧下瓶盖分开投放"]
+                        },
+                        "imageUrl": {
+                          "type": "string",
+                          "example": "/uploads/recognition/abc123.jpg"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "识别失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "无法识别图片中的垃圾"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "不支持的媒体类型",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "仅支持JPG、PNG格式的图片"
                     }
                   }
                 }
@@ -1762,9 +3831,1932 @@
           }
         }
       }
+    },
+    "/recognition/stats": {
+      "get": {
+        "summary": "获取用户垃圾类别统计",
+        "description": "获取当前登录用户的垃圾识别统计数据",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "用户垃圾识别统计数据",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "totalRecords": {
+                          "type": "integer",
+                          "example": 156
+                        },
+                        "monthlyTrend": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "month": {
+                                "type": "string",
+                                "example": "2023-10"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "example": 45
+                              }
+                            }
+                          }
+                        },
+                        "categoryDistribution": {
+                          "type": "object",
+                          "example": {
+                            "recyclable": 65,
+                            "kitchen": 42,
+                            "hazardous": 8,
+                            "other": 41
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "请先登录"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/admin/records": {
+      "get": {
+        "summary": "获取所有用户的识别记录（管理员）",
+        "description": "管理员获取所有用户的垃圾识别记录",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "example": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "example": 10
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户ID（可选，用于筛选特定用户的记录）",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "user123"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "description": "垃圾类别（可选）",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["recyclable", "kitchen", "hazardous", "other"],
+              "example": "recyclable"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "开始日期 (YYYY-MM-DD)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2023-10-01"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "结束日期 (YYYY-MM-DD)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2023-10-31"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "所有用户的识别记录列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "abc123"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "user123"
+                          },
+                          "username": {
+                            "type": "string",
+                            "example": "用户名"
+                          },
+                          "category": {
+                            "type": "string",
+                            "example": "recyclable"
+                          },
+                          "confidence": {
+                            "type": "number",
+                            "example": 0.95
+                          },
+                          "imageUrl": {
+                            "type": "string",
+                            "example": "/uploads/recognition/abc123.jpg"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "example": 10
+                        },
+                        "total": {
+                          "type": "integer",
+                          "example": 156
+                        },
+                        "pages": {
+                          "type": "integer",
+                          "example": 16
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "请先登录"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "权限不足",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "需要管理员权限"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/admin/users/{userId}/records/{recordId}": {
+      "delete": {
+        "summary": "删除用户的识别记录（管理员）",
+        "description": "管理员删除指定用户的指定垃圾识别记录",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "user123"
+            }
+          },
+          {
+            "name": "recordId",
+            "in": "path",
+            "description": "识别记录ID",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "abc123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "识别记录已成功删除"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "删除失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "删除失败"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "请先登录"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "权限不足",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "需要管理员权限"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "记录不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "记录不存在"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/history": {
+      "get": {
+        "summary": "获取识别历史记录",
+        "description": "获取当前登录用户的垃圾识别历史记录",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取识别历史",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "records": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "5f8d0d55b54764421b7156cf"
+                              },
+                              "wasteName": {
+                                "type": "string",
+                                "example": "塑料瓶"
+                              },
+                              "category": {
+                                "type": "string",
+                                "example": "recyclable"
+                              },
+                              "categoryName": {
+                                "type": "string",
+                                "example": "可回收物"
+                              },
+                              "imageUrl": {
+                                "type": "string",
+                                "example": "https://example.com/uploads/plastic-bottle.jpg"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2020-10-22T14:30:00Z"
+                              }
+                            }
+                          }
+                        },
+                        "pagination": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "limit": {
+                              "type": "integer",
+                              "example": 10
+                            },
+                            "total": {
+                              "type": "integer",
+                              "example": 50
+                            },
+                            "pages": {
+                              "type": "integer",
+                              "example": 5
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/history/{id}": {
+      "delete": {
+        "summary": "删除识别记录",
+        "description": "删除指定的垃圾识别历史记录",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "识别记录ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "记录删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "记录不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Record not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/history/batch-delete": {
+      "delete": {
+        "summary": "批量删除识别记录",
+        "description": "批量删除用户的垃圾识别历史记录",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "要删除的记录ID数组"
+                  }
+                },
+                "required": ["ids"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "批量删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Records deleted successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid request body"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/stats/categories": {
+      "get": {
+        "summary": "获取垃圾类别统计",
+        "description": "获取当前登录用户的垃圾类别统计数据",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "开始日期（YYYY-MM-DD）",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "结束日期（YYYY-MM-DD）",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "description": "语言",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "zh-CN",
+              "enum": ["zh-CN", "en-US"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取统计数据",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "category": {
+                            "type": "string",
+                            "example": "recyclable"
+                          },
+                          "categoryName": {
+                            "type": "string",
+                            "example": "可回收物"
+                          },
+                          "count": {
+                            "type": "integer",
+                            "example": 45
+                          },
+                          "percentage": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 45.0
+                          },
+                          "color": {
+                            "type": "string",
+                            "example": "#0052CC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/stats": {
+      "get": {
+        "summary": "获取用户垃圾类别统计",
+        "description": "获取当前登录用户的垃圾类别总体统计",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取统计数据",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "totalRecords": {
+                          "type": "integer",
+                          "example": 100
+                        },
+                        "monthlyTrend": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "month": {
+                                "type": "string",
+                                "example": "2023-10"
+                              },
+                              "count": {
+                                "type": "integer",
+                                "example": 25
+                              }
+                            }
+                          }
+                        },
+                        "categoryDistribution": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "integer"
+                          },
+                          "example": {
+                            "recyclable": 45,
+                            "hazardous": 10,
+                            "organic": 30,
+                            "other": 15
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recognition/admin/system-stats": {
+      "get": {
+        "summary": "获取系统统计数据（管理员）",
+        "description": "管理员获取系统垃圾识别的统计数据",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "系统统计数据",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "totalRecognitions": {
+                          "type": "integer",
+                          "example": 12567
+                        },
+                        "activeUsers": {
+                          "type": "integer",
+                          "example": 1254
+                        },
+                        "monthlyStats": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "month": {
+                                "type": "string",
+                                "example": "2023-10"
+                              },
+                              "recognitions": {
+                                "type": "integer",
+                                "example": 1256
+                              },
+                              "users": {
+                                "type": "integer",
+                                "example": 234
+                              }
+                            }
+                          }
+                        },
+                        "categoryDistribution": {
+                          "type": "object",
+                          "example": {
+                            "recyclable": 4567,
+                            "kitchen": 3254,
+                            "hazardous": 1254,
+                            "other": 3492
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未授权",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "请先登录"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "权限不足",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "需要管理员权限"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
-  "components": {
+        "/users/admin/stats": {
+          "get": {
+            "summary": "获取用户统计数据",
+            "description": "获取系统用户统计数据（仅管理员可用）",
+            "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "成功获取用户统计数据",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Success"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "totalUsers": {
+                              "type": "integer",
+                              "example": 1000
+                            },
+                            "activeUsersToday": {
+                              "type": "integer",
+                              "example": 50
+                            },
+                            "newUsersThisWeek": {
+                              "type": "integer",
+                              "example": 150
+                            },
+                            "userGrowthTrend": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "month": {
+                                    "type": "string",
+                                    "example": "2023-10"
+                                  },
+                                  "count": {
+                                    "type": "integer",
+                                    "example": 250
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "未授权",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthorized"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "权限不足",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/users/admin": {
+          "get": {
+            "summary": "获取所有用户列表",
+            "description": "获取系统所有用户的列表（仅管理员可用）",
+            "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "page",
+                "in": "query",
+                "description": "页码",
+                "required": false,
+                "schema": {
+                  "type": "integer",
+                  "default": 1,
+                  "minimum": 1
+                }
+              },
+              {
+                "name": "limit",
+                "in": "query",
+                "description": "每页数量",
+                "required": false,
+                "schema": {
+                  "type": "integer",
+                  "default": 10,
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              {
+                "name": "search",
+                "in": "query",
+                "description": "搜索关键词",
+                "required": false,
+                "schema": {
+                  "type": "string"
+                }
+              },
+              {
+                "name": "status",
+                "in": "query",
+                "description": "用户状态",
+                "required": false,
+                "schema": {
+                  "type": "string",
+                  "enum": ["active", "inactive", "banned"]
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "成功获取用户列表",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Success"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "users": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "string",
+                                    "example": "5f8d0d55b54764421b7156cf"
+                                  },
+                                  "username": {
+                                    "type": "string",
+                                    "example": "user123"
+                                  },
+                                  "email": {
+                                    "type": "string",
+                                    "example": "user123@example.com"
+                                  },
+                                  "role": {
+                                    "type": "string",
+                                    "example": "user"
+                                  },
+                                  "status": {
+                                    "type": "string",
+                                    "example": "active"
+                                  },
+                                  "createdAt": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2020-10-22T14:30:00Z"
+                                  },
+                                  "lastLogin": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2020-10-23T10:15:00Z"
+                                  }
+                                }
+                              }
+                            },
+                            "pagination": {
+                              "type": "object",
+                              "properties": {
+                                "page": {
+                                  "type": "integer",
+                                  "example": 1
+                                },
+                                "limit": {
+                                  "type": "integer",
+                                  "example": 10
+                                },
+                                "total": {
+                                  "type": "integer",
+                                  "example": 100
+                                },
+                                "pages": {
+                                  "type": "integer",
+                                  "example": 10
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "未授权",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthorized"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "权限不足",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/users/admin/{id}": {
+          "get": {
+            "summary": "获取指定用户详情",
+            "description": "获取指定用户的详细信息（仅管理员可用）",
+            "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "用户ID",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "成功获取用户详情",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Success"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "5f8d0d55b54764421b7156cf"
+                            },
+                            "username": {
+                              "type": "string",
+                              "example": "user123"
+                            },
+                            "email": {
+                              "type": "string",
+                              "example": "user123@example.com"
+                            },
+                            "role": {
+                              "type": "string",
+                              "example": "user"
+                            },
+                            "status": {
+                              "type": "string",
+                              "example": "active"
+                            },
+                            "avatar": {
+                              "type": "string",
+                              "example": "https://example.com/uploads/avatar.jpg"
+                            },
+                            "createdAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2020-10-22T14:30:00Z"
+                            },
+                            "lastLogin": {
+                              "type": "string",
+                              "format": "date-time",
+                              "example": "2020-10-23T10:15:00Z"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "用户不存在",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "未授权",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthorized"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "权限不足",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "put": {
+            "summary": "更新用户信息",
+            "description": "更新指定用户的信息（仅管理员可用）",
+            "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "用户ID",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "role": {
+                        "type": "string",
+                        "enum": ["user", "admin"]
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": ["active", "inactive", "banned"]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "成功更新用户信息",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User updated successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "请求参数错误",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Invalid request body"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "用户不存在",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "未授权",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthorized"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "权限不足",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "delete": {
+            "summary": "删除用户",
+            "description": "删除指定用户（仅管理员可用）",
+            "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "用户ID",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "用户删除成功",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User deleted successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "用户不存在",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "未授权",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthorized"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "权限不足",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/users/admin/ban/{id}": {
+          "post": {
+            "summary": "禁用用户",
+            "description": "禁用指定用户（仅管理员可用）",
+            "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "用户ID",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "用户禁用成功",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User banned successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "用户不存在",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "未授权",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthorized"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "权限不足",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/users/admin/unban/{id}": {
+          "post": {
+            "summary": "解除禁用用户",
+            "description": "解除对指定用户的禁用（仅管理员可用）",
+            "security": [
+              {
+                "bearerAuth": []
+              }
+            ],
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "description": "用户ID",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "用户解除禁用成功",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 200
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User unbanned successfully"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "用户不存在",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "User not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "401": {
+                "description": "未授权",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Unauthorized"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "权限不足",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer",
+                          "example": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Forbidden"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "components": {
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",

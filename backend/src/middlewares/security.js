@@ -29,40 +29,46 @@ exports.ForbiddenError = ForbiddenError;
  * JWT验证中间件 - Koa版本
  */
 exports.jwtAuth = async (ctx, next) => {
+  const { secret = securityConfig.jwt.secret } = securityConfig.jwt;
+  // 从请求头、查询参数或Cookie中获取Token
+  let token = ctx.headers.authorization;
+
+  if (!token) {
+    token = ctx.query.token;
+  }
+  
+  if (!token && ctx.cookies && ctx.cookies.get('token')) {
+    token = ctx.cookies.get('token');
+  }
+  
+  // 如果没有Token且不是公开路由，则返回未授权错误
+  if (!token) {
+    console.log('当前请求路径:', ctx.path);
+    console.log('配置的公开路由:', securityConfig.publicRoutes);
+    if (securityConfig.publicRoutes && securityConfig.publicRoutes.some(route => ctx.path === route)) {
+      console.log('匹配到公开路由，允许访问');
+      return await next();
+    }
+    console.log('未匹配到公开路由，需要验证');
+    ctx.status = 401;
+    ctx.body = {
+      code: 401,
+      message: '请提供有效的身份认证Token'
+    };
+    return;
+  }
+  
+  // 移除Bearer前缀
+  if (token.startsWith('Bearer ')) {
+    token = token.slice(7);
+  }
+  // 验证Token
+  console.log('尝试验证的Token:', token.substring(0, 20) + '...'); // 只打印部分Token以保护安全
+  console.log('使用的密钥长度:', secret.length);
+  
   try {
-    const { secret = securityConfig.jwt.secret } = securityConfig.jwt;
-    
-    // 从请求头、查询参数或Cookie中获取Token
-    let token = ctx.headers.authorization;
-    
-    if (!token) {
-      token = ctx.query.token;
-    }
-    
-    if (!token && ctx.cookies && ctx.cookies.get('token')) {
-      token = ctx.cookies.get('token');
-    }
-    
-    // 如果没有Token且不是公开路由，则返回未授权错误
-    if (!token) {
-      if (securityConfig.publicRoutes && securityConfig.publicRoutes.includes(ctx.path)) {
-        return await next();
-      }
-      ctx.status = 401;
-      ctx.body = {
-        code: 401,
-        message: '请提供有效的身份认证Token'
-      };
-      return;
-    }
-    
-    // 移除Bearer前缀
-    if (token.startsWith('Bearer ')) {
-      token = token.slice(7);
-    }
-    
-    // 验证Token
     const decoded = jwt.verify(token, secret);
+    console.log('Token验证成功，解码结果:', decoded);
     
     // 将解码后的用户信息存储在上下文对象中
     ctx.state.user = decoded;
@@ -73,7 +79,7 @@ exports.jwtAuth = async (ctx, next) => {
       // 生成新Token
       const newToken = jwt.sign({
         id: decoded.id,
-        username: decoded.username,
+        phone: decoded.phone,
         role: decoded.role
       }, secret, {
         expiresIn: securityConfig.jwt.expiresIn
@@ -85,17 +91,26 @@ exports.jwtAuth = async (ctx, next) => {
       
       // 如果配置了Cookie，同时设置Cookie
       if (securityConfig.jwt.cookieEnabled) {
+        // 解析expiresIn字符串为毫秒数
+        let maxAge = 24 * 60 * 60 * 1000; // 默认24小时
+        if (securityConfig.jwt.expiresIn.endsWith('h')) {
+          maxAge = parseInt(securityConfig.jwt.expiresIn) * 60 * 60 * 1000;
+        } else if (securityConfig.jwt.expiresIn.endsWith('d')) {
+          maxAge = parseInt(securityConfig.jwt.expiresIn) * 24 * 60 * 60 * 1000;
+        }
+        
         ctx.cookies.set('token', newToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: securityConfig.jwt.cookieSameSite || 'lax',
-          maxAge: parseInt(securityConfig.jwt.expiresIn) * 1000
+          maxAge: maxAge
         });
       }
     }
     
     await next();
   } catch (error) {
+    console.log('JWT验证错误:', error.name, error.message);
     if (error.name === 'TokenExpiredError') {
       ctx.status = 401;
       ctx.body = {
@@ -116,8 +131,7 @@ exports.jwtAuth = async (ctx, next) => {
       };
     }
   }
-};
-
+}
 /**
  * 角色授权中间件 - Koa版本
  */

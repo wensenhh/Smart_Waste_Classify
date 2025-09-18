@@ -1,8 +1,8 @@
 // 用户路由
-const Router = require('koa-router');
+const Router = require('@koa/router');
 const router = new Router();
 const userController = require('../controllers/userController');
-const { jwtAuth, authorize, validateInput } = require('../middlewares/security');
+const { jwtAuth, authorize } = require('../middlewares/security');
 
 /**
  * 用户路由定义
@@ -16,7 +16,7 @@ router
   .post('/reset-password', userController.resetPassword)
   
   // 需要身份验证的路由
-  .use(jwtAuth())
+  .use(jwtAuth)
   
   // 用户信息相关
   .get('/profile', userController.getProfile)
@@ -39,9 +39,8 @@ router
   .use(authorize('admin'))
   .get('/', userController.getAllUsers)
   .get('/:id', userController.getUserById)
-  .put('/:id/role', userController.updateUserRole)
-  .delete('/:id', userController.deleteUser)
-  .put('/:id/status', userController.updateUserStatus);
+  .put('/:id/status', userController.updateUserStatus)
+  .delete('/:id', userController.deleteUser);
 
 /**
  * 导出用户路由

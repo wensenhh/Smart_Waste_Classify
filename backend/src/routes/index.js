@@ -43,9 +43,11 @@ function loadRoutes() {
     const recognitionRoutes = require('./recognitionRoutes');
     router.use('/recognition', recognitionRoutes.routes());
 
+    // 导入并注册用户路由
+    const userRoutes = require('./userRoutes');
+    router.use('/users', userRoutes.routes());
+    
     // 其他路由模块可以在这里添加
-    // const userRoutes = require('./userRoutes');
-    // router.use('/users', userRoutes.routes());
 
     console.log('路由模块加载成功');
   } catch (error) {

@@ -83,7 +83,7 @@ router.get('/stats',
 );
 
 // 管理员路由 - 使用authorize中间件并指定admin角色
-router.use(authorize(['admin']));
+router.use(authorize('admin'));
 
 // 获取所有用户的识别记录（管理员）
 router.get('/admin/records', 

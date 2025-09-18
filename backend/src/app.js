@@ -57,7 +57,7 @@ function configureMiddlewares() {
   // 安全相关中间件
   app.use(security.helmet);
   app.use(security.cors);
-  app.use(security.jwtAuth); // 使用安全中间件中的JWT验证
+  // 不将jwtAuth作为全局中间件，因为路由文件中已正确配置
   
   // 日志中间件
   app.use(logger);
@@ -75,8 +75,8 @@ function configureMiddlewares() {
     jsonLimit: '10mb'
   }));
 
-  // 限流中间件
-  app.use(security.rateLimiter);
+  // 限流中间件（暂时移除，等待修复配置）
+  // app.use(security.rateLimiter);
   
   // 敏感数据掩码中间件
   app.use(security.maskSensitiveData);
@@ -154,7 +154,7 @@ async function startServer() {
     }
     
     // 启动HTTP服务器
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 3001; // 改为3001端口以解决端口被占用问题
     const httpServer = app.listen(PORT, () => {
       console.log(`智能垃圾分类系统后端服务运行在 http://localhost:${PORT}`);
       console.log(`当前环境: ${process.env.NODE_ENV}`);
