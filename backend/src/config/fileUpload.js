@@ -1,25 +1,19 @@
 // 文件上传配置
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
-// ES模块中替代__dirname和__filename
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const path = require('path');
 
 /**
  * 文件上传配置
  * 定义文件上传的相关参数和限制
  */
 
-// 上传目录配置
-export const uploadDir = path.join(__dirname, '../../uploads');
+// 上传目录配置 - 与app.js保持一致，使用环境变量或项目根目录下的uploads
+const uploadDir = process.env.FILE_UPLOAD_DIR || path.join(__dirname, '..', '..', 'uploads');
 
 // 文件大小限制 (5MB)
-export const maxFileSize = 5 * 1024 * 1024;
+const maxFileSize = 5 * 1024 * 1024;
 
 // 允许的文件类型
-export const allowedMimeTypes = [
+const allowedMimeTypes = [
   'image/jpeg',
   'image/png',
   'image/gif',
@@ -27,7 +21,7 @@ export const allowedMimeTypes = [
 ];
 
 // 允许的文件扩展名
-export const allowedExtensions = [
+const allowedExtensions = [
   '.jpg',
   '.jpeg',
   '.png',
@@ -36,7 +30,7 @@ export const allowedExtensions = [
 ];
 
 // 图像优化配置
-export const imageOptimization = {
+const imageOptimization = {
   maxWidth: 1200,
   maxHeight: 1200,
   quality: {
@@ -48,27 +42,27 @@ export const imageOptimization = {
 };
 
 // 临时文件配置
-export const tempFile = {
-  dir: path.join(__dirname, '../../temp'),
+const tempFile = {
+  dir: path.join(__dirname, 'temp'),
   expiryTime: 24 * 60 * 60 * 1000 // 24小时
 };
 
 // 静态文件服务配置
-export const staticServe = {
+const staticServe = {
   root: uploadDir,
   prefix: '/static/uploads',
   maxAge: 30 * 24 * 60 * 60 * 1000 // 30天缓存
 };
 
 // 多部分表单解析配置
-export const multipart = {
+const multipart = {
   fields: 10, // 最大字段数
   files: 5, // 最大文件数
   parts: 15 // 最大parts数
 };
 
 // 安全配置
-export const security = {
+const security = {
   // 防止路径遍历攻击
   preventPathTraversal: true,
   // 文件名清理规则
@@ -78,7 +72,7 @@ export const security = {
 };
 
 // 文件存储策略
-export const storageStrategy = {
+const storageStrategy = {
   type: 'local', // local, s3, gcs等
   // 本地存储配置
   local: {
@@ -97,16 +91,17 @@ export const storageStrategy = {
 };
 
 // 日志配置
-export const logging = {
+const logging = {
   enabled: true,
-  logFileSize: true,
-  logFileType: true,
-  logFileOrigin: true,
-  logUser: true
+  level: 'info',
+  rotate: {
+    size: '100m',
+    days: 7
+  }
 };
 
 // 缩略图配置
-export const thumbnails = {
+const thumbnails = {
   enabled: true,
   sizes: [
     { name: 'small', width: 100, height: 100 },
@@ -118,15 +113,14 @@ export const thumbnails = {
 };
 
 // 清理配置
-export const cleanup = {
+const cleanup = {
   enabled: true,
   interval: 'daily', // daily, weekly, monthly
   retainDays: 30, // 保留天数
   dryRun: false // 测试模式
 };
 
-// 导出默认配置
-export default {
+module.exports = {
   uploadDir,
   maxFileSize,
   allowedMimeTypes,

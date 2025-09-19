@@ -33,6 +33,18 @@ function generateUniqueFilename(originalName) {
 }
 
 /**
+ * 生成按时间维度的目录路径（年/月/日）
+ * @returns {string} 时间目录路径
+ */
+function generateTimeBasedDirectory() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}/${month}/${day}`;
+}
+
+/**
  * 验证文件类型
  * @param {string} filename - 文件名
  * @returns {boolean} 是否为允许的文件类型
@@ -111,11 +123,12 @@ async function optimizeImage(imageBuffer, filename) {
  * @param {Object} [options={}] - 上传选项
  * @param {boolean} [options.optimize=true] - 是否优化图像
  * @param {string} [options.subDir=''] - 子目录
+ * @param {boolean} [options.useTimeBasedDir=true] - 是否使用按时间维度的目录结构
  * @returns {Promise<string>} 文件URL
  */
 async function uploadFile(fileBuffer, originalName, options = {}) {
   try {
-    const { optimize = true, subDir = '' } = options;
+    const { optimize = true, subDir = '', useTimeBasedDir = true } = options;
 
     // 验证文件类型
     if (!validateFileType(originalName)) {
@@ -128,13 +141,26 @@ async function uploadFile(fileBuffer, originalName, options = {}) {
       throw new Error(`文件大小超过限制，最大支持${maxSizeMB}MB`);
     }
 
-    // 确保上传目录存在
-    const targetDir = subDir ? path.join(uploadDir, subDir) : uploadDir;
-    await fs.mkdir(targetDir, { recursive: true });
+    // 确定目标目录
+    let targetDirPath = uploadDir;
+    
+    // 如果指定了子目录，添加到路径
+    if (subDir) {
+      targetDirPath = path.join(targetDirPath, subDir);
+    }
+    
+    // 如果使用时间维度的目录结构，添加时间目录
+    if (useTimeBasedDir) {
+      const timeDir = generateTimeBasedDirectory();
+      targetDirPath = path.join(targetDirPath, timeDir);
+    }
+    
+    // 确保目标目录存在
+    await fs.mkdir(targetDirPath, { recursive: true });
 
     // 生成唯一文件名
     const filename = generateUniqueFilename(originalName);
-    const filePath = path.join(targetDir, filename);
+    const filePath = path.join(targetDirPath, filename);
 
     // 处理文件
     let fileData = fileBuffer;
@@ -147,10 +173,20 @@ async function uploadFile(fileBuffer, originalName, options = {}) {
     // 保存文件
     await fs.writeFile(filePath, fileData);
 
-    // 构建文件URL（实际项目中可能需要根据配置调整）
-    // 这里假设上传的文件可以通过/static/uploads/访问
-    const relativePath = subDir ? `${subDir}/${filename}` : filename;
-    const fileUrl = `/static/uploads/${relativePath}`;
+    // 构建文件URL
+    // 计算相对路径（从uploads目录开始）
+    const relativeTargetDir = path.relative(uploadDir, targetDirPath);
+    // 确保路径分隔符在URL中始终使用/而不是操作系统相关的分隔符
+    const normalizedRelativeTargetDir = relativeTargetDir.split(path.sep).join('/');
+    const relativePath = normalizedRelativeTargetDir ? `${normalizedRelativeTargetDir}/${filename}` : filename;
+    
+    // 获取基础URL（优先使用环境变量中的BASE_URL，否则从环境变量构建）
+    // 完全从环境变量中读取，不硬编码任何URL
+    const baseUrl = process.env.BASE_URL || 
+                   `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3002}`;
+    
+    // 构建完整的文件URL（简化路径，不添加/static/uploads前缀）
+    const fileUrl = `${baseUrl}/${relativePath}`;
 
     return fileUrl;
   } catch (error) {
@@ -166,8 +202,11 @@ async function uploadFile(fileBuffer, originalName, options = {}) {
  */
 async function deleteFile(fileUrl) {
   try {
-    // 从URL中提取文件路径
-    const relativePath = fileUrl.replace('/static/uploads/', '');
+    // 从URL中提取文件路径（移除基础URL部分）
+    // 完全从环境变量中读取，不硬编码任何URL
+    const baseUrl = process.env.BASE_URL || 
+                   `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3002}`;
+    const relativePath = fileUrl.replace(baseUrl + '/', '');
     const filePath = path.join(uploadDir, relativePath);
 
     // 检查文件是否存在
@@ -194,8 +233,11 @@ async function deleteFile(fileUrl) {
  */
 async function getFileInfo(fileUrl) {
   try {
-    // 从URL中提取文件路径
-    const relativePath = fileUrl.replace('/static/uploads/', '');
+    // 从URL中提取文件路径（移除基础URL部分）
+    // 完全从环境变量中读取，不硬编码任何URL
+    const baseUrl = process.env.BASE_URL || 
+                   `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3002}`;
+    const relativePath = fileUrl.replace(baseUrl + '/', '');
     const filePath = path.join(uploadDir, relativePath);
 
     // 检查文件是否存在

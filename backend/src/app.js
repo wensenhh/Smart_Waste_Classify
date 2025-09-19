@@ -2,6 +2,7 @@ const Koa = require('koa');
 const koaBody = require('koa-body').default;
 const dotenv = require('dotenv');
 const path = require('path');
+const koaStatic = require('koa-static'); // 注意：koa-static不需要.default
 
 // 加载环境变量
 dotenv.config();
@@ -54,6 +55,17 @@ async function initializeApp() {
 function configureMiddlewares() {
   // 错误处理中间件（应该放在最前面）
   app.use(errorHandler);
+
+  // 配置静态文件服务中间件 - 应该放在其他中间件之前，避免静态文件请求被处理
+  const UPLOAD_DIR = process.env.FILE_UPLOAD_DIR || 'uploads';
+  // 构建正确的绝对路径
+  const uploadsPath = path.join(__dirname, '..', UPLOAD_DIR);
+  // 使用最简单的配置方式，先验证基本功能
+  app.use(koaStatic(uploadsPath));
+  
+  // 默认图片目录的静态文件服务
+  const DEFAULT_IMAGE_DIR = path.resolve(__dirname, 'public', 'default');
+  app.use(koaStatic(DEFAULT_IMAGE_DIR));
 
   // 安全相关中间件
   app.use(security.helmet);
@@ -154,8 +166,8 @@ async function startServer() {
       console.log(`上传目录创建成功: ${UPLOAD_DIR}`);
     }
     
-    // 启动HTTP服务器
-    const PORT = process.env.PORT || 3002; // 改为3002端口以解决端口被占用问题
+    // 启动HTTP服务器 - 明确使用3002端口以避免冲突
+    const PORT = process.env.PORT || 3002;
     const httpServer = app.listen(PORT, () => {
       console.log(`智能垃圾分类系统后端服务运行在 http://localhost:${PORT}`);
       console.log(`当前环境: ${process.env.NODE_ENV}`);

@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const wasteCategoryModel = require('../models/wasteCategory');
 const recognitionRecordModel = require('../models/recognitionRecord');
-const { uploadFile } = require('../utils/fileUpload');
+const fileUpload = require('../utils/fileUpload');
 const { getLocalizedString } = require('../middlewares/i18n');
 
 /**
@@ -130,6 +130,21 @@ class WasteRecognitionService {
   }
 
   /**
+   * 上传文件到本地存储
+   * @param {Buffer} fileBuffer - 文件缓冲区
+   * @param {string} originalFilename - 原始文件名
+   * @returns {Promise<string>} - 文件URL
+   */
+  async uploadFile(fileBuffer, originalFilename) {
+    try {
+      return await fileUpload.uploadFile(fileBuffer, originalFilename);
+    } catch (error) {
+      console.error('文件上传失败:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 识别垃圾类型（模拟AI识别）
    * 在实际项目中，这里会调用真实的AI模型进行图像识别
    * @param {Buffer} imageBuffer - 图像数据
@@ -183,6 +198,22 @@ class WasteRecognitionService {
   }
 
   /**
+   * 上传文件
+   * @param {Buffer} fileBuffer - 文件数据
+   * @param {string} originalName - 原始文件名
+   * @param {Object} [options={}] - 上传选项
+   * @returns {Promise<string>} 文件URL
+   */
+  async uploadFile(fileBuffer, originalName, options = {}) {
+    try {
+      return await fileUpload.uploadFile(fileBuffer, originalName, options);
+    } catch (error) {
+      console.error('文件上传失败:', error);
+      throw error;
+    }
+  }
+
+  /**
    * 处理垃圾识别请求
    * @param {Object} requestData - 请求数据
    * @param {Buffer} requestData.imageBuffer - 图像数据
@@ -196,7 +227,7 @@ class WasteRecognitionService {
       const { imageBuffer, imageName, userId, lang = 'zh' } = requestData;
       
       // 1. 上传图片
-      const imageUrl = await uploadFile(imageBuffer, imageName);
+      const imageUrl = await utilsUploadFile(imageBuffer, imageName);
       
       // 2. 识别垃圾类型
       const recognitionResult = await this.recognizeWasteType(imageBuffer);
