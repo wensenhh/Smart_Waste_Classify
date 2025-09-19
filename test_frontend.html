@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI智能垃圾分类 - API测试</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-section {
+            border: 2px dashed #3498db;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn-sync {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-sync:hover {
+            background-color: #2980b9;
+        }
+        .btn-async {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-async:hover {
+            background-color: #c0392b;
+        }
+        .btn-status {
+            background-color: #f39c12;
+            color: white;
+        }
+        .btn-status:hover {
+            background-color: #e67e22;
+        }
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+            display: none;
+        }
+        .result-section.show {
+            display: block;
+        }
+        .result-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+        }
+        .loading {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        .error {
+            color: #e74c3c;
+            background-color: #fadbd8;
+            border: 1px solid #e74c3c;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            color: #27ae60;
+            background-color: #d5f4e6;
+            border: 1px solid #27ae60;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            margin: 10px auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .task-id {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI智能垃圾分类系统</h1>
+        
+
+        <div class="upload-section">
+            <div class="form-group">
+                <label for="imageInput">选择图片文件:</label>
+                <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+            </div>
+            <div id="imagePreview"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="languageSelect">语言 / Language / Bahasa:</label>
+            <select id="languageSelect" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px;">
+                <option value="zh">中文 (Chinese)</option>
+                <option value="en">English</option>
+                <option value="ms">Bahasa Malaysia</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-sync" onclick="classifySync()">🚀 同步分类</button>
+            <button class="btn-async" onclick="classifyAsync()">⏰ 异步分类</button>
+            <button class="btn-status" onclick="checkStatus()">📊 查询状态</button>
+        </div>
+
+        <div id="asyncTaskId" style="margin-top: 10px; display: none;">
+            <label>当前任务ID:</label>
+            <span id="taskIdDisplay" class="task-id"></span>
+        </div>
+
+        <div id="resultSection" class="result-section">
+            <h3>分类结果:</h3>
+            <div id="resultContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://43.217.144.41:5000';
+        let currentTaskId = null;
+
+        function previewImage() {
+            const input = document.getElementById('imageInput');
+            const preview = document.getElementById('imagePreview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="预览图片">`;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function showResult(content, isError = false) {
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+
+            resultContent.innerHTML = content;
+            resultSection.classList.add('show');
+
+            if (isError) {
+                resultContent.className = 'error';
+            } else {
+                resultContent.className = 'success';
+            }
+        }
+
+        function showLoading(message) {
+            showResult(`<div class="loading">${message}</div>`);
+        }
+
+        function formatAPIResult(apiResponse) {
+            if (apiResponse.code !== 0) {
+                // 错误响应
+                let errorContent = `<div class="error">❌ ${apiResponse.msg}</div>`;
+                if (apiResponse.data && apiResponse.data.suggestions) {
+                    errorContent += '<div class="result-item"><strong>💡 建议:</strong><ul>';
+                    apiResponse.data.suggestions.forEach(suggestion => {
+                        errorContent += `<li>${suggestion}</li>`;
+                    });
+                    errorContent += '</ul></div>';
+                }
+
+                return errorContent;
+            }
+
+            // 成功响应
+            const result = apiResponse.data;
+            if (!result) {
+                return `<div class="success">✅ ${apiResponse.msg}</div>`;
+            }
+
+            // 检查是否有分类数据
+            const classification = result.classification;
+            if (classification) {
+                return `
+                    <div class="success">✅ ${apiResponse.msg}</div>
+                    <div class="result-item"><strong>🗂️ 垃圾名称:</strong> ${classification.waste_name || '未知'}</div>
+                    <div class="result-item"><strong>📋 分类:</strong> ${classification.category_name || '未知'}</div>
+                    <div class="result-item"><strong>🔍 分类依据:</strong> ${classification.classification_reason || '无'}</div>
+                    <div class="result-item"><strong>♻️ 处理建议:</strong> ${classification.disposal_advice || '无'}</div>
+                    <div class="result-item"><strong>🌱 环保提示:</strong> ${classification.environmental_tip || '无'}</div>
+                    <div class="result-item"><strong>📊 置信度:</strong> ${((classification.confidence || 0) * 100).toFixed(1)}%</div>
+                    <div class="result-item"><strong>⚡ 处理方式:</strong> ${result.api_info?.method || result.method || 'sync'}</div>
+                    <div class="result-item"><strong>🤖 AI模型:</strong> ${result.api_info?.model || 'Amazon Nova Pro'}</div>
+                    <div class="result-item"><strong>🌐 语言:</strong> ${apiResponse.lang || 'zh'}</div>
+                    ${result.processing_info ? `
+                        <div class="result-item">
+                            <strong>📋 处理信息:</strong>
+                            <ul>
+                                <li>原始大小: ${result.processing_info.original_size_mb}MB</li>
+                                <li>最终大小: ${result.processing_info.final_size_mb}MB</li>
+                                <li>是否压缩: ${result.processing_info.compressed ? '是' : '否'}</li>
+                                <li>格式转换: ${result.processing_info.format_converted ? '是' : '否'}</li>
+                            </ul>
+                        </div>
+                    ` : ''}
+                `;
+            } else {
+                return `
+                    <div class="success">✅ ${apiResponse.msg}</div>
+                    <div class="result-item"><strong>🗂️ 垃圾名称:</strong> ${result.waste_name || '未知'}</div>
+                    <div class="result-item"><strong>📋 分类:</strong> ${result.category_name || '未知'}</div>
+                    <div class="result-item"><strong>🔍 分类依据:</strong> ${result.classification_reason || '无'}</div>
+                    <div class="result-item"><strong>♻️ 处理建议:</strong> ${result.disposal_advice || '无'}</div>
+                    <div class="result-item"><strong>🌱 环保提示:</strong> ${result.environmental_tip || '无'}</div>
+                    <div class="result-item"><strong>📊 置信度:</strong> ${((result.confidence || 0) * 100).toFixed(1)}%</div>
+                    <div class="result-item"><strong>⚡ 处理方式:</strong> ${result.method || 'unknown'}</div>
+                    <div class="result-item"><strong>🌐 语言:</strong> ${apiResponse.lang || 'zh'}</div>
+                `;
+            }
+        }
+
+        async function classifySync() {
+            const input = document.getElementById('imageInput');
+            if (!input.files || !input.files[0]) {
+                showResult('<div class="error">请先选择图片文件</div>', true);
+                return;
+            }
+
+            showLoading('🔄 正在进行同步分类分析...');
+
+            const formData = new FormData();
+            formData.append('image', input.files[0]);
+
+            const lang = document.getElementById('languageSelect').value;
+            formData.append('lang', lang);
+
+            try {
+                const response = await fetch(`${API_BASE}/classify`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const apiResult = await response.json();
+                console.log('API Response:', apiResult);
+
+                const formattedContent = formatAPIResult(apiResult);
+                showResult(formattedContent, apiResult.code !== 0);
+
+            } catch (error) {
+                showResult(`<div class="error">❌ 网络错误: ${error.message}</div>`, true);
+            }
+        }
+
+        async function classifyAsync() {
+            const input = document.getElementById('imageInput');
+            if (!input.files || !input.files[0]) {
+                showResult('<div class="error">请先选择图片文件</div>', true);
+                return;
+            }
+
+            showLoading('📤 正在提交异步任务...');
+
+            const formData = new FormData();
+            formData.append('image', input.files[0]);
+
+            const lang = document.getElementById('languageSelect').value;
+            formData.append('lang', lang);
+
+            try {
+                const response = await fetch(`${API_BASE}/classify/async`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const apiResult = await response.json();
+                console.log('Async API Response:', apiResult);
+
+                if (response.status === 202 && apiResult.code === 0) {
+                    // 异步任务成功提交
+                    currentTaskId = apiResult.data.task_id;
+                    document.getElementById('taskIdDisplay').textContent = currentTaskId;
+                    document.getElementById('asyncTaskId').style.display = 'block';
+
+                    showResult(`
+                        <div class="success">
+                            ✅ ${apiResult.msg}<br>
+                            任务ID: <span class="task-id">${currentTaskId}</span><br>
+                            <small>点击"查询状态"按钮查看进度</small>
+                        </div>
+                    `);
+
+                    pollTaskStatus();
+                } else {
+                    const formattedContent = formatAPIResult(apiResult);
+                    showResult(formattedContent, true);
+                }
+
+            } catch (error) {
+                showResult(`<div class="error">❌ 网络错误: ${error.message}</div>`, true);
+            }
+        }
+
+        async function checkStatus() {
+            if (!currentTaskId) {
+                showResult('<div class="error">没有正在进行的异步任务</div>', true);
+                return;
+            }
+
+            showLoading('🔄 正在查询任务状态...');
+
+            try {
+                const lang = document.getElementById('languageSelect').value;
+                const response = await fetch(`${API_BASE}/status/${currentTaskId}?lang=${lang}`);
+                const apiResult = await response.json();
+                console.log('Status API Response:', apiResult);
+
+                if (apiResult.code === 0) {
+                    const taskData = apiResult.data;
+
+                    if (taskData.status === 'completed') {
+                        const resultContent = formatAPIResult({
+                            code: 0,
+                            msg: apiResult.msg,
+                            data: taskData.result,
+                            lang: apiResult.lang
+                        });
+                        showResult(resultContent);
+                        currentTaskId = null;
+                        document.getElementById('asyncTaskId').style.display = 'none';
+                    } else if (taskData.status === 'failed') {
+                        showResult(`<div class="error">❌ ${apiResult.msg}: ${taskData.error_details || '未知错误'}</div>`, true);
+                        currentTaskId = null;
+                        document.getElementById('asyncTaskId').style.display = 'none';
+                    } else {
+                        showResult(`
+                            <div class="loading">
+                                ⏳ ${apiResult.msg}<br>
+                                任务状态: ${taskData.status}<br>
+                                创建时间: ${taskData.created_time}<br>
+                                ${taskData.start_time ? `开始时间: ${taskData.start_time}` : ''}
+                            </div>
+                        `);
+                    }
+                } else {
+                    const formattedContent = formatAPIResult(apiResult);
+                    showResult(formattedContent, true);
+                }
+
+            } catch (error) {
+                showResult(`<div class="error">❌ 网络错误: ${error.message}</div>`, true);
+            }
+        }
+
+        async function pollTaskStatus() {
+            if (!currentTaskId) return;
+
+            setTimeout(async () => {
+                if (!currentTaskId) return;
+
+                try {
+                    const lang = document.getElementById('languageSelect').value;
+                    const response = await fetch(`${API_BASE}/status/${currentTaskId}?lang=${lang}`);
+                    const apiResult = await response.json();
+
+                    if (apiResult.code === 0) {
+                        const taskData = apiResult.data;
+
+                        if (taskData.status === 'completed') {
+                            const resultContent = formatAPIResult({
+                                code: 0,
+                                msg: apiResult.msg,
+                                data: taskData.result,
+                                lang: apiResult.lang
+                            });
+                            showResult(resultContent);
+                            currentTaskId = null;
+                            document.getElementById('asyncTaskId').style.display = 'none';
+                        } else if (taskData.status === 'failed') {
+                            showResult(`<div class="error">❌ ${apiResult.msg}: ${taskData.error_details || '未知错误'}</div>`, true);
+                            currentTaskId = null;
+                            document.getElementById('asyncTaskId').style.display = 'none';
+                        } else if (taskData.status === 'processing') {
+                            showResult(`<div class="loading">🔄 ${apiResult.msg}</div>`);
+                            pollTaskStatus();
+                        } else {
+                            pollTaskStatus();
+                        }
+                    } else {
+                        console.error('轮询API错误:', apiResult);
+                        pollTaskStatus();
+                    }
+                } catch (error) {
+                    console.error('轮询错误:', error);
+                    pollTaskStatus();
+                }
+            }, 3000);
+        }
+
+        
+        window.onload = async function() {
+            try {
+                const lang = document.getElementById('languageSelect') ?
+                    document.getElementById('languageSelect').value : 'zh';
+                const response = await fetch(`${API_BASE}/health?lang=${lang}`);
+                if (response.ok) {
+                    console.log('✅ API服务器连接正常');
+                } else {
+                    console.warn('⚠️ API服务器响应异常');
+                }
+            } catch (error) {
+                console.error('❌ 无法连接到API服务器，请确保服务器已启动: python api_server.py');
+            }
+        };
+    </script>
+</body>
+</html>
