@@ -200,14 +200,64 @@ Authorization: Bearer {token}
 
 ### 4.2 获取单个垃圾类别详情
 
-**描述**: 获取指定垃圾类别的详细信息
+**描述**: 获取指定垃圾类别下的具体垃圾列表
 
 **请求**: 
 - **方法**: GET
 - **路径**: /recognition/categories/{categoryId}
+
+**特别注意**: 路径中的 categories 是复数形式，不是单数的 category！使用单数形式会导致404错误。
 - **认证**: 不需要
 - **参数**: 
   - categoryId: 垃圾类别ID（recyclable, kitchen, hazardous, other）
+  - lang: (string, 可选) 语言代码，zh 或 en，默认为 zh
+
+**响应**: 
+```json
+{
+  "code": 200,
+  "message": "获取成功",
+  "data": [
+    {
+      "id": "plastic_bottle",
+      "name": "塑料瓶",
+      "description": "塑料瓶属于可回收物，请投入蓝色垃圾桶。",
+      "suggestion": "建议先冲洗干净，取下瓶盖，压扁后投放。"
+    },
+    {
+      "id": "paper_box",
+      "name": "纸箱",
+      "description": "纸箱属于可回收物，请投入蓝色垃圾桶。",
+      "suggestion": "建议拆解平整后投放，避免占用过多空间。"
+    },
+    {
+      "id": "aluminum_can",
+      "name": "铝罐",
+      "description": "铝罐属于可回收物，请投入蓝色垃圾桶。",
+      "suggestion": "建议冲洗干净，压扁后投放。"
+    }
+  ]
+}
+```
+
+**响应字段说明**:
+- `data`: 垃圾项列表数组
+  - `id`: 垃圾项ID
+  - `name`: 垃圾项名称
+  - `description`: 垃圾项描述
+  - `suggestion`: 垃圾项处理建议
+
+### 4.3 获取单个垃圾详情
+
+**描述**: 获取指定垃圾项的详细信息
+
+**请求**: 
+- **方法**: GET
+- **路径**: /recognition/items/{wasteItemId}
+- **认证**: 不需要
+- **参数**: 
+  - wasteItemId: 垃圾项ID（如 plastic_bottle, paper_box, battery 等）
+  - lang: (string, 可选) 语言代码，zh 或 en，默认为 zh
 
 **响应**: 
 ```json
@@ -215,16 +265,31 @@ Authorization: Bearer {token}
   "code": 200,
   "message": "获取成功",
   "data": {
-    "id": "recyclable",
-    "name": "可回收物",
-    "color": "蓝色",
-    "description": "适宜回收利用和资源化利用的生活废弃物",
-    "examples": ["废纸", "塑料", "玻璃", "金属", "织物"],
-    "handling_methods": "回收后进行分类处理，部分可再利用制作成新产品",
-    "environmental_impact": "正确回收可减少资源浪费，降低环境污染"
+    "id": "plastic_bottle",
+    "name": "塑料瓶",
+    "category": "recyclable",
+    "description": "塑料瓶属于可回收物，请投入蓝色垃圾桶。",
+    "suggestion": "建议先冲洗干净，取下瓶盖，压扁后投放。"
   }
 }
 ```
+
+**响应字段说明**:
+- `data`: 垃圾详情对象
+  - `id`: 垃圾项ID
+  - `name`: 垃圾项名称
+  - `category`: 垃圾所属类别ID
+  - `description`: 垃圾项描述
+  - `suggestion`: 垃圾项处理建议
+
+**错误响应**:
+当请求的垃圾项不存在时，返回404状态码：
+```json
+{
+  "code": 404,
+  "message": "未找到该垃圾物品",
+  "error": "The requested waste item does not exist"
+}```
 
 ## 5. 用户识别历史接口
 
