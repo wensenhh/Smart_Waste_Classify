@@ -55,8 +55,8 @@ const register = async (ctx) => {
  * 用户登录
  */
 const login = async (ctx) => {
-  // 使用phone字段作为登录标识
-  const phone = ctx.request.body.phone || ctx.query.phone;
+  // 使用phone字段作为登录标识，同时兼容username字段
+  const phone = ctx.request.body.phone || ctx.request.body.username || ctx.query.phone || ctx.query.username;
   const password = ctx.request.body.password || ctx.query.password;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
   try {

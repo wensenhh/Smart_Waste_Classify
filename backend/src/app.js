@@ -11,6 +11,7 @@ const { errorHandler } = require('./middlewares/errorHandler');
 const { logger } = require('./middlewares/logger');
 const security = require('./middlewares/security'); // 导入安全中间件
 const db = require('./utils/db');
+const { i18nMiddleware } = require('./middlewares/i18n'); // 导入国际化中间件
 
 // 创建Koa应用实例
 const app = new Koa();
@@ -66,7 +67,7 @@ function configureMiddlewares() {
   // app.use(performanceMonitor);
   
   // 国际化中间件
-  // app.use(i18n);
+  app.use(i18nMiddleware);
   
   // 请求解析中间件 - 支持JSON、表单和multipart/form-data
   app.use(koaBody({

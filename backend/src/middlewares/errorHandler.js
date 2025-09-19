@@ -25,28 +25,28 @@ const errorHandler = async (ctx, next) => {
     // 根据错误类型设置不同的状态码和消息
     if (error.name === 'ValidationError') {
       status = 400;
-      message = t('validation_error');
+      message = error.message || t('validation_error');
       errorCode = 'VALIDATION_ERROR';
       data = error.details || error.data;
     } else if (error.name === 'UnauthorizedError') {
       status = 401;
-      message = t('unauthorized');
+      message = error.message || t('unauthorized');
       errorCode = 'UNAUTHORIZED';
     } else if (error.name === 'ForbiddenError') {
       status = 403;
-      message = t('forbidden');
+      message = error.message || t('forbidden');
       errorCode = 'FORBIDDEN';
     } else if (error.name === 'NotFoundError') {
       status = 404;
-      message = t('not_found');
+      message = error.message || t('not_found');
       errorCode = 'NOT_FOUND';
     } else if (error.name === 'TooManyRequestsError') {
       status = 429;
-      message = t('request_too_frequent');
+      message = error.message || t('request_too_frequent');
       errorCode = 'TOO_MANY_REQUESTS';
     } else if (error.name === 'DatabaseError') {
       status = 500;
-      message = t('database.query_failed');
+      message = error.message || t('database.query_failed');
       errorCode = 'DATABASE_ERROR';
     } else if (error.name === 'BadRequestError') {
       status = 400;

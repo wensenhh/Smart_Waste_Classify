@@ -56,17 +56,17 @@ const getRequestLanguage = (ctx) => {
   let lang = null;
   
   // 1. 从查询参数中获取
-  if (i18nConfig.detect.query && ctx.query[i18nConfig.detect.query]) {
-    lang = ctx.query[i18nConfig.detect.query];
+  if (i18nConfig.detection.query && ctx.query && ctx.query[i18nConfig.detection.queryParameter]) {
+    lang = ctx.query[i18nConfig.detection.queryParameter];
   }
   
   // 2. 从Cookie中获取
-  if (!lang && i18nConfig.detect.cookie) {
-    lang = ctx.cookies.get(i18nConfig.detect.cookie);
+  if (!lang && i18nConfig.detection.cookie) {
+    lang = ctx.cookies.get(i18nConfig.detection.cookieName);
   }
   
   // 3. 从请求头中获取
-  if (!lang && i18nConfig.detect.header) {
+  if (!lang && i18nConfig.detection.header) {
     const acceptLanguage = ctx.headers['accept-language'];
     if (acceptLanguage) {
       // 解析Accept-Language头，获取首选语言
@@ -76,7 +76,7 @@ const getRequestLanguage = (ctx) => {
       
       // 查找支持的语言
       for (const l of languages) {
-        if (i18nConfig.supportedLanguages.includes(l)) {
+        if (i18nConfig.locales.includes(l)) {
           lang = l;
           break;
         }
@@ -85,8 +85,8 @@ const getRequestLanguage = (ctx) => {
   }
   
   // 4. 默认语言
-  if (!lang || !i18nConfig.supportedLanguages.includes(lang)) {
-    lang = i18nConfig.defaultLanguage;
+  if (!lang || !i18nConfig.locales.includes(lang)) {
+    lang = i18nConfig.defaultLocale;
   }
   
   return lang;
@@ -98,7 +98,7 @@ const getRequestLanguage = (ctx) => {
 const translate = (key, lang, replacements = {}) => {
   // 确保语言存在
   if (!translations[lang]) {
-    lang = i18nConfig.defaultLanguage;
+    lang = i18nConfig.defaultLocale;
   }
   
   // 获取翻译文本
@@ -155,7 +155,7 @@ const i18nMiddleware = async (ctx, next) => {
   ctx.i18n = {
     t: (key, replacements = {}) => translate(key, lang, replacements),
     getLanguage: () => lang,
-    getSupportedLanguages: () => i18nConfig.supportedLanguages
+    getSupportedLanguages: () => i18nConfig.locales
   };
   
   // 设置响应头
