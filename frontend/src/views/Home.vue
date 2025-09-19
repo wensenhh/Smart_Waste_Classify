@@ -5,9 +5,9 @@
       <template #actions>
         <button 
           class="header-btn"
-          @click="openCitySelector"
+          @click="openLanguageSelector"
         >
-          {{ recognitionStore.getCurrentCity }}
+          {{ i18nStore.getAvailableLocales.find(lang => lang.code === i18nStore.getLocale)?.name || '中文' }}
         </button>
       </template>
     </Header>
@@ -78,22 +78,22 @@
     <!-- 使用底部导航栏公共组件 -->
     <BottomNavBar />
 
-    <!-- 城市选择弹窗 -->
-    <div v-if="citySelectorVisible" class="modal-overlay" @click="closeCitySelector">
+    <!-- 语言选择弹窗 -->
+    <div v-if="languageSelectorVisible" class="modal-overlay" @click="closeLanguageSelector">
       <div class="modal-content" @click.stop>
-        <h3 class="modal-title">选择城市</h3>
-        <div class="city-list">
+        <h3 class="modal-title">{{ $t('common.selectLanguage') }}</h3>
+        <div class="language-list">
           <div 
-            v-for="city in cities"
-            :key="city"
-            class="city-item"
-            :class="{ selected: city === recognitionStore.getCurrentCity }"
-            @click="selectCity(city)"
+            v-for="lang in i18nStore.getAvailableLocales"
+            :key="lang.code"
+            class="language-item"
+            :class="{ selected: lang.code === i18nStore.getLocale }"
+            @click="selectLanguage(lang.code)"
           >
-            {{ city }}
+            {{ lang.name }}
           </div>
         </div>
-        <button class="close-btn" @click="closeCitySelector">
+        <button class="close-btn" @click="closeLanguageSelector">
           {{ $t('common.cancel') }}
         </button>
       </div>
@@ -111,6 +111,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useRecognitionStore } from '../stores/recognition';
+import { useI18nStore } from '../stores/i18n';
 import Header from '../components/Header.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import CameraCapture from '../components/CameraCapture.vue';
@@ -118,14 +119,10 @@ import CameraCapture from '../components/CameraCapture.vue';
 const router = useRouter();
 const route = useRoute();
 const recognitionStore = useRecognitionStore();
+const i18nStore = useI18nStore();
 const fileInput = ref(null);
-const citySelectorVisible = ref(false);
+const languageSelectorVisible = ref(false);
 const cameraCaptureVisible = ref(false);
-
-// 支持的城市列表
-const cities = [
-  '北京', '上海', '广州', '深圳', '杭州', '成都', '南京', '武汉', '西安'
-];
 
 // 初始化
 onMounted(() => {
@@ -189,14 +186,14 @@ const formatTime = (timestamp) => {
   }
 };
 
-// 打开城市选择器
-const openCitySelector = () => {
-  citySelectorVisible.value = true;
+// 打开语言选择器
+const openLanguageSelector = () => {
+  languageSelectorVisible.value = true;
 };
 
-// 关闭城市选择器
-const closeCitySelector = () => {
-  citySelectorVisible.value = false;
+// 关闭语言选择器
+const closeLanguageSelector = () => {
+  languageSelectorVisible.value = false;
 };
 
 // 摄像头捕获处理函数
@@ -215,10 +212,10 @@ const handleCameraClose = () => {
   cameraCaptureVisible.value = false;
 };
 
-// 选择城市
-const selectCity = (city) => {
-  recognitionStore.setCurrentCity(city);
-  closeCitySelector();
+// 选择语言
+const selectLanguage = (languageCode) => {
+  i18nStore.setLocale(languageCode);
+  closeLanguageSelector();
 };</script>
 
 <style scoped>
@@ -394,14 +391,15 @@ const selectCity = (city) => {
   text-align: center;
 }
 
-.city-list {
+/* 语言选择弹窗样式 */
+.language-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.city-item {
+.language-item {
   padding: 10px;
   text-align: center;
   border-radius: 8px;
@@ -410,7 +408,7 @@ const selectCity = (city) => {
   transition: all 0.3s ease;
 }
 
-.city-item.selected {
+.language-item.selected {
   background-color: #667eea;
   color: white;
 }

@@ -29,18 +29,54 @@
           <div v-if="errors.username" class="error-message">{{ errors.username }}</div>
         </div>
 
-        <!-- 邮箱输入 -->
+        <!-- 手机号输入 -->
         <div class="form-group">
-          <label for="email">{{ $t('register.email') }}</label>
-          <input
-            type="email"
-            id="email"
-            v-model="email"
-            :placeholder="$t('register.enterEmail')"
-            required
-            class="form-input"
-          />
-          <div v-if="errors.email" class="error-message">{{ errors.email }}</div>
+          <label for="phone">{{ $t('register.phone') }}</label>
+          <div class="phone-input-container">
+            <!-- 区号选择器 -->
+            <div class="country-code-selector" @click="showCountryCodeDropdown = !showCountryCodeDropdown">
+              <span class="selected-code">{{ selectedCountryCode }}</span>
+              <span class="dropdown-icon">{{ showCountryCodeDropdown ? '▲' : '▼' }}</span>
+            </div>
+            
+            <!-- 手机号输入框 -->
+            <input
+              type="tel"
+              id="phone"
+              v-model="phone"
+              :placeholder="$t('register.enterPhone')"
+              required
+              class="form-input phone-input"
+              @blur="validatePhone()"
+            />
+          </div>
+          
+          <!-- 区号下拉列表 -->
+          <div v-if="showCountryCodeDropdown" class="country-code-dropdown">
+            <div class="search-container">
+              <input
+                type="text"
+                v-model="searchKeyword"
+                @input="filterCountries"
+                placeholder="搜索国家/地区..."
+                class="search-input"
+              />
+            </div>
+            <div class="country-list">
+              <div
+                v-for="country in filteredCountries"
+                :key="country.code"
+                class="country-item"
+                @click="selectCountryCode(country.code)"
+              >
+                <span class="flag">{{ country.flag }}</span>
+                <span class="country-name">{{ currentLanguage === 'zh' ? country.cnName : country.name }}</span>
+                <span class="country-code">{{ country.code }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div v-if="errors.phone" class="error-message">{{ errors.phone }}</div>
         </div>
 
         <!-- 密码输入 -->
@@ -156,10 +192,12 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useI18n } from 'vue-i18n';
+import { countryCodes, getCountryCodeByLocation, validatePhoneNumber, formatPhoneNumber } from '../utils/countryCodes';
+import { useI18nStore } from '../stores/i18n';
 
 defineOptions({
   name: 'Register'
@@ -171,10 +209,16 @@ const { t } = useI18n();
 
 // 表单数据
 const username = ref('');
-const email = ref('');
+const phone = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const agreeTerms = ref(false);
+
+// 区号选择相关状态
+const selectedCountryCode = ref('+86'); // 默认使用中国区号
+const showCountryCodeDropdown = ref(false);
+const searchKeyword = ref('');
+const filteredCountries = ref([]);
 
 // 状态控制
 const isRegistering = ref(false);
@@ -183,38 +227,97 @@ const showConfirmPassword = ref(false);
 const showPasswordTooltip = ref(false);
 const errors = reactive({
   username: '',
-  email: '',
+  phone: '',
   password: '',
   confirmPassword: '',
   agreeTerms: ''
 });
 
+// 获取当前语言
+const i18nStore = useI18nStore();
+const currentLanguage = ref('zh');
+
+// 初始化
+onMounted(async () => {
+  // 获取当前语言
+  currentLanguage.value = i18nStore.getLocale || 'zh';
+  
+  // 确保filteredCountries有初始数据
+  filteredCountries.value = [...countryCodes];
+  console.log('初始化国家列表:', filteredCountries.value.length, '个国家/地区');
+  
+  try {
+    // 尝试根据用户地理位置自动选择区号
+    const countryCode = await getCountryCodeByLocation();
+    selectedCountryCode.value = countryCode;
+  } catch (error) {
+    console.warn('无法自动选择区号，使用默认值:', error);
+  }
+});
+
+// 过滤国家列表
+const filterCountries = () => {
+  if (!searchKeyword.value.trim()) {
+    filteredCountries.value = [...countryCodes];
+  } else {
+    const keyword = searchKeyword.value.toLowerCase();
+    filteredCountries.value = countryCodes.filter(country => 
+      country.name.toLowerCase().includes(keyword) ||
+      country.cnName.toLowerCase().includes(keyword) ||
+      country.code.includes(keyword)
+    );
+  }
+  console.log('过滤后的国家列表:', filteredCountries.value.length, '个国家/地区');
+};
+
+// 选择国家区号
+const selectCountryCode = (code) => {
+  selectedCountryCode.value = code;
+  showCountryCodeDropdown.value = false;
+  searchKeyword.value = '';
+  
+  // 重新验证手机号
+  if (phone.value.trim()) {
+    validatePhone();
+  }
+};
+
+// 单独验证手机号
+const validatePhone = () => {
+  if (!phone.value.trim()) {
+    errors.phone = t('register.phoneRequired');
+    return false;
+  } else if (!validatePhoneNumber(selectedCountryCode.value, phone.value)) {
+    errors.phone = t('register.phoneInvalid');
+    return false;
+  } else {
+    errors.phone = '';
+    return true;
+  }
+};
+
 // 表单验证
-const validateForm = () => {
-  let isValid = true;
-  
-  // 重置错误信息
-  Object.keys(errors).forEach(key => {
-    errors[key] = '';
-  });
-  
-  // 验证用户名
-  if (!username.value.trim()) {
-    errors.username = t('register.usernameRequired');
-    isValid = false;
-  } else if (username.value.length < 3) {
-    errors.username = t('register.usernameMinLength');
-    isValid = false;
-  }
-  
-  // 验证邮箱
-  if (!email.value.trim()) {
-    errors.email = t('register.emailRequired');
-    isValid = false;
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-    errors.email = t('register.emailInvalid');
-    isValid = false;
-  }
+  const validateForm = () => {
+    let isValid = true;
+    
+    // 重置错误信息
+    Object.keys(errors).forEach(key => {
+      errors[key] = '';
+    });
+    
+    // 验证用户名
+    if (!username.value.trim()) {
+      errors.username = t('register.usernameRequired');
+      isValid = false;
+    } else if (username.value.length < 3) {
+      errors.username = t('register.usernameMinLength');
+      isValid = false;
+    }
+    
+    // 验证手机号（使用新的验证逻辑）
+    if (!validatePhone()) {
+      isValid = false;
+    }
   
   // 验证密码
   if (!password.value) {
@@ -247,33 +350,34 @@ const validateForm = () => {
 };
 
 // 处理注册
-const handleRegister = async () => {
-  if (isRegistering.value) return;
-  
-  // 表单验证
-  if (!validateForm()) return;
-  
-  isRegistering.value = true;
-  
-  try {
-    // 模拟注册请求
-    await new Promise(resolve => setTimeout(resolve, 2000));
+  const handleRegister = async () => {
+    if (isRegistering.value) return;
     
-    // 实际项目中这里应该调用API进行注册
-    // 根据项目实际需求调整参数
-    const registerSuccess = await userStore.register({
-      username: username.value,
-      email: email.value,
-      password: password.value
-    });
+    // 表单验证
+    if (!validateForm()) return;
     
-    if (registerSuccess) {
-      // 注册成功后跳转到登录页或首页
-      alert(t('register.registerSuccess'));
-      router.push({ name: 'Login' });
-    } else {
-      alert(t('register.registerFailed'));
-    }
+    isRegistering.value = true;
+    
+    try {
+      // 模拟注册请求
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // 实际项目中这里应该调用API进行注册
+      // 根据API文档调整参数
+        const registerSuccess = await userStore.register({
+          name: username.value,
+          phone: phone.value,
+          password: password.value,
+          phoneCode: selectedCountryCode.value
+        });
+      
+      if (registerSuccess) {
+        // 注册成功后跳转到登录页或首页
+        alert(t('register.registerSuccess'));
+        router.push({ name: 'Login' });
+      } else {
+        alert(t('register.registerFailed'));
+      }
   } catch (error) {
     console.error('Register failed:', error);
     alert(t('register.registerFailed'));
@@ -415,6 +519,7 @@ const registerWithFacebook = () => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  position: relative;
 }
 
 .form-group label {
@@ -678,6 +783,150 @@ const registerWithFacebook = () => {
   
   .login-header h1 {
     font-size: 24px;
+  }
+}
+
+/* 区号选择器样式 */
+.phone-input-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.country-code-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 100px;
+  padding: 12px 16px;
+  margin-right: 10px;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.country-code-selector:hover {
+  background-color: #e9ecef;
+  border-color: #4facfe;
+}
+
+.selected-code {
+  margin-right: 8px;
+}
+
+.dropdown-icon {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.phone-input {
+  flex: 1;
+}
+
+.country-code-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 300px;
+  margin-top: 8px;
+  border: 2px solid #e1e5e9;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.search-container {
+  padding: 16px;
+  border-bottom: 1px solid #e1e5e9;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4facfe;
+}
+
+.country-list {
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.country-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+}
+
+.country-item:hover {
+  background-color: #f8f9fa;
+}
+
+.flag {
+  margin-right: 12px;
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.country-name {
+  flex: 1;
+  color: #333;
+}
+
+.country-code {
+  font-weight: 600;
+  color: #4facfe;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+  .country-code-selector {
+    min-width: 85px;
+    padding: 12px 12px;
+    font-size: 13px;
+  }
+  
+  .flag {
+    font-size: 16px;
+    margin-right: 8px;
+  }
+  
+  .country-name {
+    font-size: 13px;
+  }
+  
+  .country-code {
+    font-size: 13px;
   }
 }
 </style>
