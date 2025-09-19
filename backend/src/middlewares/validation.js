@@ -167,6 +167,16 @@ exports.validateRequest = (rules) => {
         ...ctx.params
       };
       
+      // 特殊处理文件字段验证
+      for (const [field, ruleStr] of Object.entries(rules)) {
+        if (ruleStr.includes('file')) {
+          // 检查文件是否存在
+          if (ctx.request.file) {
+            requestData[field] = 'file_exists'; // 标记文件存在，用于通过Joi验证
+          }
+        }
+      }
+      
       // 执行验证
       const { error, value } = schema.validate(requestData, {
         abortEarly: false, // 收集所有错误

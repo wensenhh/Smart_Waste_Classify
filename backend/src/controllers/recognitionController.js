@@ -4,12 +4,161 @@ const recognitionRecordModel = require('../models/recognitionRecord');
 const wasteCategoryModel = require('../models/wasteCategory');
 const { deleteFile } = require('../utils/fileUpload');
 const { getLocalizedString } = require('../middlewares/i18n');
+const axios = require('axios');
+const FormData = require('form-data'); // 用于处理文件上传
 
 /**
  * 垃圾识别控制器
  * 处理垃圾识别相关的API请求
  */
 class RecognitionController {
+  /**
+   * 上传垃圾图片并调用外部接口识别
+   * @param {Object} ctx - Koa上下文对象
+   */
+  async upload(ctx) {
+    try {
+      console.log('收到文件上传请求');
+      console.log('请求头:', ctx.request.headers);
+      console.log('请求查询参数:', ctx.query);
+      
+      // 从请求中获取图像文件
+      const file = ctx.request.file;
+      const saveHistory = ctx.query.saveHistory === 'true' || false;
+      
+      if (!file) {
+        console.error('没有收到文件');
+        ctx.throw(400, getLocalizedString(ctx, 'recognition.imageRequired'));
+      }
+      
+      console.log('文件信息:', { filename: file.originalname, mimetype: file.mimetype, size: file.size, fieldname: file.fieldname });
+      console.log('文件存储位置:', file.path ? file.path : '内存中(buffer)');
+
+      // 获取语言和用户ID
+      const lang = ctx.query.lang || 'zh';
+      const userId = ctx.state.user?.id || null;
+
+      // 安全验证：防止滥用外部API
+      // 1. 验证文件大小和类型（已在uploadMiddleware中处理）
+      // 2. 记录请求信息用于审计
+      const requestInfo = {
+        timestamp: new Date(),
+        userId: userId || 'anonymous',
+        filename: file.originalname,
+        filesize: file.size,
+        ip: ctx.ip
+      };
+      console.log('接收到垃圾识别请求:', requestInfo);
+      
+      // 3. 调用外部垃圾识别接口
+      const externalApiUrl = 'http://43.217.144.41:5000/classify';
+      const formData = new FormData();
+      formData.append('image', file.buffer, { filename: file.originalname, contentType: file.mimetype });
+      formData.append('lang', lang); // 添加语言参数到外部API请求中
+      
+      // 设置超时时间，防止请求长时间挂起
+      let externalResult;
+      try {
+        const response = await axios.post(externalApiUrl, formData, {
+          headers: formData.getHeaders(),
+          timeout: 30000, // 30秒超时
+          maxContentLength: 10 * 1024 * 1024, // 最大10MB
+        });
+        externalResult = response.data;
+      } catch (axiosError) {
+        console.error('外部API调用失败:', {
+          status: axiosError.response?.status,
+          message: axiosError.message,
+          stack: axiosError.stack
+        });
+        throw new Error('外部识别服务暂时不可用，请稍后再试');
+      }
+      
+      // 安全防范：验证外部API返回的数据结构
+      if (!externalResult || typeof externalResult !== 'object') {
+        throw new Error('外部API返回无效结果格式');
+      }
+      
+      if (externalResult.error) {
+        throw new Error(externalResult.message || '外部API识别失败');
+      }
+      
+      // 4. 上传图片到本地存储
+      let imageUrl;
+      try {
+        imageUrl = await wasteRecognitionService.uploadFile(file.buffer, file.originalname);
+      } catch (uploadError) {
+        console.error('图片上传失败:', uploadError);
+        // 图片上传失败不影响识别结果返回，但记录错误
+      }
+      
+      // 5. 构建识别结果，确保返回数据的一致性和安全性
+      // 从外部接口返回的data.classification中提取数据
+      const classification = externalResult.data?.classification || {};
+      const apiInfo = externalResult.data?.api_info || {};
+      
+      const recognitionResult = {
+        waste_name: classification.waste_name || '未知',
+        category: classification.category || '',
+        category_name: classification.category_name || '未知',
+        classification_reason: classification.classification_reason || '无',
+        disposal_advice: classification.disposal_advice || '无',
+        environmental_tip: classification.environmental_tip || '无',
+        confidence: Math.max(0, Math.min(1, classification.confidence || 0)), // 确保置信度在0-1之间
+        method: apiInfo.method || 'unknown',
+        model: apiInfo.model || 'unknown',
+        version: apiInfo.version || 'unknown',
+        imageUrl: imageUrl || null,
+        timestamp: new Date()
+      };
+      
+      // 6. 如果需要保存历史记录或有用户ID，保存识别记录到数据库
+      if (saveHistory || userId) {
+        try {
+          await recognitionRecordModel.createRecord({
+            userId,
+            imageUrl,
+            wasteType: recognitionResult.waste_name,
+            category: recognitionResult.category_name,
+            confidence: recognitionResult.confidence,
+            description: recognitionResult.classification_reason,
+            suggestion: recognitionResult.disposal_advice
+          });
+          console.log('识别记录已保存到数据库:', { userId, wasteName: recognitionResult.waste_name });
+        } catch (dbError) {
+          console.error('保存识别记录失败:', dbError);
+          // 数据库保存失败不影响识别结果返回，但记录错误
+        }
+      }
+      
+      // 7. 记录成功的识别请求
+      console.log('垃圾识别请求处理成功:', {
+        userId: userId || 'anonymous',
+        wasteName: recognitionResult.waste_name,
+        confidence: recognitionResult.confidence
+      });
+      
+      // 返回识别结果
+      ctx.status = 200;
+      ctx.body = {
+        success: true,
+        data: recognitionResult,
+        message: getLocalizedString(ctx, 'recognition.success')
+      };
+    } catch (error) {
+      console.error('垃圾识别上传失败:', {
+        message: error.message,
+        stack: error.stack,
+        userId: ctx.state.user?.id || 'anonymous'
+      });
+      ctx.status = error.status || 400;
+      ctx.body = {
+        success: false,
+        message: error.message || getLocalizedString(ctx, 'recognition.error')
+      };
+    }
+  }
+
   /**
    * 识别垃圾
    * @param {Object} ctx - Koa上下文对象

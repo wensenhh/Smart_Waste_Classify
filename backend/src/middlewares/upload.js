@@ -1,6 +1,7 @@
 // 文件上传中间件
 const multer = require('@koa/multer');
 const path = require('path');
+const fs = require('fs'); // 提前加载fs模块
 
 // 文件验证函数
 function validateFile(file) {
@@ -19,34 +20,18 @@ function validateFile(file) {
   return true;
 }
 
-// 存储配置
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // 确保上传目录存在
-    const fs = require('fs');
-    const uploadDir = process.env.FILE_UPLOAD_DIR || './uploads';
-    
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    // 生成唯一文件名
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    const basename = path.basename(file.originalname, ext);
-    cb(null, `${basename}-${uniqueSuffix}${ext}`);
-  }
-});
+// 存储配置 - 使用memoryStorage以便在控制器中直接访问file.buffer
+const storage = multer.memoryStorage();
 
 // 文件过滤器
 const fileFilter = (req, file, cb) => {
   try {
+    console.log('文件过滤中:', { filename: file.originalname, mimetype: file.mimetype, size: file.size });
     validateFile(file);
+    console.log('文件验证通过:', file.originalname);
     cb(null, true);
   } catch (error) {
+    console.error('文件验证失败:', { filename: file.originalname, error: error.message });
     cb(new Error(error.message), false);
   }
 };
@@ -56,13 +41,21 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
+    fileSize: 5 * 1024 * 1024, // 5MB
+    fieldNameSize: 100, // 字段名最大长度
+    fieldSize: 1024 * 1024, // 非文件字段值最大长度
+    fields: 5, // 非文件字段最大数量
+    files: 1, // 文件最大数量
+    parts: 10, // 最大部分数
+    headerPairs: 200 // 头部键值对最大数量
   }
 });
 
 // 上传中间件
 const uploadMiddleware = {
   single: (fieldName = 'file') => {
+    // @koa/multer已经内部处理了Express风格到Koa风格的转换
+    // 直接返回multer中间件即可
     return upload.single(fieldName);
   },
   array: (fieldName = 'files', maxCount = 5) => {

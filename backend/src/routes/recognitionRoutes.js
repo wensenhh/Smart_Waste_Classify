@@ -20,6 +20,15 @@ router.post('/identify',
   recognitionController.recognizeWaste
 );
 
+// 公开路由 - 上传图片并调用外部接口识别
+router.post('/upload', 
+  uploadMiddleware.single('image'),
+  validateRequest({ 
+    image: 'required|file'
+  }),
+  recognitionController.upload
+);
+
 // 公开路由 - 搜索垃圾信息
 router.get('/search', 
   validateRequest({ 

@@ -69,12 +69,9 @@ function configureMiddlewares() {
   // 国际化中间件
   app.use(i18nMiddleware);
   
-  // 请求解析中间件 - 支持JSON、表单和multipart/form-data
+  // 请求解析中间件 - 只支持JSON和表单，文件上传由@koa/multer处理
   app.use(koaBody({
-    multipart: true,
-    formidable: {
-      maxFileSize: 10 * 1024 * 1024 // 10MB
-    },
+    multipart: false, // 禁用multipart处理，由@koa/multer专门处理
     jsonLimit: '10mb',
     formLimit: '10mb'
   }));
@@ -158,7 +155,7 @@ async function startServer() {
     }
     
     // 启动HTTP服务器
-    const PORT = process.env.PORT || 3001; // 改为3001端口以解决端口被占用问题
+    const PORT = process.env.PORT || 3002; // 改为3002端口以解决端口被占用问题
     const httpServer = app.listen(PORT, () => {
       console.log(`智能垃圾分类系统后端服务运行在 http://localhost:${PORT}`);
       console.log(`当前环境: ${process.env.NODE_ENV}`);
