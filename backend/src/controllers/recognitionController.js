@@ -117,16 +117,48 @@ class RecognitionController {
         ctx.throw(404, getLocalizedString(ctx, 'recognition.categoryNotFound'));
       }
 
-      // 返回垃圾类别详情
+      // 获取该类别下的所有垃圾项
+      const wasteItems = wasteRecognitionService.getWasteItemsByCategory(categoryId, lang);
+
+      // 直接返回垃圾列表数组作为data
       ctx.status = 200;
       ctx.body = {
         success: true,
-        data: category,
+        data: wasteItems,
         message: getLocalizedString(ctx, 'recognition.categoryFetched')
       };
     } catch (error) {
       console.error('获取垃圾类别详情失败:', error);
       ctx.throw(400, error.message || getLocalizedString(ctx, 'recognition.categoryError'));
+    }
+  }
+
+  /**
+   * 获取单个垃圾详情
+   * @param {Object} ctx - Koa上下文对象
+   */
+  async getWasteItemDetail(ctx) {
+    try {
+      const { wasteItemId } = ctx.params;
+      const lang = ctx.query.lang || 'zh';
+
+      // 获取垃圾详情信息
+      const wasteItem = wasteRecognitionService.getWasteInfo(wasteItemId, lang);
+
+      if (!wasteItem) {
+        ctx.throw(404, getLocalizedString(ctx, 'recognition.wasteItemNotFound'));
+      }
+
+      // 返回垃圾详情
+      ctx.status = 200;
+      ctx.body = {
+        success: true,
+        data: wasteItem,
+        message: getLocalizedString(ctx, 'recognition.wasteItemFetched')
+      };
+    } catch (error) {
+      console.error('获取垃圾详情失败:', error);
+      ctx.throw(400, error.message || getLocalizedString(ctx, 'recognition.wasteItemError'));
     }
   }
 

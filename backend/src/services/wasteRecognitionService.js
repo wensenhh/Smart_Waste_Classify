@@ -322,6 +322,30 @@ class WasteRecognitionService {
   }
 
   /**
+   * 获取特定垃圾类别下的所有垃圾项
+   * @param {string} categoryId - 垃圾类别ID
+   * @param {string} [lang='zh'] - 语言代码
+   * @returns {Array} 该类别下的所有垃圾项
+   */
+  getWasteItemsByCategory(categoryId, lang = 'zh') {
+    const wasteItems = [];
+    
+    for (const [wasteTypeId, wasteInfo] of Object.entries(this.wasteDatabase)) {
+      if (wasteInfo.category === categoryId) {
+        wasteItems.push({
+          id: wasteTypeId,
+          name: wasteInfo.name[lang] || wasteInfo.name.zh,
+          description: wasteInfo.description[lang] || wasteInfo.description.zh,
+          suggestion: wasteInfo.suggestion[lang] || wasteInfo.suggestion.zh
+        });
+      }
+    }
+    console.log('getWasteItemsByCategory', wasteItems);
+    
+    return wasteItems;
+  }
+  
+  /**
    * 删除用户的识别记录
    * @param {string} userId - 用户ID
    * @param {string|Array<string>} recordIds - 记录ID或ID数组

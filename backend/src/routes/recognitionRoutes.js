@@ -41,6 +41,14 @@ router.get('/categories/:categoryId',
   recognitionController.getCategoryDetail
 );
 
+// 公开路由 - 获取单个垃圾详情
+router.get('/items/:wasteItemId', 
+  validateRequest({ 
+    wasteItemId: 'required|string'
+  }),
+  recognitionController.getWasteItemDetail
+);
+
 // 身份验证路由 - 使用Koa的jwtAuth中间件
 router.use(jwtAuth);
 
