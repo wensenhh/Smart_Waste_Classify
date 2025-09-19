@@ -79,13 +79,11 @@ const login = async (ctx) => {
     }
     console.log('用户信息:', user);
     
-    // 验证密码 - 暂时跳过，用于测试
-    // const passwordMatch = await bcrypt.compare(password, user.password);
-    // if (!passwordMatch) {
-    //   throw new UnauthorizedError(t('user.login_failed'));
-    // }
-    
-    console.log('跳过密码验证');
+    // 验证密码
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      throw new UnauthorizedError(t('user.login_failed'));
+    }
 
     // 更新最后登录时间
     await db.update('UPDATE users SET last_login = NOW() WHERE id = ?', [user.id]);
