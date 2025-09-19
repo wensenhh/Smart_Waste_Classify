@@ -1,0 +1,431 @@
+// 主题色彩系统 - SASS变量
+$primary-color: #4CAF50;
+$primary-dark: #388E3C;
+$primary-light: #81C784;
+$primary-lighter: #E8F5E9;
+$primary-transparent: rgba(76, 175, 80, 0.1);
+
+// 辅助色 - 分类标识
+$recycle-blue: #2196F3;
+$organic-green: #8BC34A;
+$harmful-red: #F44336;
+$other-gray: #9E9E9E;
+$metal-yellow: #FFC107;
+$plastic-purple: #9C27B0;
+
+// 中性色
+$text-primary: #212121;
+$text-secondary: #757575;
+$text-disabled: #9E9E9E;
+$text-light: #FFFFFF;
+$background-primary: #FFFFFF;
+$background-secondary: #F5F5F5;
+$background-card: #FFFFFF;
+$border-color: #E0E0E0;
+$shadow-color: rgba(0, 0, 0, 0.1);
+
+// 状态色
+$success-color: #4CAF50;
+$warning-color: #FF9800;
+$error-color: #F44336;
+$info-color: #2196F3;
+
+// 尺寸变量
+$border-radius-small: 4px;
+$border-radius-medium: 8px;
+$border-radius-large: 16px;
+$border-radius-full: 50%;
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-xxl: 48px;
+
+// 阴影变量
+$shadow-sm: 0 2px 4px $shadow-color;
+$shadow-md: 0 4px 8px $shadow-color;
+$shadow-lg: 0 8px 16px $shadow-color;
+
+// 字体
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-md: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 24px;
+$font-size-xxl: 32px;
+
+// 行高
+$line-height-tight: 1.2;
+$line-height-normal: 1.5;
+$line-height-relaxed: 1.8;
+
+// 过渡动画
+$transition-fast: 0.15s ease-in-out;
+$transition-normal: 0.3s ease-in-out;
+$transition-slow: 0.5s ease-in-out;
+
+// 将SASS变量转换为CSS变量，方便在组件中使用
+:root {
+  // 主色调 - 环保绿
+  --primary-color: #{$primary-color};
+  --primary-dark: #{$primary-dark};
+  --primary-light: #{$primary-light};
+  --primary-lighter: #{$primary-lighter};
+  --primary-transparent: #{$primary-transparent};
+  
+  // 辅助色 - 分类标识
+  --recycle-blue: #{$recycle-blue};
+  --organic-green: #{$organic-green};
+  --harmful-red: #{$harmful-red};
+  --other-gray: #{$other-gray};
+  --metal-yellow: #{$metal-yellow};
+  --plastic-purple: #{$plastic-purple};
+  
+  // 中性色
+  --text-primary: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --text-disabled: #{$text-disabled};
+  --text-light: #{$text-light};
+  --background-primary: #{$background-primary};
+  --background-secondary: #{$background-secondary};
+  --background-card: #{$background-card};
+  --border-color: #{$border-color};
+  --shadow-color: #{$shadow-color};
+  
+  // 状态色
+  --success-color: #{$success-color};
+  --warning-color: #{$warning-color};
+  --error-color: #{$error-color};
+  --info-color: #{$info-color};
+  
+  // 尺寸变量
+  --border-radius-small: #{$border-radius-small};
+  --border-radius-medium: #{$border-radius-medium};
+  --border-radius-large: #{$border-radius-large};
+  --border-radius-full: #{$border-radius-full};
+  
+  --spacing-xs: #{$spacing-xs};
+  --spacing-sm: #{$spacing-sm};
+  --spacing-md: #{$spacing-md};
+  --spacing-lg: #{$spacing-lg};
+  --spacing-xl: #{$spacing-xl};
+  --spacing-xxl: #{$spacing-xxl};
+  
+  // 阴影变量
+  --shadow-sm: #{$shadow-sm};
+  --shadow-md: #{$shadow-md};
+  --shadow-lg: #{$shadow-lg};
+  
+  // 字体
+  --font-family: #{$font-family};
+  --font-size-xs: #{$font-size-xs};
+  --font-size-sm: #{$font-size-sm};
+  --font-size-md: #{$font-size-md};
+  --font-size-lg: #{$font-size-lg};
+  --font-size-xl: #{$font-size-xl};
+  --font-size-xxl: #{$font-size-xxl};
+  
+  // 行高
+  --line-height-tight: #{$line-height-tight};
+  --line-height-normal: #{$line-height-normal};
+  --line-height-relaxed: #{$line-height-relaxed};
+  
+  // 过渡动画
+  --transition-fast: #{$transition-fast};
+  --transition-normal: #{$transition-normal};
+  --transition-slow: #{$transition-slow};
+}
+
+// 基础重置样式
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// 根元素设置
+html {
+  font-size: $font-size-md;
+  scroll-behavior: smooth;
+}
+
+// 主体样式
+body {
+  font-family: $font-family;
+  font-size: $font-size-md;
+  line-height: $line-height-normal;
+  color: $text-primary;
+  background-color: $background-secondary;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  
+  // 链接样式
+  a {
+    color: $primary-color;
+    text-decoration: none;
+    transition: color $transition-fast;
+    
+    &:hover {
+      color: $primary-dark;
+    }
+  }
+  
+  // 标题样式
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: $spacing-md;
+    font-weight: 600;
+    line-height: $line-height-tight;
+    color: $text-primary;
+  }
+  
+  h1 { font-size: $font-size-xxl; }
+  h2 { font-size: $font-size-xl; }
+  h3 { font-size: $font-size-lg; }
+  
+  // 段落样式
+  p {
+    margin-bottom: $spacing-md;
+    line-height: $line-height-relaxed;
+  }
+  
+  // 按钮基础样式
+  button {
+    font-family: $font-family;
+    font-size: $font-size-md;
+    font-weight: 500;
+    padding: $spacing-sm $spacing-lg;
+    border: none;
+    border-radius: $border-radius-medium;
+    cursor: pointer;
+    transition: all $transition-normal;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-sm;
+    
+    // 主按钮样式
+    &.btn-primary {
+      background-color: $primary-color;
+      color: $text-light;
+      
+      &:hover {
+        background-color: $primary-dark;
+        transform: translateY(-1px);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+    
+    // 次要按钮样式
+    &.btn-secondary {
+      background-color: transparent;
+      color: $primary-color;
+      border: 1px solid $primary-color;
+      
+      &:hover {
+        background-color: $primary-transparent;
+      }
+    }
+  }
+  
+  // 卡片样式
+  .card {
+    background-color: $background-card;
+    border-radius: $border-radius-medium;
+    box-shadow: $shadow-sm;
+    padding: $spacing-lg;
+    transition: box-shadow $transition-normal;
+    
+    &:hover {
+      box-shadow: $shadow-md;
+    }
+  }
+  
+  // 表单元素样式
+  input, select, textarea {
+    font-family: $font-family;
+    font-size: $font-size-md;
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-medium;
+    background-color: $background-primary;
+    transition: border-color $transition-fast;
+    outline: none;
+    
+    &:focus {
+      border-color: $primary-color;
+    }
+  }
+}
+
+// 工具类
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+// 外边距工具类
+$spacing-types: xs, sm, md, lg, xl;
+
+@each $type in $spacing-types {
+  $spacing-value: var(--spacing-#{$type});
+  
+  .mt-#{$type} { margin-top: $spacing-value; }
+  .mb-#{$type} { margin-bottom: $spacing-value; }
+  .p-#{$type} { padding: $spacing-value; }
+}
+
+// Flex布局工具类
+.flex { display: flex; }
+.flex-column { flex-direction: column; }
+.align-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+// Gap工具类
+@each $type in $spacing-types {
+  $spacing-value: var(--spacing-#{$type});
+  
+  .gap-#{$type} { gap: $spacing-value; }
+}
+
+// 宽高工具类
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+// 动画定义
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// 动画工具类
+.fade-in { animation: fadeIn $transition-normal ease-out; }
+.slide-in { animation: slideIn $transition-normal ease-out; }
+.pulse { animation: pulse 2s infinite; }
+
+// 加载状态
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid $border-color;
+  border-radius: 50%;
+  border-top-color: $primary-color;
+  animation: spin 1s ease-in-out infinite;
+}
+
+// 标签样式
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: 500;
+  margin-right: $spacing-xs;
+  margin-bottom: $spacing-xs;
+  
+  &-recycle { background-color: $recycle-blue; color: $text-light; }
+  &-organic { background-color: $organic-green; color: $text-light; }
+  &-harmful { background-color: $harmful-red; color: $text-light; }
+  &-other { background-color: $other-gray; color: $text-light; }
+  &-metal { background-color: $metal-yellow; color: $text-primary; }
+  &-plastic { background-color: $plastic-purple; color: $text-light; }
+}
+
+// 图标容器
+.icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: $border-radius-full;
+  background-color: $primary-transparent;
+  color: $primary-color;
+}
+
+// 错误提示样式
+.error-message {
+  background-color: rgba(244, 67, 54, 0.1);
+  border: 1px solid $error-color;
+  border-radius: $border-radius-medium;
+  padding: $spacing-sm $spacing-md;
+  margin-bottom: $spacing-md;
+  color: $error-color;
+  font-size: $font-size-sm;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  animation: fadeIn $transition-normal ease-out;
+  
+  .error-icon {
+    font-size: $font-size-lg;
+    flex-shrink: 0;
+  }
+}
+
+// 表单错误状态
+.form-input {
+  &.error {
+    border-color: $error-color;
+    
+    &:focus {
+      border-color: $error-color;
+      box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
+    }
+  }
+}
+
+// 响应式断点
+@media (max-width: 768px) {
+  :root {
+    --font-size-xxl: 28px;
+    --font-size-xl: 20px;
+    --spacing-xl: 24px;
+    --spacing-xxl: 32px;
+  }
+  
+  .card {
+    padding: $spacing-md;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --font-size-xxl: 24px;
+    --font-size-xl: 18px;
+    --font-size-lg: 16px;
+  }
+}

@@ -208,7 +208,10 @@ if (import.meta.env.DEV) {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+// 导入全局变量
+@import '../style.scss';
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -220,140 +223,140 @@ if (import.meta.env.DEV) {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn $transition-normal ease;
 }
 
 .modal-container {
   background: white;
-  border-radius: 8px;
+  border-radius: $border-radius-medium;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   max-width: 90%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.3s ease;
+  animation: slideIn $transition-normal ease;
+  
+  // 大小样式
+  &.small {
+    width: 400px;
+  }
+  
+  &.medium {
+    width: 600px;
+  }
+  
+  &.large {
+    width: 900px;
+  }
+  
+  &.fullscreen {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  // 位置样式
+  &.top {
+    align-self: flex-start;
+    margin-top: 50px;
+  }
+  
+  &.bottom {
+    align-self: flex-end;
+    margin-bottom: 50px;
+  }
 }
 
-/* 大小样式 */
-.modal-container.small {
-  width: 400px;
-}
-
-.modal-container.medium {
-  width: 600px;
-}
-
-.modal-container.large {
-  width: 900px;
-}
-
-.modal-container.fullscreen {
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 100vh;
-  border-radius: 0;
-}
-
-/* 位置样式 */
-.modal-container.top {
-  align-self: flex-start;
-  margin-top: 50px;
-}
-
-.modal-container.bottom {
-  align-self: flex-end;
-  margin-bottom: 50px;
-}
-
-/* 模态框头部 */
+// 模态框头部
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1px solid $border-color;
+  
+  .modal-title {
+    font-size: $font-size-md;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0;
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: $text-disabled;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $border-radius-full;
+    transition: all $transition-normal;
+    
+    &:hover {
+      background-color: $background-secondary;
+      color: $text-secondary;
+    }
+  }
 }
 
-.modal-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #999;
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-}
-
-.close-button:hover {
-  background-color: #f5f5f5;
-  color: #666;
-}
-
-/* 模态框内容 */
+// 模态框内容
 .modal-body {
   flex: 1;
-  padding: 24px;
+  padding: $spacing-lg;
   overflow-y: auto;
 }
 
-/* 模态框底部 */
+// 模态框底部
 .modal-footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  padding: 16px 24px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.modal-button {
-  padding: 8px 16px;
-  border: 1px solid #d9d9d9;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.modal-button.cancel {
-  background-color: white;
-  color: #333;
-}
-
-.modal-button.cancel:hover:not(:disabled) {
-  border-color: #4caf50;
-  color: #4caf50;
-}
-
-.modal-button.confirm {
-  background-color: #4caf50;
-  border-color: #4caf50;
-  color: white;
-}
-
-.modal-button.confirm:hover:not(:disabled) {
-  background-color: #45a049;
-  border-color: #45a049;
-}
-
-.modal-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  padding: $spacing-md $spacing-lg;
+  border-top: 1px solid $border-color;
+  
+  .modal-button {
+    padding: 8px 16px;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-small;
+    font-size: $font-size-sm;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all $transition-normal;
+    
+    &.cancel {
+      background-color: white;
+      color: $text-primary;
+      
+      &:hover:not(:disabled) {
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+    }
+    
+    &.confirm {
+      background-color: $primary-color;
+      border-color: $primary-color;
+      color: white;
+      
+      &:hover:not(:disabled) {
+        background-color: $primary-dark;
+        border-color: $primary-dark;
+      }
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
 }
 
 /* 动画 */
@@ -382,12 +385,12 @@ if (import.meta.env.DEV) {
   .modal-container {
     max-width: 95%;
     margin: 20px;
-  }
-  
-  .modal-container.small,
-  .modal-container.medium,
-  .modal-container.large {
-    width: 100%;
+    
+    &.small,
+    &.medium,
+    &.large {
+      width: 100%;
+    }
   }
   
   .modal-header,

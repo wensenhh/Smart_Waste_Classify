@@ -109,79 +109,82 @@ watch(() => props.show, (newShow) => {
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+// 导入全局变量
+@import '../style.scss';
+
 .message-toast {
   position: fixed;
   min-width: 300px;
   max-width: 400px;
   padding: 12px 20px;
-  border-radius: 8px;
+  border-radius: $border-radius-medium;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   background: white;
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  animation: slideIn 0.3s ease-out;
-  transition: all 0.3s ease;
-}
-
-.toast-content {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.toast-icon {
-  font-size: 18px;
-}
-
-.toast-message {
-  font-size: 14px;
-  color: #333;
-  line-height: 1.5;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #999;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-}
-
-.close-button:hover {
-  background-color: #f5f5f5;
-  color: #666;
-}
-
-/* 类型样式 */
-.message-toast.info {
-  background-color: #e3f2fd;
-  border-left: 4px solid #2196f3;
-}
-
-.message-toast.success {
-  background-color: #e8f5e9;
-  border-left: 4px solid #4caf50;
-}
-
-.message-toast.warning {
-  background-color: #fff3e0;
-  border-left: 4px solid #ff9800;
-}
-
-.message-toast.error {
-  background-color: #ffebee;
-  border-left: 4px solid #f44336;
+  animation: slideIn $transition-normal ease-out;
+  transition: all $transition-normal;
+  
+  .toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    .toast-icon {
+      font-size: 18px;
+    }
+    
+    .toast-message {
+      font-size: $font-size-sm;
+      color: $text-primary;
+      line-height: 1.5;
+    }
+  }
+  
+  .close-button {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: $text-disabled;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: $border-radius-full;
+    transition: all $transition-normal;
+    
+    &:hover {
+      background-color: $background-secondary;
+      color: $text-secondary;
+    }
+  }
+  
+  // 类型样式
+  &.info {
+    background-color: #e3f2fd;
+    border-left: 4px solid $info-color;
+  }
+  
+  &.success {
+    background-color: #e8f5e9;
+    border-left: 4px solid $success-color;
+  }
+  
+  &.warning {
+    background-color: #fff3e0;
+    border-left: 4px solid $warning-color;
+  }
+  
+  &.error {
+    background-color: #ffebee;
+    border-left: 4px solid $error-color;
+  }
 }
 
 /* 动画 */
