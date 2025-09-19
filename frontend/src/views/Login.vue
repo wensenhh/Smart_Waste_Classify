@@ -14,6 +14,12 @@
         <p>{{ $t('login.subtitle') }}</p>
       </div>
 
+      <!-- 错误提示区域 -->
+      <div v-if="loginError" class="error-message">
+        <span class="error-icon">⚠️</span>
+        {{ loginError }}
+      </div>
+
       <form @submit.prevent="handleLogin" class="login-form">
         <!-- 用户名/邮箱输入 -->
         <div class="form-group">
@@ -25,7 +31,7 @@
             :placeholder="$t('login.enterUsername')"
             required
             class="form-input"
-            @focus="showPasswordTooltip = false"
+            @focus="showPasswordTooltip = false; clearLoginError()"
           />
         </div>
 
@@ -49,6 +55,7 @@
               :placeholder="$t('login.enterPassword')"
               required
               class="form-input password-input"
+              @focus="clearLoginError()"
             />
             <button 
               type="button" 
@@ -180,17 +187,21 @@ const isLoggingIn = ref(false);
 const isResettingPassword = ref(false);
 const showPassword = ref(false);
 const showPasswordTooltip = ref(false);
+const loginError = ref('');
+
+// 清除登录错误
+const clearLoginError = () => {
+  loginError.value = '';
+};
 
 // 处理登录
 const handleLogin = async () => {
   if (isLoggingIn.value) return;
   
   isLoggingIn.value = true;
+  clearLoginError();
   
   try {
-    // 模拟登录请求
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
     // 实际项目中这里应该调用API进行登录
     // 根据user.js中的login方法定义，它接受一个credentials对象
     const loginSuccess = await userStore.login({
@@ -202,11 +213,12 @@ const handleLogin = async () => {
       // 登录成功后跳转到首页
       router.push({ name: 'Home' });
     } else {
-      alert('登录失败');
+      // 显示具体的错误信息
+      loginError.value = userStore.error || '登录失败：账号或密码错误';
     }
   } catch (error) {
     console.error('Login failed:', error);
-    alert('登录失败');
+    loginError.value = '登录失败：网络错误或服务器问题';
   } finally {
     isLoggingIn.value = false;
   }

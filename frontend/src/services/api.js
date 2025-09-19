@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: '/api', // 基础URL，实际使用时根据后端API地址调整
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api', // 使用环境变量配置的API基础URL
   timeout: 10000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json'
@@ -57,9 +57,13 @@ api.interceptors.response.use(
       // 服务器返回错误
       switch (error.response.status) {
         case 401:
-          // 未授权，跳转到登录页
+          // 未授权，移除token
           localStorage.removeItem('token');
-          window.location.href = '/';
+          // 不要在登录页强制跳转，让调用者处理错误
+          // 只有当当前页面不是登录页时才跳转
+          if (!window.location.pathname.includes('/login')) {
+            window.location.href = '/';
+          }
           break;
         case 403:
           // 拒绝访问

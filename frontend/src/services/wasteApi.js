@@ -5,11 +5,11 @@ export const wasteApi = {
   // 用户相关API
   user: {
     // 用户登录
-    login: (credentials) => api.post('/user/login', credentials),
+    login: (credentials) => api.post('/users/login', credentials),
     // 获取用户积分
-    getPoints: () => api.get('/user/points'),
+    getPoints: () => api.get('/users/points'),
     // 获取用户成就
-    getAchievements: () => api.get('/user/achievements')
+    getAchievements: () => api.get('/users/achievements')
   },
   
   // 垃圾识别相关API
