@@ -1,12 +1,11 @@
+// 导入axios
 import axios from 'axios';
+import errorHandler from './errorHandler';
 
 // 创建axios实例
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api', // 使用环境变量配置的API基础URL
-  timeout: 10000, // 请求超时时间
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  timeout: 10000 // 请求超时时间
 });
 
 // 请求拦截器
@@ -42,8 +41,33 @@ api.interceptors.response.use(
       // 这里可以隐藏全局加载状态
     }
     
+    // 检查是否有新的token
+    if (response.headers && response.headers['x-token-expired'] === 'true' && response.headers['x-new-token']) {
+      const newToken = response.headers['x-new-token'];
+      localStorage.setItem('token', newToken);
+      console.log('Token refreshed successfully');
+    }
+    
     // 统一处理响应数据
     const data = response.data;
+    
+    // 检查业务状态码
+    if (data.code && data.code !== errorHandler.STATUS_CODES.SUCCESS) {
+      // 业务逻辑错误，转换为Promise.reject以便后续处理
+      const error = new Error(data.message || '业务处理失败');
+      error.response = {
+        status: response.status,
+        data: data
+      };
+      
+      // 特定业务错误的前置处理
+      if (data.code === errorHandler.STATUS_CODES.TOKEN_EXPIRED) {
+        localStorage.removeItem('token');
+      }
+      
+      return Promise.reject(error);
+    }
+    
     return data;
   },
   error => {
@@ -52,41 +76,27 @@ api.interceptors.response.use(
       // 这里可以隐藏全局加载状态
     }
     
-    // 统一处理错误
-    if (error.response) {
-      // 服务器返回错误
-      switch (error.response.status) {
-        case 401:
-          // 未授权，移除token
-          localStorage.removeItem('token');
-          // 不要在登录页强制跳转，让调用者处理错误
-          // 只有当当前页面不是登录页时才跳转
-          if (!window.location.pathname.includes('/login')) {
-            window.location.href = '/';
-          }
-          break;
-        case 403:
-          // 拒绝访问
-          console.error('拒绝访问');
-          break;
-        case 404:
-          // 请求不存在
-          console.error('请求不存在');
-          break;
-        case 500:
-          // 服务器错误
-          console.error('服务器错误');
-          break;
-        default:
-          console.error(`请求失败: ${error.response.status}`);
+    // 使用统一错误处理器处理错误
+    const errorInfo = errorHandler.handleError(error);
+    
+    // 记录错误日志
+    console.error('API Error:', errorInfo);
+    
+    // 对于特定错误类型进行预处理
+      if (errorInfo.status === errorHandler.STATUS_CODES.UNAUTHORIZED || 
+          errorInfo.code === errorHandler.STATUS_CODES.TOKEN_EXPIRED) {
+        localStorage.removeItem('token');
+        // 只有当当前页面不是登录页时才跳转
+        if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
+          // 延迟跳转，确保错误信息能够被处理
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1500);
+        }
       }
-    } else if (error.request) {
-      // 请求超时
-      console.error('请求超时，请检查网络连接');
-    } else {
-      // 请求配置错误
-      console.error('请求配置错误');
-    }
+    
+    // 增强错误对象，添加标准化的错误信息
+    error.errorInfo = errorInfo;
     
     return Promise.reject(error);
   }

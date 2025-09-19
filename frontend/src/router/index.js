@@ -129,8 +129,8 @@ router.beforeEach((to, from, next) => {
     if (isLoggedIn) {
       next();
     } else {
-      // 可以重定向到登录页
-      next('/');
+      // 重定向到登录页
+      next('/login');
     }
   } else {
     next();

@@ -93,7 +93,11 @@ class RecognitionController {
       } catch (uploadError) {
         console.error('图片上传失败:', uploadError);
         // 为了确保记录完整，即使上传失败也生成一个默认的图片URL
-        imageUrl = `/static/default/placeholder.jpg`;
+        const baseUrl = process.env.BASE_URL || 
+                      (process.env.NODE_ENV === 'development' ? 
+                      `http://localhost:${process.env.PORT || 3002}` : 
+                      'https://api.example.com');
+        imageUrl = `${baseUrl}/static/default/placeholder.svg`;
       }
       
       // 5. 构建识别结果，确保返回数据的一致性和安全性

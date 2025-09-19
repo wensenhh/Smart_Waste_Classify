@@ -35,7 +35,7 @@
         <input 
           type="file" 
           ref="fileInput"
-          accept="image/*"
+          accept="image/png,image/jpeg,image/jpe"
           style="display: none"
           @change="handleFileSelect"
         />

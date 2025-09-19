@@ -79,7 +79,7 @@ exports.jwtAuth = async (ctx, next) => {
       // 生成新Token
       const newToken = jwt.sign({
         id: decoded.id,
-        phone: decoded.phone,
+        name: decoded.name,
         role: decoded.role
       }, secret, {
         expiresIn: securityConfig.jwt.expiresIn

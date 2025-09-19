@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "智能垃圾分类系统后端服务",
   "main": "server.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
@@ -26,6 +27,7 @@
     "koa-bodyparser": "^4.4.1",
     "koa-helmet": "^7.0.2",
     "koa-ratelimit": "^5.1.0",
+    "koa-static": "^5.0.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.6.5",
     "sharp": "^0.34.4"

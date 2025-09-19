@@ -43,13 +43,24 @@ export const useUserStore = defineStore('user', {
         this.error = null;
         
         // 登录请求
-        const response = await wasteApi.user.login(credentials);
-        
-        this.userInfo = response.data;
-        this.isLoggedIn = true;
-        
-        // 保存用户信息到本地存储
-        localStorage.setItem('userInfo', JSON.stringify(this.userInfo));
+      const response = await wasteApi.user.login(credentials);
+      
+      this.userInfo = response.data;
+      this.isLoggedIn = true;
+      
+      // 保存用户信息和token到本地存储
+      localStorage.setItem('userInfo', JSON.stringify(this.userInfo));
+      
+      // 从响应头或响应数据中获取token
+      // 检查响应头中的Authorization字段
+      if (response.headers && response.headers.authorization) {
+        const token = response.headers.authorization.replace('Bearer ', '');
+        localStorage.setItem('token', token);
+      }
+      // 如果token在响应数据中
+      else if (response.data && response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
         
         // 登录成功后获取用户积分和成就
         await this.fetchUserPoints();

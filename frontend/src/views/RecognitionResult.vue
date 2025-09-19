@@ -64,7 +64,7 @@
       <section class="knowledge-section" v-if="recognitionStore.getRecognitionResult">
         <h3 class="section-title">相关知识</h3>
         <div class="knowledge-content">
-          <p>{{ getRelatedKnowledge(recognitionStore.getRecognitionResult.type) }}</p>
+          <p>{{ recognitionStore.getRecognitionResult.tips }}</p>
         </div>
       </section>
 
@@ -200,17 +200,6 @@ export default {
       return typeMap[type] || 'other';
     };
 
-    // 获取相关知识
-    const getRelatedKnowledge = (type) => {
-      const knowledgeMap = {
-        '可回收物': '可回收物是指适宜回收利用和资源化利用的生活废弃物，如废纸张、废塑料、废玻璃制品、废金属、废织物等。回收后经过处理可以再利用，减少资源浪费。',
-        '厨余垃圾': '厨余垃圾是指居民日常生活及食品加工、饮食服务、单位供餐等活动中产生的垃圾，包括丢弃不用的菜叶、剩菜、剩饭、果皮、蛋壳、茶渣、骨头等，其主要来源为家庭厨房、餐厅、饭店、食堂、市场及其他与食品加工有关的行业。',
-        '有害垃圾': '有害垃圾是指存有对人体健康有害的重金属、有毒的物质或者对环境造成现实危害或者潜在危害的废弃物。包括废电池、废荧光灯管、废灯泡、废水银温度计、废油漆桶、废家电类、过期药品、过期化妆品等。',
-        '其他垃圾': '其他垃圾指危害比较小，没有再次利用价值的垃圾，如建筑垃圾类，生活垃圾类等，一般采取填埋、焚烧、卫生分解等方法，部分还可以使用生物解决，如放蚯蚓等。其他垃圾是可回收垃圾、厨余垃圾、有害垃圾剩余下来的一种垃圾。'
-      };
-      return knowledgeMap[type] || '该垃圾的相关知识正在整理中。';
-    };
-
     // 分享结果
     const shareResult = () => {
       // 实际项目中可以调用系统分享API
@@ -253,7 +242,6 @@ export default {
       goBack,
       goHome,
       getTypeClass,
-      getRelatedKnowledge,
       shareResult,
       submitFeedback,
       confirmFeedback,

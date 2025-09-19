@@ -65,19 +65,20 @@ const register = async (ctx) => {
  * 用户登录
  */
 const login = async (ctx) => {
-  // 使用phone字段作为登录标识，同时兼容username字段和可能的拼写错误
+  // 使用name字段作为登录标识，同时兼容username字段
   const requestBody = ctx.request.body || {};
-  const phone = requestBody.phone || requestBody.username || ctx.query.phone || ctx.query.username || ctx.query.usernma; // 兼容常见拼写错误
+  // 将username参数映射到name字段进行登录验证
+  const loginName = requestBody.username || requestBody.name || ctx.query.username || ctx.query.name;
   const password = requestBody.password || ctx.query.password;
   const t = ctx.i18n ? ctx.i18n.t : (key) => key;
   try {
     // 验证输入
-    if (!phone || !password) {
+    if (!loginName || !password) {
       throw new ValidationError(t('validation_error'));
     }
     
-    // 查询用户
-    const users = await db.query('SELECT * FROM users WHERE phone = ?', [phone]);
+    // 查询用户 - 使用name字段进行查询
+    const users = await db.query('SELECT * FROM users WHERE name = ?', [loginName]);
     if (users.length === 0) {
       throw new UnauthorizedError(t('user.login_failed'));
     }
@@ -102,7 +103,7 @@ const login = async (ctx) => {
     // 生成JWT Token
     const token = jwt.sign({
       id: user.id,
-      phone: user.phone
+      name: user.name
     }, securityConfig.jwt.secret, {
       expiresIn: securityConfig.jwt.expiresIn
     });

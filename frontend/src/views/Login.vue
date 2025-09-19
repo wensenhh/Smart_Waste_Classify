@@ -205,7 +205,7 @@ const handleLogin = async () => {
     // 实际项目中这里应该调用API进行登录
     // 根据user.js中的login方法定义，它接受一个credentials对象
     const loginSuccess = await userStore.login({
-      phone: username.value,
+      name: username.value,
       password: password.value
     });
     
