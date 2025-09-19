@@ -244,12 +244,12 @@ const navigateToRegister = () => {
 // 第三方登录
 const loginWithGoogle = () => {
   console.log('Login with Google');
-  alert($t('login.googleLoginComingSoon'));
+  window.$popup.info(t('login.googleLoginComingSoon'));
 };
 
 const loginWithFacebook = () => {
   console.log('Login with Facebook');
-  alert($t('login.facebookLoginComingSoon'));
+  window.$popup.info(t('login.facebookLoginComingSoon'));
 };
 
 // 关闭忘记密码弹窗
@@ -271,11 +271,11 @@ const resetPassword = async () => {
     
     // 实际项目中这里应该调用API发送重置密码邮件
     
-    alert($t('login.resetLinkSent'));
+    window.$popup.success(t('login.resetLinkSent'));
     closeForgotPassword();
   } catch (error) {
     console.error('Reset password failed:', error);
-    alert($t('login.resetFailed'));
+    window.$popup.error(t('login.resetFailed'));
   } finally {
     isResettingPassword.value = false;
   }

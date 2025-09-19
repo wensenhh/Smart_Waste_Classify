@@ -240,7 +240,7 @@ export default {
     const enrollCourse = (courseId) => {
       // 这里可以实现课程注册逻辑
       console.log(`Enroll course: ${courseId}`);
-      alert('课程注册成功！');
+      window.$popup.success('课程注册成功！');
     };
 
     // 截断文本

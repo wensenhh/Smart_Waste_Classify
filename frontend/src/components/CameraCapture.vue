@@ -87,17 +87,17 @@ const requestCameraAuthorization = async () => {
     console.log('开始主动请求摄像头授权...');
     
     // 检查navigator.mediaDevices和getUserMedia方法是否存在
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      console.error('浏览器不支持getUserMedia API');
-      
-      // 为Safari浏览器提供更友好的错误信息和替代方案
-      if (isSafari.value) {
-        alert('您的Safari浏览器可能不支持此功能\n请确保您使用的是最新版本的Safari浏览器\n并检查设备设置中是否允许网站访问摄像头');
-      } else {
-        alert('您的浏览器不支持摄像头功能，推荐使用最新版Chrome或Safari浏览器');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.error('浏览器不支持getUserMedia API');
+        
+        // 为Safari浏览器提供更友好的错误信息和替代方案
+        if (isSafari.value) {
+          window.$popup.error('您的Safari浏览器可能不支持此功能\n请确保您使用的是最新版本的Safari浏览器\n并检查设备设置中是否允许网站访问摄像头');
+        } else {
+          window.$popup.error('您的浏览器不支持摄像头功能，推荐使用最新版Chrome或Safari浏览器');
+        }
+        return;
       }
-      return;
-    }
     
     // 尝试获取摄像头访问权限
     stream = await navigator.mediaDevices.getUserMedia({
@@ -118,15 +118,15 @@ const requestCameraAuthorization = async () => {
   } catch (error) {
     console.error('授权请求失败:', error);
     if (error.name === 'NotAllowedError') {
-      alert('您已拒绝摄像头访问权限\n请在Safari设置中手动授予权限\n设置路径: 设置 > Safari > 网站设置 > 相机');
-    } else if (error.name === 'NotFoundError') {
-      alert('未找到可用的摄像头设备');
-    } else if (error.name === 'NotReadableError') {
-      alert('摄像头被其他应用占用，请关闭其他应用后重试');
-    } else {
-      // 提供更通用的错误信息，避免显示技术性错误
-      alert('无法访问摄像头，请检查您的浏览器设置和设备权限');
-    }
+        window.$popup.error('您已拒绝摄像头访问权限\n请在Safari设置中手动授予权限\n设置路径: 设置 > Safari > 网站设置 > 相机');
+      } else if (error.name === 'NotFoundError') {
+        window.$popup.error('未找到可用的摄像头设备');
+      } else if (error.name === 'NotReadableError') {
+        window.$popup.error('摄像头被其他应用占用，请关闭其他应用后重试');
+      } else {
+        // 提供更通用的错误信息，避免显示技术性错误
+        window.$popup.error('无法访问摄像头，请检查您的浏览器设置和设备权限');
+      }
   }
 };
 
@@ -138,18 +138,18 @@ const initializeCamera = async () => {
   
   try {
     // 检查浏览器兼容性 - 针对Safari进行特殊处理
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      // 为Safari浏览器提供更友好的错误信息
-      if (isSafari.value) {
-        console.log('Safari浏览器检测到mediaDevices API不可用，显示授权引导');
-        safariInitFailed.value = true;
-        return;
-      } else {
-        alert('您的浏览器不支持摄像头功能，推荐使用Chrome或Safari浏览器');
-        emit('close');
-        return;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        // 为Safari浏览器提供更友好的错误信息
+        if (isSafari.value) {
+          console.log('Safari浏览器检测到mediaDevices API不可用，显示授权引导');
+          safariInitFailed.value = true;
+          return;
+        } else {
+          window.$popup.error('您的浏览器不支持摄像头功能，推荐使用Chrome或Safari浏览器');
+          emit('close');
+          return;
+        }
       }
-    }
     
     // 优先使用后置摄像头，但添加兼容性回退方案
     const constraints = {
@@ -237,13 +237,13 @@ const initializeCamera = async () => {
     } else {
       // 其他浏览器的错误提示
       if (error.name === 'NotAllowedError') {
-        alert('请允许应用访问您的摄像头');
+        window.$popup.error('请允许应用访问您的摄像头');
       } else if (error.name === 'NotFoundError') {
-        alert('未找到可用的摄像头设备');
+        window.$popup.error('未找到可用的摄像头设备');
       } else if (error.name === 'NotReadableError') {
-        alert('摄像头被其他应用占用，请关闭其他应用后重试');
+        window.$popup.error('摄像头被其他应用占用，请关闭其他应用后重试');
       } else {
-        alert('初始化摄像头失败: ' + error.message);
+        window.$popup.error('初始化摄像头失败: ' + error.message);
       }
       emit('close');
     }

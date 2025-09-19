@@ -214,7 +214,7 @@ export default {
     // 分享结果
     const shareResult = () => {
       // 实际项目中可以调用系统分享API
-      alert('分享功能已触发');
+      window.$popup.success('分享功能已触发');
     };
 
     // 提交反馈类型
@@ -231,10 +231,10 @@ export default {
       );
       
       if (result) {
-        alert('感谢您的反馈！');
+        window.$popup.success('感谢您的反馈！');
         closeFeedback();
       } else {
-        alert('反馈提交失败，请重试');
+        window.$popup.error('反馈提交失败，请重试');
       }
     };
 

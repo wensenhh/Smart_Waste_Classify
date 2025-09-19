@@ -18,6 +18,9 @@ import Header from './components/Header.vue'
 // 导入i18n store
 import { useI18nStore } from './stores/i18n'
 
+// 导入弹窗工具
+import popupManager from './utils/popup.js'
+
 // 创建应用实例
 const app = createApp(App)
 
@@ -25,6 +28,9 @@ const app = createApp(App)
 app.use(router)
 app.use(pinia)
 app.use(i18n)
+
+// 全局注册弹窗工具
+app.config.globalProperties.$popup = popupManager
 
 // 初始化i18n store
 const i18nStore = useI18nStore()
@@ -35,3 +41,6 @@ app.component('Header', Header)
 
 // 挂载应用
 app.mount('#app')
+
+// 导出popupManager，便于组合式API中使用
+export { popupManager }

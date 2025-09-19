@@ -349,7 +349,7 @@ export default {
       userInfo.value.city = editCity.value;
       userInfo.value.avatar = editAvatar.value;
       closeEditProfileModal();
-      alert('个人资料已更新！');
+      window.$popup.success('个人资料已更新！');
     };
 
     const i18nStore = useI18nStore();
@@ -373,7 +373,7 @@ export default {
     const saveLanguageSettings = () => {
       if (selectedLanguage.value !== i18nStore.getLocale) {
         i18nStore.setLocale(selectedLanguage.value);
-        alert('语言设置已更新！');
+        window.$popup.success('语言设置已更新！');
       }
       closeLanguageModal();
     };

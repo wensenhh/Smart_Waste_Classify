@@ -373,14 +373,14 @@ const validatePhone = () => {
       
       if (registerSuccess) {
         // 注册成功后跳转到登录页或首页
-        alert(t('register.registerSuccess'));
+        window.$popup.success(t('register.registerSuccess'));
         router.push({ name: 'Login' });
       } else {
-        alert(t('register.registerFailed'));
+        window.$popup.error(t('register.registerFailed'));
       }
   } catch (error) {
     console.error('Register failed:', error);
-    alert(t('register.registerFailed'));
+    window.$popup.error(t('register.registerFailed'));
   } finally {
     isRegistering.value = false;
   }
@@ -409,12 +409,12 @@ const navigateToLogin = () => {
 // 第三方注册
 const registerWithGoogle = () => {
   console.log('Register with Google');
-  alert(t('register.googleRegisterComingSoon'));
+  window.$popup.info(t('register.googleRegisterComingSoon'));
 };
 
 const registerWithFacebook = () => {
   console.log('Register with Facebook');
-  alert(t('register.facebookRegisterComingSoon'));
+  window.$popup.info(t('register.facebookRegisterComingSoon'));
 };
 </script>
 
