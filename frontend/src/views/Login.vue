@@ -142,7 +142,7 @@
               type="email"
               id="resetEmail"
               v-model="resetEmail"
-              placeholder="{{ $t('login.enterEmail') }}"
+              :placeholder="$t('login.enterEmail')"
               required
               class="form-input"
             />
