@@ -140,5 +140,9 @@ const navigateTo = (routeName) => {
 
 .nav-text {
   font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60px;
 }
 </style>

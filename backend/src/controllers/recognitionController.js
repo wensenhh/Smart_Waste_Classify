@@ -82,7 +82,7 @@ class RecognitionController {
       if (externalResult.error) {
         throw new Error(externalResult.message || '外部API识别失败');
       }
-      
+        console.log('外部API返回结果:', externalResult);
       // 4. 上传图片到本地存储
       let imageUrl;
       try {

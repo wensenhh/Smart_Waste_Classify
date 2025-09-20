@@ -227,30 +227,19 @@ const handleLogin = async () => {
       // 登录成功后跳转到首页
       router.push({ name: 'Home' });
     } else {
-      // 根据不同错误类型显示友好的错误信息
-      if (userStore.error) {
-        if (userStore.error.includes('validation_error') || 
-            userStore.error.includes('VALIDATION_ERROR')) {
-          loginError.value = '请输入用户名和密码';
-        } else if (userStore.error.includes('login_failed') || 
-                   userStore.error.includes('ACCOUNT_INACTIVE')) {
-          loginError.value = '账号或密码错误，请重新输入';
-        } else {
-          loginError.value = '登录失败，请稍后再试';
-        }
-      } else {
-        loginError.value = '账号或密码错误，请重新输入';
-      }
+      // 直接使用后端返回的错误信息作为用户提示
+      loginError.value = userStore.error || t('login.accountOrPasswordError');
     }
   } catch (error) {
     console.error('Login failed:', error);
-    // 网络错误处理
+    // 网络错误处理（保留前端特有的错误处理）
     if (error.toString().includes('Network Error')) {
-      loginError.value = '网络连接失败，请检查您的网络设置';
+      loginError.value = t('login.networkError');
     } else if (error.toString().includes('timeout')) {
-      loginError.value = '请求超时，请稍后再试';
+      loginError.value = t('login.timeoutError');
     } else {
-      loginError.value = '服务器暂时不可用，请稍后再试';
+      // 对于其他类型的错误，尝试使用错误对象中的message属性
+      loginError.value = error.message || t('login.serverUnavailableError');
     }
   } finally {
     isLoggingIn.value = false;

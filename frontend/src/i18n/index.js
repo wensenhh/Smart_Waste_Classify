@@ -311,7 +311,11 @@ const zh = {
     sendResetLink: '发送重置链接',
     sending: '发送中...',
     resetLinkSent: '重置链接已发送，请查收邮件',
-    resetFailed: '重置失败，请稍后重试'
+    resetFailed: '重置失败，请稍后重试',
+    accountOrPasswordError: '账号或密码错误，请重新输入',
+    networkError: '网络连接失败，请检查您的网络设置',
+    timeoutError: '请求超时，请稍后再试',
+    serverUnavailableError: '服务器暂时不可用，请稍后再试'
   }
 };
 
@@ -625,12 +629,23 @@ const en = {
     sendResetLink: 'Send reset link',
     sending: 'Sending...',
     resetLinkSent: 'Reset link has been sent, please check your email',
-    resetFailed: 'Reset failed, please try again later'
+    resetFailed: 'Reset failed, please try again later',
+    accountOrPasswordError: 'Account or password is incorrect, please re-enter',
+    networkError: 'Network connection failed, please check your network settings',
+    timeoutError: 'Request timed out, please try again later',
+    serverUnavailableError: 'Server is temporarily unavailable, please try again later'
   }
 };
 
 // 马来语语言包
 const ms = {
+  // 添加login模块的错误提示翻译键，与zh和en保持一致
+  login: {
+    accountOrPasswordError: 'Akaun atau kata laluan tidak betul, sila masukkan semula',
+    networkError: 'Kesalahan sambungan rangkaian, sila semak tetapan rangkaian anda',
+    timeoutError: 'Permintaan melebihi masa, sila cuba lagi kemudian',
+    serverUnavailableError: 'Server sementara tidak tersedia, sila cuba lagi kemudian'
+  },
   community: {
     title: 'Kongsi Komuniti',
     subtitle: 'Kongsi pengalaman pengelasan sisa dengan pengguna lain',
@@ -944,7 +959,7 @@ const ms = {
 // 创建i18n实例
 const i18n = createI18n({
   legacy: false,
-  locale: 'zh', // 默认语言
+  locale: 'en', // 默认语言
   fallbackLocale: 'en', // 回退语言
   messages: {
     zh,

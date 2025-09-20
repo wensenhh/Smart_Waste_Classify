@@ -1,12 +1,26 @@
 // 导入axios
 import axios from 'axios';
 import errorHandler from './errorHandler';
+// 导入i18n store以获取当前语言设置
+import { useI18nStore } from '../stores/i18n';
+import { getActivePinia, createPinia } from 'pinia';
 
 // 创建axios实例
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api', // 使用环境变量配置的API基础URL
   timeout: 40000 // 请求超时时间，设置为40秒
 });
+
+// 存储当前语言的变量，以便快速访问
+let currentLang = localStorage.getItem('appLocale') || 'en';
+
+// 监听语言变更事件，实时更新当前语言
+if (typeof document !== 'undefined') {
+  document.addEventListener('localeChanged', (event) => {
+    currentLang = event.detail;
+    console.log('Language updated via event:', currentLang);
+  });
+}
 
 // 请求拦截器
 api.interceptors.request.use(
@@ -15,6 +29,50 @@ api.interceptors.request.use(
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    // 添加语言参数到请求中
+    try {
+      // 首先使用我们维护的currentLang变量（通过事件监听实时更新）
+      let lang = currentLang;
+      
+      // 尝试获取活动的pinia实例，以获取最新的语言设置
+      try {
+        const piniaInstance = getActivePinia() || createPinia();
+        const i18nStore = useI18nStore(piniaInstance);
+        if (i18nStore && i18nStore.getLocale) {
+          // 验证从store获取的语言是否有效
+          if (i18nStore.getLocale) {
+            lang = i18nStore.getLocale;
+            // 更新currentLang变量以保持同步
+            currentLang = lang;
+          }
+        }
+      } catch (error) {
+        // 如果获取store失败，继续使用currentLang的值
+        console.warn('Failed to get locale from store, using cached value:', error);
+      }
+      
+      // 确保语言是后端支持的语言
+      const supportedLangs = ['zh', 'en', 'ms'];
+      if (!supportedLangs.includes(lang)) {
+        lang = 'zh'; // 如果是不支持的语言，默认使用中文
+      }
+      
+      console.log('Setting lang parameter to:', lang);
+      // 将lang参数添加到查询参数中
+      if (config.params) {
+        config.params.lang = lang;
+      } else {
+        config.params = { lang };
+      }
+      
+      // 同时添加到Cookie中，确保与后端检测顺序一致
+      if (typeof document !== 'undefined') {
+        document.cookie = `lang=${lang}; path=/; max-age=2592000`; // 30天有效期
+      }
+    } catch (error) {
+      console.error('Error adding language parameter to request:', error);
     }
     
     // 显示加载指示器

@@ -190,6 +190,7 @@ import Header from '../components/Header.vue';
 import popupManager from '../utils/popup.js';
 
 // 设置路由和存储
+// 手动触发热更新以应用成就名称翻译
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
@@ -279,7 +280,28 @@ const fetchUserProfile = async () => {
     // 更新本地状态
     userInfo.value = userStore.getUserInfo;
     userStats.value.points = userStore.getPoints;
-    achievements.value = userStore.getAchievements;
+    
+    // 获取成就数据并进行翻译处理
+    const storeAchievements = userStore.getAchievements;
+    if (storeAchievements && storeAchievements.length > 0) {
+      // 对每个成就的名称进行翻译
+      achievements.value = storeAchievements.map(achievement => {
+        // 根据成就名称匹配对应的翻译键
+        let translatedName = achievement.name;
+        if (achievement.name === '垃圾分类新手') {
+          translatedName = t('profile.wasteSortingExpert');
+        } else if (achievement.name === '每日签到达人') {
+          translatedName = t('profile.continuousUsage');
+        } else if (achievement.name === '知识渊博') {
+          translatedName = t('profile.knowledgeCompetitionWinner');
+        }
+        
+        return {
+          ...achievement,
+          name: translatedName
+        };
+      });
+    }
   }
 };
 

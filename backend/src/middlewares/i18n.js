@@ -83,7 +83,7 @@ const getRequestLanguage = (ctx) => {
       }
     }
   }
-  
+  console.log('Detected language:', lang);
   // 4. 默认语言
   if (!lang || !i18nConfig.locales.includes(lang)) {
     lang = i18nConfig.defaultLocale;

@@ -65,7 +65,7 @@
 
       <!-- 相关知识区域 -->
       <section class="knowledge-section" v-if="recognitionStore.getRecognitionResult">
-        <h3 class="section-title">相关知识</h3>
+        <!-- <h3 class="section-title">相关知识</h3> -->
         <div class="knowledge-content">
           <div v-html="recognitionStore.getRecognitionResult.tips"></div>
         </div>
@@ -664,8 +664,6 @@ export default {
   display: flex;
   align-items: center; /* 垂直居中 */
   justify-content: space-between; /* 水平分布元素 */
-  padding: 10px;
-  min-height: 56px; /* 最小高度保证足够空间 */
   box-sizing: border-box;
 }
 

@@ -281,9 +281,11 @@ const handleCameraClose = () => {
 
 // 选择语言
 const selectLanguage = (languageCode) => {
+  console.log('selectLanguage', languageCode);
   i18nStore.setLocale(languageCode);
   closeLanguageSelector();
-};</script>
+};
+</script>
 
 <style scoped>
 .home-container {
@@ -405,18 +407,25 @@ const selectLanguage = (languageCode) => {
 
 .item-info {
   flex: 1;
+  overflow: hidden;
 }
 
 .item-name {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .item-type {
   font-size: 14px;
   opacity: 0.8;
   margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .item-confidence {
@@ -424,11 +433,17 @@ const selectLanguage = (languageCode) => {
   opacity: 0.8;
   margin-bottom: 5px;
   color: #4ade80;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .item-time {
   font-size: 12px;
   opacity: 0.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .no-record {

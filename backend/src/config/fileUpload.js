@@ -10,7 +10,7 @@ const path = require('path');
 const uploadDir = process.env.FILE_UPLOAD_DIR || path.join(__dirname, '..', '..', 'uploads');
 
 // 文件大小限制 (5MB)
-const maxFileSize = 5 * 1024 * 1024;
+const maxFileSize = 20 * 1024 * 1024;
 
 // 允许的文件类型
 const allowedMimeTypes = [
