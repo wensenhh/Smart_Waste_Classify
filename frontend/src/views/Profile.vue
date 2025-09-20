@@ -8,7 +8,7 @@
       <!-- 用户信息卡片 -->
       <section class="user-info-card">
         <div class="user-avatar">
-          <div class="avatar-icon">{{ userInfo.avatar }}</div>
+          <div class="avatar-icon">{{ avatarOptions[0] }}</div>
         </div>
         <div class="user-details">
           <h2>{{ userInfo.name }}</h2>
@@ -116,15 +116,15 @@
         <div class="modal-body">
           <div class="form-group">
             <label>{{ $t('profile.name') }}</label>
-            <input type="text" v-model="editName" placeholder="{{ $t('profile.enterName') }}">
+            <input type="text" v-model="editName" :placeholder="$t('profile.enterName')">
           </div>
           <div class="form-group">
             <label>{{ $t('profile.email') }}</label>
-            <input type="email" v-model="editEmail" placeholder="{{ $t('profile.enterEmail') }}" disabled>
+            <input type="email" v-model="editEmail" :placeholder="$t('profile.enterEmail')" disabled>
           </div>
           <div class="form-group">
             <label>{{ $t('profile.city') }}</label>
-            <input type="text" v-model="editCity" placeholder="{{ $t('profile.enterCity') }}">
+            <input type="text" v-model="editCity" :placeholder="$t('profile.enterCity')">
           </div>
           <div class="form-group">
             <label>{{ $t('profile.avatar') }}</label>
@@ -179,257 +179,238 @@
   </div>
 </template>
 
-<script>
-import { ref } from 'vue';
+<script setup>
+import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useI18nStore } from '../stores/i18n';
 import BottomNavBar from '../components/BottomNavBar.vue';
+import Header from '../components/Header.vue';
 
-// 如果Header组件存在，则导入它
-// import Header from '../components/Header.vue';
+// 设置路由和存储
+const router = useRouter();
+const route = useRoute();
+const userStore = useUserStore();
+const i18nStore = useI18nStore();
 
-// 如果需要使用NavBar和Footer，则导入它们
-// import NavBar from '../components/NavBar.vue';
-// import Footer from '../components/Footer.vue';
+// 响应式状态
+const showEditProfileModal = ref(false);
 
-export default {
-  name: 'Profile',
-  components: {
-    BottomNavBar
-    // 如果使用了Header组件，取消下面这行的注释
-    // Header
-    // 如果使用了NavBar和Footer组件，取消下面两行的注释
-    // NavBar,
-    // Footer
+// 从store获取用户信息
+const userInfo = ref(userStore.getUserInfo || {
+  name: '环保小卫士',
+  email: 'eco.warrior@example.com',
+  city: '吉隆坡',
+  avatar: '👤'
+});
+
+// 用户统计数据
+const userStats = ref({
+  recognitionCount: 42,
+  streakDays: 7,
+  points: userStore.getPoints || 1280
+});
+
+// 成就列表
+const achievements = ref(userStore.getAchievements || [
+  {
+    id: 1,
+    name: '垃圾分类达人',
+    icon: '🏅',
+    date: '2025-06-15'
   },
-  setup() {
-    const router = useRouter();
-    const route = useRoute();
-    const userStore = useUserStore();
-    const showEditProfileModal = ref(false);
-    
-    // 用户信息
-    const userInfo = ref({
-      name: '环保小卫士',
-      email: 'eco.warrior@example.com',
-      city: '吉隆坡',
-      avatar: '👤'
-    });
+  {
+    id: 2,
+    name: '连续使用7天',
+    icon: '🔥',
+    date: '2025-06-14'
+  },
+  {
+    id: 3,
+    name: '知识竞赛优胜者',
+    icon: '🎯',
+    date: '2025-06-10'
+  }
+]);
 
-    // 用户统计数据
-    const userStats = ref({
-      recognitionCount: 42,
-      streakDays: 7,
-      points: 1280
-    });
+// 最近活动
+const recentActivities = ref([
+  {
+    id: 1,
+    icon: '🔍',
+    text: '识别了一个塑料瓶',
+    time: '今天 14:30'
+  },
+  {
+    id: 2,
+    icon: '📚',
+    text: '学习了垃圾分类知识',
+    time: '昨天 09:45'
+  },
+  {
+    id: 3,
+    icon: '🎮',
+    text: '参与了每日一题挑战',
+    time: '2天前'
+  },
+  {
+    id: 4,
+    icon: '🏆',
+    text: '获得了垃圾分类达人成就',
+    time: '3天前'
+  }
+]);
 
-    // 成就列表
-    const achievements = ref([
-      {
-        id: 1,
-        name: '垃圾分类达人',
-        icon: '🏅',
-        date: '2025-06-15'
-      },
-      {
-        id: 2,
-        name: '连续使用7天',
-        icon: '🔥',
-        date: '2025-06-14'
-      },
-      {
-        id: 3,
-        name: '知识竞赛优胜者',
-        icon: '🎯',
-        date: '2025-06-10'
-      }
-    ]);
+// 页面加载时获取用户资料
+onMounted(async () => {
+  // 初始化用户状态
+  await userStore.initializeUser();
+  // 获取最新的用户资料
+  await fetchUserProfile();
+});
 
-    // 最近活动
-    const recentActivities = ref([
-      {
-        id: 1,
-        icon: '🔍',
-        text: '识别了一个塑料瓶',
-        time: '今天 14:30'
-      },
-      {
-        id: 2,
-        icon: '📚',
-        text: '学习了垃圾分类知识',
-        time: '昨天 09:45'
-      },
-      {
-        id: 3,
-        icon: '🎮',
-        text: '参与了每日一题挑战',
-        time: '2天前'
-      },
-      {
-        id: 4,
-        icon: '🏆',
-        text: '获得了垃圾分类达人成就',
-        time: '3天前'
-      }
-    ]);
+// 获取用户资料
+const fetchUserProfile = async () => {
+  const success = await userStore.fetchUserProfile();
+  if (success) {
+    // 更新本地状态
+    userInfo.value = userStore.getUserInfo;
+    userStats.value.points = userStore.getPoints;
+    achievements.value = userStore.getAchievements;
+  }
+};
 
-    // 导航项
-    const navItems = [
-      {
-        name: 'home',
-        route: 'Home',
-        icon: '🏠',
-        label: 'common.home'
-      },
-      {
-        name: 'knowledge',
-        route: 'KnowledgeBase',
-        icon: '📚',
-        label: 'common.knowledgeBase'
-      },
-      {
-        name: 'interaction',
-        route: 'InteractionCenter',
-        icon: '🎮',
-        label: 'common.interactionCenter'
-      },
-      {
-        name: 'education',
-        route: 'Education',
-        icon: '📝',
-        label: 'common.education'
-      },
-      {
-        name: 'profile',
-        route: 'Profile',
-        icon: '👤',
-        label: 'common.profile'
-      }
-    ];
+// 导航项
+const navItems = [
+  {
+    name: 'home',
+    route: 'Home',
+    icon: '🏠',
+    label: 'common.home'
+  },
+  {
+    name: 'knowledge',
+    route: 'KnowledgeBase',
+    icon: '📚',
+    label: 'common.knowledgeBase'
+  },
+  {
+    name: 'interaction',
+    route: 'InteractionCenter',
+    icon: '🎮',
+    label: 'common.interactionCenter'
+  },
+  {
+    name: 'education',
+    route: 'Education',
+    icon: '📝',
+    label: 'common.education'
+  },
+  {
+    name: 'profile',
+    route: 'Profile',
+    icon: '👤',
+    label: 'common.profile'
+  }
+];
 
-    // 头像选项
-    const avatarOptions = ['👤', '👩', '👨', '👧', '👦', '🌱', '♻️', '🌍'];
+// 头像选项
+const avatarOptions = ['👤', '👩', '👨', '👧', '👦', '🌱', '♻️', '🌍'];
 
-    // 编辑表单数据
-    const editName = ref('');
-    const editEmail = ref('');
-    const editCity = ref('');
-    const editAvatar = ref('');
+// 编辑表单数据
+const editName = ref('');
+const editEmail = ref('');
+const editCity = ref('');
+const editAvatar = ref('');
 
-    // 导航到指定路由
-    const navigateTo = (routeName) => {
-      if (routeName !== route.name) {
-        router.push({ name: routeName });
-      }
-    };
+// 语言设置相关状态
+const showLanguageModal = ref(false);
+const selectedLanguage = ref(i18nStore.getLocale);
 
-    // 编辑个人资料
-    const editProfile = () => {
-      editName.value = userInfo.value.name;
-      editEmail.value = userInfo.value.email;
-      editCity.value = userInfo.value.city;
-      editAvatar.value = userInfo.value.avatar;
-      showEditProfileModal.value = true;
-    };
+// 导航到指定路由
+const navigateTo = (routeName) => {
+  if (routeName !== route.name) {
+    router.push({ name: routeName });
+  }
+};
 
-    // 关闭编辑资料弹窗
-    const closeEditProfileModal = () => {
-      showEditProfileModal.value = false;
-    };
+// 编辑个人资料
+const editProfile = () => {
+  editName.value = userInfo.value.name;
+  editEmail.value = userInfo.value.email;
+  editCity.value = userInfo.value.city;
+  editAvatar.value = userInfo.value.avatar;
+  showEditProfileModal.value = true;
+};
 
-    // 选择头像
-    const selectAvatar = (avatar) => {
-      editAvatar.value = avatar;
-    };
+// 关闭编辑资料弹窗
+const closeEditProfileModal = () => {
+  showEditProfileModal.value = false;
+};
 
-    // 保存个人资料更改
-    const saveProfileChanges = () => {
-      userInfo.value.name = editName.value;
-      userInfo.value.city = editCity.value;
-      userInfo.value.avatar = editAvatar.value;
-      closeEditProfileModal();
-      window.$popup.success('个人资料已更新！');
-    };
+// 选择头像
+const selectAvatar = (avatar) => {
+  editAvatar.value = avatar;
+};
 
-    const i18nStore = useI18nStore();
-    
-    // 语言设置相关状态
-    const showLanguageModal = ref(false);
-    const selectedLanguage = ref(i18nStore.getLocale);
-    
-    // 打开语言设置
-    const openLanguageSettings = () => {
-      selectedLanguage.value = i18nStore.getLocale;
-      showLanguageModal.value = true;
-    };
-    
-    // 关闭语言设置弹窗
-    const closeLanguageModal = () => {
-      showLanguageModal.value = false;
-    };
-    
-    // 保存语言设置
-    const saveLanguageSettings = () => {
-      if (selectedLanguage.value !== i18nStore.getLocale) {
-        i18nStore.setLocale(selectedLanguage.value);
-        window.$popup.success('语言设置已更新！');
-      }
-      closeLanguageModal();
-    };
+// 保存个人资料更改
+const saveProfileChanges = () => {
+  // 更新本地状态
+  userInfo.value.name = editName.value;
+  userInfo.value.city = editCity.value;
+  userInfo.value.avatar = editAvatar.value;
+  
+  // 更新store中的用户信息
+  userStore.updateUserInfo({
+    name: editName.value,
+    city: editCity.value,
+    avatar: editAvatar.value
+  });
+  
+  closeEditProfileModal();
+  window.$popup.success('个人资料已更新！');
+};
 
-    // 打开通知设置
-    const openNotificationSettings = () => {
-      console.log('Open notification settings');
-    };
+// 打开语言设置
+const openLanguageSettings = () => {
+  selectedLanguage.value = i18nStore.getLocale;
+  showLanguageModal.value = true;
+};
 
-    // 打开隐私设置
-    const openPrivacySettings = () => {
-      console.log('Open privacy settings');
-    };
+// 关闭语言设置弹窗
+const closeLanguageModal = () => {
+  showLanguageModal.value = false;
+};
 
-    // 打开帮助中心
-    const openHelpCenter = () => {
-      console.log('Open help center');
-    };
+// 保存语言设置
+const saveLanguageSettings = () => {
+  if (selectedLanguage.value !== i18nStore.getLocale) {
+    i18nStore.setLocale(selectedLanguage.value);
+    window.$popup.success('语言设置已更新！');
+  }
+  closeLanguageModal();
+};
 
-    // 退出登录
-    const logout = () => {
-      if (confirm('确定要退出登录吗？')) {
-        userStore.logout();
-        router.push({ name: 'Login' });
-      }
-    };
+// 打开通知设置
+const openNotificationSettings = () => {
+  console.log('Open notification settings');
+};
 
-    return {
-      userInfo,
-      userStats,
-      achievements,
-      recentActivities,
-      navItems,
-      showEditProfileModal,
-      editName,
-      editEmail,
-      editCity,
-      editAvatar,
-      avatarOptions,
-      navigateTo,
-      editProfile,
-      closeEditProfileModal,
-      selectAvatar,
-      saveProfileChanges,
-      openLanguageSettings,
-      openNotificationSettings,
-      openPrivacySettings,
-      openHelpCenter,
-      logout,
-      route,
-      showLanguageModal,
-      selectedLanguage,
-      i18nStore,
-      closeLanguageModal,
-      saveLanguageSettings
-    };
+// 打开隐私设置
+const openPrivacySettings = () => {
+  console.log('Open privacy settings');
+};
+
+// 打开帮助中心
+const openHelpCenter = () => {
+  console.log('Open help center');
+};
+
+// 退出登录
+const logout = () => {
+  if (confirm('确定要退出登录吗？')) {
+    userStore.logout();
+    router.push({ name: 'Login' });
   }
 };
 </script>

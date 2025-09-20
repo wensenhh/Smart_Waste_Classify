@@ -14,6 +14,8 @@ export const wasteApi = {
     forgotPassword: (params) => api.post('/users/forgot-password', params),
     // 用户重置密码
     resetPassword: (params) => api.post('/users/reset-password', params),
+    // 获取用户资料
+    getProfile: () => api.get('/users/profile'),
     // 更改用户资料
     profile: (params) => api.put('/users/profile', params),
     // 用户修改密码

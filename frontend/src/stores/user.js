@@ -142,6 +142,31 @@ export const useUserStore = defineStore('user', {
       }
     },
 
+    // 获取用户资料
+    async fetchUserProfile() {
+      try {
+        this.loading = true;
+        this.error = null;
+        
+        const response = await wasteApi.user.getProfile();
+        
+        if (response.success && response.data) {
+          this.userInfo = response.data;
+          this.isLoggedIn = true;
+          // 更新本地存储
+          localStorage.setItem('userInfo', JSON.stringify(this.userInfo));
+        }
+        
+        return true;
+      } catch (error) {
+        this.error = error.response?.data?.message || error.message || '获取用户资料失败';
+        console.error('获取用户资料失败:', error);
+        return false;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     // 更新用户信息
     updateUserInfo(info) {
       this.userInfo = { ...this.userInfo, ...info };
