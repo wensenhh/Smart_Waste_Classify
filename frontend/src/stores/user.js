@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { wasteApi } from '../services/api';
+import { wasteApi } from '../services/wasteApi';
 
 // 用户状态管理store
 export const useUserStore = defineStore('user', {
