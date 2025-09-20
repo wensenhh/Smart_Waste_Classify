@@ -198,6 +198,7 @@ import { useUserStore } from '../stores/user';
 import { useI18n } from 'vue-i18n';
 import { countryCodes, getCountryCodeByLocation, validatePhoneNumber, formatPhoneNumber } from '../utils/countryCodes';
 import { useI18nStore } from '../stores/i18n';
+import popupManager from '../utils/popup.js';
 
 defineOptions({
   name: 'Register'
@@ -373,14 +374,14 @@ const validatePhone = () => {
       
       if (registerSuccess) {
         // 注册成功后跳转到登录页或首页
-        window.$popup.success(t('register.registerSuccess'));
+        popupManager.success(t('register.registerSuccess'));
         router.push({ name: 'Login' });
       } else {
-        window.$popup.error(t('register.registerFailed'));
+        popupManager.error(t('register.registerFailed'));
       }
   } catch (error) {
     console.error('Register failed:', error);
-    window.$popup.error(t('register.registerFailed'));
+    popupManager.error(t('register.registerFailed'));
   } finally {
     isRegistering.value = false;
   }
@@ -409,12 +410,12 @@ const navigateToLogin = () => {
 // 第三方注册
 const registerWithGoogle = () => {
   console.log('Register with Google');
-  window.$popup.info(t('register.googleRegisterComingSoon'));
+  popupManager.info(t('register.googleRegisterComingSoon'));
 };
 
 const registerWithFacebook = () => {
   console.log('Register with Facebook');
-  window.$popup.info(t('register.facebookRegisterComingSoon'));
+  popupManager.info(t('register.facebookRegisterComingSoon'));
 };
 </script>
 
