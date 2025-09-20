@@ -43,7 +43,7 @@ export const wasteApi = {
     // 获取垃圾类别列表
     getCategories: (params) => api.get('/recognition/categories', { params }),
     // 获取垃圾类别详情
-    getCategoriesDetail: (slug) => api.get(`/recognition/category/${slug}`),
+    getCategoriesDetail: (slug) => api.get(`/recognition/categories/${slug}`),
     // 获取单个垃圾类别详情
     getCategoryDetail: (categoryId) => api.get(`/recognition/categories/${categoryId}`),
     // 垃圾识别
@@ -77,8 +77,20 @@ export const wasteApi = {
   knowledge: {
     // 获取分类知识
     getBase: (params) => api.get('/knowledge', { params }),
-    // 获取分类列表
-    getCategories: () => api.get('/categories'),
+    // 获取分类列表（根据API文档）
+    getCategories: () => api.get('/recognition/categories'),
+    // 获取单个垃圾类别详情
+  getCategoryBySlug: (slug, keyword = '') => {
+    const params = {};
+    if (keyword) {
+      params.keyword = keyword;
+    }
+    return api.get(`/recognition/categories/${slug}`, { params });
+  },
+    // 搜索垃圾信息（根据API文档）
+    searchWasteItems: (params) => api.get('/recognition/search', { params }),
+    // 获取单个垃圾详情（根据API文档）
+    getWasteItemById: (wasteItemId) => api.get(`/recognition/items/${wasteItemId}`),
     // 获取宣传教育内容
     getEducation: (type) => api.get(`/education/${type}`)
   },
@@ -96,14 +108,24 @@ export const wasteApi = {
   // 为保持向后兼容性，保留原有直接方法
   recognizeWaste: (data) => api.post('/recognition', data),
   getKnowledgeBase: (params) => api.get('/knowledge', { params }),
-  getCategories: () => api.get('/categories'),
+  getCategories: () => api.get('/recognition/categories'), // 更新为正确的API路径
   getUserPoints: () => api.get('/user/points'),
   getUserAchievements: () => api.get('/user/achievements'),
   getDailyQuestion: () => api.get('/questions/daily'),
   getChallengeQuestions: (level) => api.get(`/questions/challenge/${level}`),
   submitAnswer: (data) => api.post('/questions/submit', data),
   getEducationContent: (type) => api.get(`/education/${type}`),
-  feedbackRecognition: (resultId, feedbackData) => api.post(`/recognition/${resultId}/feedback`, feedbackData)
+  feedbackRecognition: (resultId, feedbackData) => api.post(`/recognition/${resultId}/feedback`, feedbackData),
+  // 新增向后兼容的方法
+  searchWasteItems: (params) => api.get('/recognition/search', { params }),
+  getWasteItemById: (wasteItemId) => api.get(`/recognition/items/${wasteItemId}`),
+  getCategoryBySlug: (slug, keyword = '') => {
+    const params = {};
+    if (keyword) {
+      params.keyword = keyword;
+    }
+    return api.get(`/recognition/categories/${slug}`, { params });
+  }
 };
 
 export default wasteApi;

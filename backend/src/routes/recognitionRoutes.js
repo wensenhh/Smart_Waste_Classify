@@ -30,13 +30,7 @@ router.post('/upload',
   recognitionController.upload
 );
 
-// 公开路由 - 搜索垃圾信息
-router.get('/search', 
-  validateRequest({ 
-    keyword: 'required|string'
-  }),
-  recognitionController.searchWaste
-);
+
 
 // 公开路由 - 获取垃圾类别
 router.get('/categories', 

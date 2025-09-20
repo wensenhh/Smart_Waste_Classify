@@ -6,15 +6,26 @@
       :searchPlaceholder="$t('knowledge.searchPlaceholder')"
       :initialSearchQuery="searchQuery"
       @search="handleSearch"
-      @search-input="handleSearch"
     />
+
+    <!-- 错误消息 -->
+    <div v-if="error" class="error-message">
+      {{ error }}
+      <button class="retry-btn" @click="handleRetry">重试</button>
+    </div>
 
 
 
     <!-- 主要内容区域 -->
     <main class="main-content">
+      <!-- 加载状态 -->
+      <div v-if="loading && filteredKnowledgeItems.length === 0" class="loading-state">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">加载中...</div>
+      </div>
+
       <!-- 分类标签 -->
-      <section class="category-tabs">
+      <section v-if="!loading || filteredKnowledgeItems.length > 0" class="category-tabs">
         <button 
           v-for="category in categories"
           :key="category.id"
@@ -27,7 +38,7 @@
       </section>
 
       <!-- 知识列表 -->
-      <section class="knowledge-list">
+      <section v-if="!loading || filteredKnowledgeItems.length > 0" class="knowledge-list">
         <div 
           v-for="item in filteredKnowledgeItems"
           :key="item.id"
@@ -38,17 +49,17 @@
             <div class="item-title">{{ item.name }}</div>
             <div 
               class="item-type-badge"
-              :class="getTypeClass(item.type)"
+              :class="getTypeClass(item.type || item.category?.name)"
             >
-              {{ item.type }}
+              {{ item.type || item.category?.name }}
             </div>
           </div>
           <div class="item-content">
             {{ truncateText(item.description, 80) }}
           </div>
           <div class="item-footer">
-            <span class="item-source">来源：{{ item.source }}</span>
-            <span class="item-view-count">{{ item.viewCount }} 次浏览</span>
+            <span class="item-source">来源：{{ item.source || '系统数据' }}</span>
+            <span class="item-view-count">{{ item.viewCount || 0 }} 次浏览</span>
           </div>
         </div>
 
@@ -75,24 +86,24 @@
         <div class="modal-body">
           <div 
             class="detail-type-badge"
-            :class="getTypeClass(selectedKnowledgeItem.type)"
+            :class="getTypeClass(selectedKnowledgeItem.type || selectedKnowledgeItem.category?.name)"
           >
-            {{ selectedKnowledgeItem.type }}
+            {{ selectedKnowledgeItem.type || selectedKnowledgeItem.category?.name }}
           </div>
           <div class="detail-description">
             {{ selectedKnowledgeItem.description }}
           </div>
           <div class="detail-content">
             <h4>处理方法</h4>
-            <p>{{ selectedKnowledgeItem.treatment }}</p>
+            <p>{{ selectedKnowledgeItem.treatment || selectedKnowledgeItem.suggestion || '暂无相关信息' }}</p>
           </div>
           <div class="detail-content">
             <h4>注意事项</h4>
-            <p>{{ selectedKnowledgeItem.precautions }}</p>
+            <p>{{ selectedKnowledgeItem.precautions || '暂无相关信息' }}</p>
           </div>
           <div class="detail-footer">
-            <span class="detail-source">来源：{{ selectedKnowledgeItem.source }}</span>
-            <span class="detail-date">更新时间：{{ selectedKnowledgeItem.updateDate }}</span>
+            <span class="detail-source">来源：{{ selectedKnowledgeItem.source || '系统数据' }}</span>
+            <span class="detail-date">更新时间：{{ selectedKnowledgeItem.updateDate || '暂无' }}</span>
           </div>
         </div>
       </div>
@@ -100,235 +111,191 @@
   </div>
 </template>
 
-<script>
-import { ref, computed } from 'vue';
+<script setup>
+import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import NavBar from '../components/NavBar.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import Header from '../components/Header.vue';
+import wasteApi from '../services/wasteApi';
 
-export default {
-  name: 'KnowledgeBase',
-  components: {
-    NavBar,
-    BottomNavBar,
-    Header
-  },
-  setup() {
-    const router = useRouter();
-    const route = useRoute();
-    const searchQuery = ref('');
-    const selectedCategory = ref('all');
-    const selectedKnowledgeItem = ref(null);
+const router = useRouter();
+const route = useRoute();
+const searchQuery = ref('');
+const selectedCategory = ref('all');
+const selectedKnowledgeItem = ref(null);
+const loading = ref(false);
+const error = ref('');
 
-    // 分类列表
-    const categories = [
-      { id: 'all', name: '全部' },
-      { id: 'recyclable', name: '可回收物' },
-      { id: 'kitchen', name: '厨余垃圾' },
-      { id: 'hazardous', name: '有害垃圾' },
-      { id: 'other', name: '其他垃圾' }
-    ];
+// 重试操作
+const handleRetry = async () => {
+  await fetchCategories();
+  await fetchKnowledgeItems(selectedCategory.value, searchQuery.value);
+};
 
-    // 模拟知识库数据
-    const knowledgeItems = ref([
-      {
-        id: 1,
-        name: '塑料瓶',
-        type: '可回收物',
-        category: 'recyclable',
-        description: '塑料瓶是日常生活常见的可回收物品，主要由PET塑料制成。回收后可以通过再加工制成新的塑料制品，减少资源浪费和环境污染。',
-        treatment: '使用后请清洗干净，去除瓶盖和标签，投入蓝色可回收物垃圾桶。',
-        precautions: '避免将污染严重的塑料瓶投入可回收垃圾桶，否则可能影响回收质量。',
-        source: '环保部门',
-        viewCount: 1250,
-        updateDate: '2025-05-10'
-      },
-      {
-        id: 2,
-        name: '香蕉皮',
-        type: '厨余垃圾',
-        category: 'kitchen',
-        description: '香蕉皮属于厨余垃圾，含有丰富的有机物，可以通过堆肥等方式进行资源化利用。',
-        treatment: '投入绿色厨余垃圾垃圾桶，或用于家庭堆肥。',
-        precautions: '如果香蕉皮已经发霉或腐烂，仍属于厨余垃圾，但建议尽快处理。',
-        source: '环保部门',
-        viewCount: 980,
-        updateDate: '2025-04-25'
-      },
-      {
-        id: 3,
-        name: '废电池',
-        type: '有害垃圾',
-        category: 'hazardous',
-        description: '废电池中含有汞、镉、铅等重金属，随意丢弃会对土壤和水源造成严重污染，应按照有害垃圾进行分类投放。',
-        treatment: '投入红色有害垃圾专用垃圾桶，或送到专门的电池回收点。',
-        precautions: '不要将废电池与其他垃圾混合，避免电池破损导致有害物质泄漏。',
-        source: '环保部门',
-        viewCount: 2300,
-        updateDate: '2025-06-01'
-      },
-      {
-        id: 4,
-        name: '纸巾',
-        type: '其他垃圾',
-        category: 'other',
-        description: '纸巾虽然由纸制成，但由于其吸水性强，回收价值低，且可能含有细菌和污染物，通常被归类为其他垃圾。',
-        treatment: '投入灰色其他垃圾垃圾桶。',
-        precautions: '不要将清洁后的纸巾误认为可回收物，目前大多数纸巾都属于其他垃圾。',
-        source: '环保部门',
-        viewCount: 1850,
-        updateDate: '2025-05-20'
-      },
-      {
-        id: 5,
-        name: '旧报纸',
-        type: '可回收物',
-        category: 'recyclable',
-        description: '旧报纸是优质的可回收资源，回收后可以制成再生纸，减少对树木的砍伐。',
-        treatment: '整理平整，投入蓝色可回收物垃圾桶，或送到回收站。',
-        precautions: '避免将油污或潮湿的报纸投入可回收垃圾桶，会影响回收质量。',
-        source: '环保部门',
-        viewCount: 1420,
-        updateDate: '2025-05-05'
-      },
-      {
-        id: 6,
-        name: '剩饭菜',
-        type: '厨余垃圾',
-        category: 'kitchen',
-        description: '剩饭菜属于典型的厨余垃圾，含有大量的有机物，可以通过生物处理转化为肥料或能源。',
-        treatment: '沥干水分后投入绿色厨余垃圾垃圾桶，或使用家用厨余垃圾处理器。',
-        precautions: '避免将骨头、贝壳等坚硬物体与剩饭菜混合，可能会损坏处理设备。',
-        source: '环保部门',
-        viewCount: 2100,
-        updateDate: '2025-04-15'
+// 分类列表
+const categories = ref([
+  { id: 'all', name: '全部' }
+]);
+
+// 知识库数据
+const knowledgeItems = ref([]);
+const filteredKnowledgeItems = ref([]);
+
+// 从API获取分类列表
+const fetchCategories = async () => {
+  try {
+    loading.value = true;
+    error.value = '';
+    const response = await wasteApi.knowledge.getCategories();
+    
+    // 检查response.data是否存在并且是一个对象
+    if (response.data && typeof response.data === 'object') {
+      // 使用Object.values()获取对象的所有值，然后进行迭代
+      Object.values(response.data).forEach(category => {
+        // 确保category是有效的对象
+        if (category && category.name) {
+          categories.value.push({
+            id: category.slug || category.id,
+            name: category.name
+          });
+        }
+      });
+      console.log('Categories loaded:', categories.value);
+      // 在分类列表加载完成后，自动使用第一个分类的ID请求垃圾类别详情接口
+      if (categories.value.length > 0) {
+        // 设置第一个分类为当前选中分类
+        selectedCategory.value = categories.value[0].id;
+        // 请求第一个分类的垃圾详情
+        await fetchKnowledgeItems(selectedCategory.value);
       }
-    ]);
-
-    // 导航项
-    const navItems = [
-      {
-        name: 'home',
-        route: 'Home',
-        icon: '🏠',
-        label: 'common.home'
-      },
-      {
-        name: 'knowledge',
-        route: 'KnowledgeBase',
-        icon: '📚',
-        label: 'common.knowledgeBase'
-      },
-      {
-        name: 'interaction',
-        route: 'InteractionCenter',
-        icon: '🎮',
-        label: 'common.interactionCenter'
-      },
-      {
-        name: 'education',
-        route: 'Education',
-        icon: '📝',
-        label: 'common.education'
-      },
-      {
-        name: 'profile',
-        route: 'Profile',
-        icon: '👤',
-        label: 'common.profile'
-      }
-    ];
-
-    // 过滤后的知识列表
-    const filteredKnowledgeItems = computed(() => {
-      let filtered = knowledgeItems.value;
-      
-      // 根据分类过滤
-      if (selectedCategory.value !== 'all') {
-        filtered = filtered.filter(item => item.category === selectedCategory.value);
-      }
-      
-      // 根据搜索关键词过滤
-      if (searchQuery.value.trim()) {
-        const query = searchQuery.value.trim().toLowerCase();
-        filtered = filtered.filter(item => 
-          item.name.toLowerCase().includes(query) || 
-          item.description.toLowerCase().includes(query) ||
-          item.type.toLowerCase().includes(query)
-        );
-      }
-      
-      return filtered;
-    });
-
-    // 处理搜索
-    const handleSearch = () => {
-      // 搜索逻辑已在computed中处理
-    };
-
-    // 选择分类
-    const selectCategoryHandler = (categoryId) => {
-      selectedCategory.value = categoryId;
-    };
-
-    // 查看知识详情
-    const viewKnowledgeDetail = (item) => {
-      selectedKnowledgeItem.value = item;
-      // 增加浏览次数
-      item.viewCount++;
-    };
-
-    // 关闭知识详情
-    const closeKnowledgeDetail = () => {
-      selectedKnowledgeItem.value = null;
-    };
-
-    // 导航到指定路由
-    const navigateTo = (routeName) => {
-      if (routeName !== route.name) {
-        router.push({ name: routeName });
-      }
-    };
-
-    // 获取类型样式类
-    const getTypeClass = (type) => {
-      const typeMap = {
-        '可回收物': 'recyclable',
-        '厨余垃圾': 'kitchen',
-        '有害垃圾': 'hazardous',
-        '其他垃圾': 'other'
-      };
-      return typeMap[type] || 'other';
-    };
-
-    // 截断文本
-    const truncateText = (text, length) => {
-      if (text.length <= length) {
-        return text;
-      }
-      return text.substring(0, length) + '...';
-    };
-
-    return {
-      searchQuery,
-      selectedCategory,
-      selectedKnowledgeItem,
-      categories,
-      knowledgeItems,
-      navItems,
-      filteredKnowledgeItems,
-      handleSearch,
-      selectCategoryHandler,
-      viewKnowledgeDetail,
-      closeKnowledgeDetail,
-      navigateTo,
-      getTypeClass,
-      truncateText,
-      route
-    };
+    }
+  } catch (err) {
+    error.value = '获取分类列表失败，请稍后重试';
+    console.error('Failed to fetch categories:', err);
+  } finally {
+    loading.value = false;
   }
 };
+
+// 从API获取知识库数据
+const fetchKnowledgeItems = async (categoryId = 'all', keyword = '') => {
+  try {
+    loading.value = true;
+    error.value = '';
+    
+    // 统一调用接口，传递categoryId参数和keyword参数
+    const response = await wasteApi.knowledge.getCategoryBySlug(categoryId, keyword.trim());
+    // 直接使用response.data，因为后端返回的就是数组
+    filteredKnowledgeItems.value = Array.isArray(response.data) ? response.data : [];
+  
+  } catch (err) {
+    error.value = '获取知识库数据失败，请稍后重试';
+    console.error('Failed to fetch knowledge items:', err);
+    filteredKnowledgeItems.value = [];
+  } finally {
+    loading.value = false;
+  }
+};
+
+// 导航项
+const navItems = [
+  {
+    name: 'home',
+    route: 'Home',
+    icon: '🏠',
+    label: 'common.home'
+  },
+  {
+    name: 'knowledge',
+    route: 'KnowledgeBase',
+    icon: '📚',
+    label: 'common.knowledgeBase'
+  },
+  {
+    name: 'interaction',
+    route: 'InteractionCenter',
+    icon: '🎮',
+    label: 'common.interactionCenter'
+  },
+  {
+    name: 'education',
+    route: 'Education',
+    icon: '📝',
+    label: 'common.education'
+  },
+  {
+    name: 'profile',
+    route: 'Profile',
+    icon: '👤',
+    label: 'common.profile'
+  }
+];
+
+// 处理搜索
+const handleSearch = async (searchValue) => {
+  // 如果Header组件传递了搜索值，则使用该值；否则使用当前的searchQuery.value
+  const keyword = searchValue !== undefined ? searchValue : searchQuery.value;
+  await fetchKnowledgeItems(selectedCategory.value, keyword);
+};
+
+// 选择分类
+const selectCategoryHandler = async (categoryId) => {
+  selectedCategory.value = categoryId;
+  await fetchKnowledgeItems(categoryId, searchQuery.value);
+};
+
+// 查看知识详情
+const viewKnowledgeDetail = async (item) => {
+  try {
+    // 使用API获取完整的垃圾详情
+    const response = await wasteApi.knowledge.getWasteItemById(item.id);
+    selectedKnowledgeItem.value = response.data;
+  } catch (err) {
+    console.error('Failed to fetch waste item details:', err);
+    // 如果API调用失败，使用传入的item数据作为备选
+    selectedKnowledgeItem.value = item;
+  }
+};
+
+// 关闭知识详情
+const closeKnowledgeDetail = () => {
+  selectedKnowledgeItem.value = null;
+  console.log('closeKnowledgeDetail', selectedKnowledgeItem.value);
+};
+
+// 导航到指定路由
+const navigateTo = (routeName) => {
+  if (routeName !== route.name) {
+    router.push({ name: routeName });
+  }
+};
+
+// 获取类型样式类
+const getTypeClass = (type) => {
+  const typeMap = {
+    '可回收物': 'recyclable',
+    '厨余垃圾': 'kitchen',
+    '有害垃圾': 'hazardous',
+    '其他垃圾': 'other'
+  };
+  return typeMap[type] || 'other';
+};
+
+// 截断文本
+const truncateText = (text, length) => {
+  if (!text) return '';
+  if (text.length <= length) {
+    return text;
+  }
+  return text.substring(0, length) + '...';
+};
+
+// 初始化数据
+onMounted(async () => {
+  // 只获取分类数据，不自动加载垃圾信息
+  await fetchCategories();
+});
 </script>
 
 <style scoped>
@@ -338,6 +305,66 @@ export default {
   min-height: 100vh;
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   color: white;
+}
+
+/* 错误消息样式 */
+.error-message {
+  background-color: rgba(244, 67, 54, 0.2);
+  color: white;
+  padding: 12px 20px;
+  margin: 0 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.retry-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retry-btn:hover {
+  background-color: #d32f2f;
+  transform: translateY(-1px);
+}
+
+/* 加载状态样式 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .main-content {
@@ -517,11 +544,23 @@ export default {
   justify-content: center;
   border-radius: 50%;
   transition: all 0.3s ease;
+  z-index: 1001; /* 确保按钮在最上层 */
+  position: relative; /* 为z-index生效 */
+  outline: none; /* 移除默认轮廓 */
 }
 
-.modal-close-btn:hover {
+.modal-close-btn:hover,
+.modal-close-btn:focus {
   background-color: #f5f5f5;
   color: #333;
+}
+
+.modal-close-btn:active {
+  transform: scale(0.95); /* 添加点击效果 */
+}
+
+.modal-close-btn span {
+  pointer-events: none; /* 确保点击span也触发按钮事件 */
 }
 
 .modal-body {

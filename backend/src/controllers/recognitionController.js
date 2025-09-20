@@ -1,6 +1,7 @@
 // 垃圾识别控制器
 const wasteRecognitionService = require('../services/wasteRecognitionService');
 const recognitionRecordModel = require('../models/recognitionRecord');
+const wasteCategoryModel = require('../models/wasteCategory');
 const { deleteFile } = require('../utils/fileUpload');
 const { getLocalizedString } = require('../middlewares/i18n');
 const axios = require('axios');
@@ -267,29 +268,74 @@ class RecognitionController {
   }
 
   /**
-   * 获取单个垃圾类别详情
+   * 获取单个垃圾类别详情或所有类别详情
    * @param {Object} ctx - Koa上下文对象
    */
   async getCategoryDetail(ctx) {
     try {
       const { categoryId } = ctx.params;
       const lang = ctx.query.lang || 'zh';
+      const { keyword } = ctx.query;
+      let wasteItems = [];
+      
+      // 处理搜索关键词
+      const searchLower = keyword && keyword.trim() !== '' ? keyword.toLowerCase().trim() : null;
+      // 处理特殊情况：当categoryId为'all'时，返回所有类别的垃圾项
+      if (categoryId === 'all') {
+        // 获取所有垃圾类别
+        const categories = wasteCategoryModel.getAllCategories();
+        
+        // 遍历所有类别，获取每个类别下的垃圾项并合并
+        for (const categoryKey of Object.keys(categories)) {
+          const categoryItems = wasteRecognitionService.getWasteItemsByCategory(categoryKey, lang);
+          
+          // 如果有关键词，在添加到结果集前先进行过滤，减少内存使用
+          if (searchLower) {
+            const filteredItems = categoryItems.filter(item => {
+              const nameLower = item.name?.toLowerCase() || '';
+              const descriptionLower = item.description?.toLowerCase() || '';
+              return nameLower.includes(searchLower) || descriptionLower.includes(searchLower);
+            });
+            wasteItems = [...wasteItems, ...filteredItems];
+          } else {
+            wasteItems = [...wasteItems, ...categoryItems];
+          }
+        }
+      } else {
+        // 正常情况：获取本地化的垃圾类别
+        const category = wasteCategoryModel.getLocalizedCategory(categoryId, lang);
 
-      // 获取本地化的垃圾类别
-      const category = wasteCategoryModel.getLocalizedCategory(categoryId, lang);
+        if (!category) {
+          ctx.throw(404, getLocalizedString(ctx, 'recognition.categoryNotFound'));
+        }
 
-      if (!category) {
-        ctx.throw(404, getLocalizedString(ctx, 'recognition.categoryNotFound'));
+        // 获取该类别下的所有垃圾项
+        wasteItems = wasteRecognitionService.getWasteItemsByCategory(categoryId, lang);
       }
 
-      // 获取该类别下的所有垃圾项
-      const wasteItems = wasteRecognitionService.getWasteItemsByCategory(categoryId, lang);
+      // 如果有关键词参数，根据关键词过滤结果（对于非'all'情况）
+      if (searchLower && categoryId !== 'all') {
+        wasteItems = wasteItems.filter(item => {
+          const nameLower = item.name?.toLowerCase() || '';
+          const descriptionLower = item.description?.toLowerCase() || '';
+          const suggestionLower = item.suggestion?.toLowerCase() || '';
+          // 扩展搜索范围，包括suggestion字段以提高匹配准确性
+          return nameLower.includes(searchLower) || 
+                 descriptionLower.includes(searchLower) || 
+                 suggestionLower.includes(searchLower);
+        });
+      }
 
-      // 直接返回垃圾列表数组作为data
+      // 返回垃圾列表数组作为data，并添加搜索结果统计信息
       ctx.status = 200;
       ctx.body = {
         success: true,
         data: wasteItems,
+        searchInfo: {
+          keyword: keyword || '',
+          category: categoryId,
+          totalResults: wasteItems.length
+        },
         message: getLocalizedString(ctx, 'recognition.categoryFetched')
       };
     } catch (error) {
