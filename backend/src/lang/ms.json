@@ -1,0 +1,190 @@
+{
+  "success": "Operasi berjaya",
+  "error": "Operasi gagal",
+  "server_error": "Ralat dalaman pelayan",
+  "validation_error": "Pengesahan data gagal",
+  "unauthorized": "Akses tanpa kebenaran",
+  "forbidden": "Kebenaran tidak mencukupi",
+  "not_found": "Sumber tidak dijumpai",
+  "request_too_frequent": "Permintaan terlalu kerap, sila cuba lagi kemudian",
+  
+  "user": {
+    "register_success": "Pendaftaran berjaya",
+    "register_failed": "Pendaftaran gagal",
+    "login_success": "Log masuk berjaya",
+    "login_failed": "Log masuk gagal, nama pengguna atau kata laluan salah",
+    "logout_success": "Log keluar berjaya",
+    "profile_updated": "Profil dikemas kini dengan berjaya",
+    "password_updated": "Kata laluan dikemas kini dengan berjaya",
+    "phone_exist": "Nombor telefon sudah wujud",
+    "user_not_exist": "Pengguna tidak wujud",
+    "invalid_phone": "Nombor telefon tidak sah",
+    "invalid_password": "Format kata laluan tidak sah",
+    "password_too_short": "Panjang kata laluan tidak boleh kurang daripada 8 aksara",
+    "password_too_long": "Panjang kata laluan tidak boleh melebihi 32 aksara",
+    "password_require_uppercase": "Kata laluan mesti mengandungi huruf besar",
+    "password_require_lowercase": "Kata laluan mesti mengandungi huruf kecil",
+    "password_require_number": "Kata laluan mesti mengandungi nombor",
+    "password_require_special": "Kata laluan mesti mengandungi aksara khas",
+    "avatar_uploaded": "Avatar dimuat naik dengan berjaya",
+    "already_favorited": "Sudah ditambahkan ke kegemaran",
+    "favorite_not_found": "Kegemaran tidak wujud",
+    "account_inactive": "Akaun telah dinyahaktifkan"
+  },
+  
+  "recognition": {
+    "success": "Pengenalan berjaya",
+    "failed": "Pengenalan gagal",
+    "no_image": "Sila muat naik imej",
+    "invalid_image": "Fail imej tidak sah",
+    "image_too_large": "Fail imej terlalu besar",
+    "history_empty": "Sejarah pengenalan kosong",
+    "history_loaded": "Sejarah pengenalan dimuatkan dengan berjaya",
+    "image_required": "Sila muat naik imej",
+    "keyword_required": "Kata kunci carian diperlukan",
+    "search_success": "Carian berjaya",
+    "search_error": "Carian gagal",
+    "categories_fetched": "Kategori sisa diambil dengan berjaya",
+    "categories_error": "Gagal mengambil kategori sisa",
+    "category_not_found": "Kategori sisa tidak dijumpai",
+    "category_fetched": "Kategori sisa diambil dengan berjaya",
+    "category_error": "Gagal mengambil kategori sisa",
+    "waste_item_not_found": "Item sisa tidak dijumpai",
+    "waste_item_fetched": "Item sisa diambil dengan berjaya",
+    "waste_item_error": "Gagal mengambil item sisa",
+    "history_fetched": "Sejarah pengenalan diambil dengan berjaya",
+    "history_error": "Gagal mengambil sejarah pengenalan",
+    "record_not_found": "Rekod pengenalan tidak dijumpai",
+    "record_fetched": "Rekod pengenalan diambil dengan berjaya",
+    "record_error": "Gagal mengambil rekod pengenalan",
+    "delete_failed": "Gagal memadam rekod pengenalan",
+    "delete_success": "Rekod pengenalan dipadam dengan berjaya",
+    "delete_error": "Gagal memadam rekod pengenalan",
+    "invalid_record_ids": "ID rekod tidak sah",
+    "batch_delete_success": "Padam kumpulan rekod pengenalan berjaya",
+    "batch_delete_error": "Gagal memadam kumpulan rekod pengenalan",
+    "stats_fetched": "Statistik kategori sisa diambil dengan berjaya",
+    "stats_error": "Gagal mengambil statistik kategori sisa",
+    "admin_records_fetched": "Rekod pentadbir diambil dengan berjaya",
+    "admin_records_error": "Gagal mengambil rekod pentadbir",
+    "admin_delete_success": "Padam pentadbir berjaya",
+    "admin_delete_error": "Gagal memadam rekod pentadbir",
+    "system_stats_fetched": "Statistik pengenalan sistem diambil dengan berjaya",
+    "system_stats_error": "Gagal mengambil statistik pengenalan sistem"
+  },
+  
+  "waste": {
+    "recyclable": "Sisa boleh kitar semula",
+    "kitchen": "Sisa dapur",
+    "harmful": "Sisa berbahaya",
+    "other": "Sisa lain",
+    "categories_loaded": "Kategori sisa dimuatkan dengan berjaya",
+    "items_loaded": "Item sisa dimuatkan dengan berjaya",
+    "item_not_found": "Item sisa tidak dijumpai"
+  },
+  
+  "post": {
+    "created": "Tulisan dibuat dengan berjaya",
+    "updated": "Tulisan dikemas kini dengan berjaya",
+    "deleted": "Tulisan dipadam dengan berjaya",
+    "not_found": "Tulisan tidak dijumpai",
+    "title_required": "Tajuk tidak boleh kosong",
+    "content_required": "Kandungan tidak boleh kosong",
+    "posts_loaded": "Senarai tulisan dimuatkan dengan berjaya",
+    "post_loaded": "Butiran tulisan dimuatkan dengan berjaya",
+    "comment_created": "Komen dibuat dengan berjaya",
+    "comment_deleted": "Komen dipadam dengan berjaya",
+    "comment_not_found": "Komen tidak dijumpai",
+    "liked": "Disuka dengan berjaya",
+    "unliked": "Batal suka dengan berjaya"
+  },
+  
+  "activity": {
+    "created": "Aktiviti dibuat dengan berjaya",
+    "updated": "Aktiviti dikemas kini dengan berjaya",
+    "deleted": "Aktiviti dipadam dengan berjaya",
+    "not_found": "Aktiviti tidak dijumpai",
+    "title_required": "Tajuk aktiviti tidak boleh kosong",
+    "description_required": "Huraian aktiviti tidak boleh kosong",
+    "location_required": "Lokasi aktiviti tidak boleh kosong",
+    "date_required": "Tarikh aktiviti tidak boleh kosong",
+    "time_required": "Masa aktiviti tidak boleh kosong",
+    "max_participants_required": "Jumlah peserta maksimum tidak boleh kosong",
+    "activities_loaded": "Senarai aktiviti dimuatkan dengan berjaya",
+    "activity_loaded": "Butiran aktiviti dimuatkan dengan berjaya",
+    "registered": "Pendaftaran berjaya",
+    "registration_cancelled": "Pendaftaran dibatalkan dengan berjaya",
+    "already_registered": "Anda telah mendaftar untuk aktiviti ini",
+    "registration_closed": "Pendaftaran ditutup",
+    "activity_full": "Aktiviti penuh",
+    "registration_not_found": "Rekod pendaftaran tidak dijumpai"
+  },
+  
+  "question": {
+    "loaded": "Soalan dimuatkan dengan berjaya",
+    "not_found": "Soalan tidak dijumpai",
+    "answered": "Dijawab dengan berjaya",
+    "correct": "Jawapan betul",
+    "incorrect": "Jawapan salah",
+    "history_loaded": "Sejarah jawapan dimuatkan dengan berjaya",
+    "daily_question_loaded": "Soalan harian dimuatkan dengan berjaya"
+  },
+  
+  "pagination": {
+    "page_invalid": "Nombor halaman tidak sah",
+    "limit_invalid": "Saiz halaman tidak sah"
+  },
+  
+  "database": {
+    "connection_failed": "Penyambungan pangkalan data gagal",
+    "query_failed": "Permintaan pangkalan data gagal",
+    "transaction_failed": "Eksekusi transaksi gagal",
+    "connection_success": "Penyambungan pangkalan data berjaya"
+  },
+  
+  "api": {
+    "welcome": "API Backend Sistem Pengelasan Sisa Pintar",
+    "version": "Versi semasa: 1.0.0",
+    "status": "Perkhidmatan berjalan dengan normal"
+  },
+  
+  "external_api": {
+    "unavailable": "Perkhidmatan pengenalan luaran sementara tidak tersedia, sila cuba lagi kemudian",
+    "invalid_response": "API luaran mengembalikan format hasil tidak sah",
+    "recognition_failed": "Pengenalan API luaran gagal",
+    "upload_failed": "Muatan naik imej berjaya tetapi URL tidak dikembalikan"
+  },
+  
+  "upload": {
+    "unsupported_type": "Jenis fail tidak disokong. Sila muat naik imej JPEG, PNG, GIF atau WebP.",
+    "size_exceeded": "Saiz fail melebihi had. Sila muat naik imej yang lebih kecil daripada 5MB.",
+    "no_file": "Tiada fail dimuat naik",
+    "max_files": "Jumlah maksimum fail telah melebihi",
+    "directory_creation_failed": "Gagal membuat direktori muat naik fail"
+  },
+  
+  "security": {
+    "invalid_token": "Sila berikan token pengesahan yang sah",
+    "expired_token": "Pengesahan telah tamat tempoh, sila log masuk sekali lagi",
+    "bad_token": "Token pengesahan tidak sah",
+    "auth_failed": "Pengesahan gagal",
+    "not_authorized": "Anda perlu mengesahkan dahulu",
+    "insufficient_permissions": "Kebenaran tidak mencukupi untuk mengakses sumber ini"
+  },
+  
+  "countries": {
+    "china": "China",
+    "united_states": "Amerika Syarikat",
+    "united_kingdom": "United Kingdom",
+    "japan": "Jepun",
+    "south_korea": "Korea Selatan",
+    "singapore": "Singapura",
+    "australia": "Australia",
+    "germany": "Jerman",
+    "france": "Perancis",
+    "hong_kong": "Hong Kong",
+    "macau": "Macau",
+    "taiwan": "Taiwan",
+    "unknown": "Tidak diketahui"
+  }
+}

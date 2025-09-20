@@ -112,5 +112,110 @@
     "welcome": "智能垃圾分类系统后端API",
     "version": "当前版本: 1.0.0",
     "status": "服务运行正常"
+  },
+  
+  "external_api": {
+    "unavailable": "外部识别服务暂时不可用，请稍后再试",
+    "invalid_response": "外部API返回无效结果格式",
+    "recognition_failed": "外部API识别失败",
+    "upload_failed": "图片上传成功但未返回URL"
+  },
+  
+  "upload": {
+    "unsupported_type": "不支持的文件类型。请上传JPEG、PNG、GIF或WebP格式的图片。",
+    "size_exceeded": "文件大小超过限制。请上传小于5MB的图片。",
+    "no_file": "没有上传文件",
+    "max_files": "文件数量超过限制",
+    "directory_creation_failed": "无法创建文件上传目录"
+  },
+  
+  "security": {
+    "invalid_token": "请提供有效的身份认证Token",
+    "expired_token": "身份认证已过期，请重新登录",
+    "bad_token": "无效的身份认证Token",
+    "auth_failed": "身份认证失败",
+    "not_authorized": "需要先进行身份认证",
+    "insufficient_permissions": "权限不足，无法访问此资源"
+  },
+  
+  "recognition": {
+    "success": "识别成功",
+    "failed": "识别失败",
+    "no_image": "请上传图片",
+    "invalid_image": "无效的图片文件",
+    "image_too_large": "图片文件过大",
+    "history_empty": "识别历史为空",
+    "history_loaded": "识别历史加载成功",
+    "image_required": "请上传图片",
+    "keyword_required": "搜索关键词不能为空",
+    "search_success": "搜索成功",
+    "search_error": "搜索失败",
+    "categories_fetched": "垃圾类别获取成功",
+    "categories_error": "获取垃圾类别失败",
+    "category_not_found": "未找到垃圾类别",
+    "category_fetched": "垃圾类别获取成功",
+    "category_error": "获取垃圾类别详情失败",
+    "waste_item_not_found": "未找到垃圾物品",
+    "waste_item_fetched": "垃圾物品获取成功",
+    "waste_item_error": "获取垃圾详情失败",
+    "history_fetched": "识别历史获取成功",
+    "history_error": "获取用户识别历史失败",
+    "record_not_found": "未找到识别记录",
+    "record_fetched": "识别记录获取成功",
+    "record_error": "获取识别记录详情失败",
+    "delete_failed": "删除识别记录失败",
+    "delete_success": "识别记录删除成功",
+    "delete_error": "删除识别记录失败",
+    "invalid_record_ids": "无效的记录ID",
+    "batch_delete_success": "批量删除识别记录成功",
+    "batch_delete_error": "批量删除识别记录失败",
+    "stats_fetched": "用户垃圾类别统计获取成功",
+    "stats_error": "获取用户垃圾类别统计失败",
+    "admin_records_fetched": "管理员记录获取成功",
+    "admin_records_error": "获取管理员记录失败",
+    "admin_delete_success": "管理员删除成功",
+    "admin_delete_error": "删除管理员记录失败",
+    "system_stats_fetched": "系统识别统计获取成功",
+    "system_stats_error": "获取系统识别统计失败"
+  },
+  
+  "user": {
+    "register_success": "注册成功",
+    "register_failed": "注册失败",
+    "login_success": "登录成功",
+    "login_failed": "登录失败，用户名或密码错误",
+    "logout_success": "登出成功",
+    "profile_updated": "个人资料更新成功",
+    "password_updated": "密码更新成功",
+    "phone_exist": "手机号已存在",
+    "user_not_exist": "用户不存在",
+    "invalid_phone": "无效的手机号",
+    "invalid_password": "密码格式不正确",
+    "password_too_short": "密码长度不能少于8位",
+    "password_too_long": "密码长度不能超过32位",
+    "password_require_uppercase": "密码必须包含大写字母",
+    "password_require_lowercase": "密码必须包含小写字母",
+    "password_require_number": "密码必须包含数字",
+    "password_require_special": "密码必须包含特殊字符",
+    "avatar_uploaded": "头像上传成功",
+    "already_favorited": "已添加到收藏",
+    "favorite_not_found": "收藏不存在",
+    "account_inactive": "账户已被停用"
+  },
+  
+  "countries": {
+    "china": "中国",
+    "united_states": "美国",
+    "united_kingdom": "英国",
+    "japan": "日本",
+    "south_korea": "韩国",
+    "singapore": "新加坡",
+    "australia": "澳大利亚",
+    "germany": "德国",
+    "france": "法国",
+    "hong_kong": "香港",
+    "macau": "澳门",
+    "taiwan": "台湾",
+    "unknown": "未知"
   }
 }

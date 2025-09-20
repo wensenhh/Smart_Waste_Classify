@@ -4,6 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 const sharp = require('sharp');
 const { uploadDir, maxFileSize } = require('../config/fileUpload');
+const { getLocalizedString } = require('../middlewares/i18n'); // 导入国际化函数
 
 /**
  * 确保上传目录存在
@@ -15,7 +16,7 @@ async function ensureUploadDir() {
   } catch (error) {
     if (error.code !== 'EEXIST') {
       console.error('创建上传目录失败:', error);
-      throw new Error('无法创建文件上传目录');
+      throw new Error(getLocalizedString('zh', 'upload.directory_creation_failed'));
     }
   }
 }
@@ -132,13 +133,13 @@ async function uploadFile(fileBuffer, originalName, options = {}) {
 
     // 验证文件类型
     if (!validateFileType(originalName)) {
-      throw new Error('不支持的文件类型，仅支持JPG、PNG、GIF、WebP格式');
+      throw new Error(getLocalizedString('zh', 'upload.unsupported_type'));
     }
 
     // 验证文件大小
     if (!validateFileSize(fileBuffer)) {
       const maxSizeMB = maxFileSize / (1024 * 1024);
-      throw new Error(`文件大小超过限制，最大支持${maxSizeMB}MB`);
+      throw new Error(getLocalizedString('zh', 'upload.size_exceeded') + `，最大支持${maxSizeMB}MB`);
     }
 
     // 确定目标目录

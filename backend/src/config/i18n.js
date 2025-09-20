@@ -5,10 +5,10 @@ dotenv.config();
 
 const i18nConfig = {
   // 支持的语言
-  locales: ['zh', 'en'],
+  locales: process.env.SUPPORTED_LANGUAGES ? process.env.SUPPORTED_LANGUAGES.split(',') : ['zh', 'en', 'ms'],
   
   // 默认语言
-  defaultLocale: process.env.DEFAULT_LOCALE || 'zh',
+  defaultLocale: process.env.DEFAULT_LANGUAGE || 'zh',
   
   // 语言文件目录
   directory: process.env.I18N_DIRECTORY || '../lang',

@@ -2,19 +2,20 @@
 const multer = require('@koa/multer');
 const path = require('path');
 const fs = require('fs'); // 提前加载fs模块
+const { getLocalizedString } = require('./i18n'); // 导入国际化函数
 
 // 文件验证函数
-function validateFile(file) {
+function validateFile(file, locale = 'zh') {
   // 检查文件类型
   const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
   if (!allowedTypes.includes(file.mimetype)) {
-    throw new Error('不支持的文件类型。请上传JPEG、PNG、GIF或WebP格式的图片。');
+    throw new Error(getLocalizedString(locale, 'upload.unsupported_type'));
   }
 
   // 检查文件大小（5MB）
   const maxSize = 5 * 1024 * 1024;
   if (file.size > maxSize) {
-    throw new Error('文件大小超过限制。请上传小于5MB的图片。');
+    throw new Error(getLocalizedString(locale, 'upload.size_exceeded'));
   }
 
   return true;
@@ -27,14 +28,16 @@ const storage = multer.memoryStorage();
 const fileFilter = (req, file, cb) => {
   try {
     console.log('文件过滤中:', { filename: file.originalname, mimetype: file.mimetype, size: file.size });
-    validateFile(file);
+    // 从请求中获取语言设置，如果没有则使用默认值
+    const locale = req.headers['accept-language']?.startsWith('en') ? 'en' : 'zh';
+    validateFile(file, locale);
     console.log('文件验证通过:', file.originalname);
     cb(null, true);
   } catch (error) {
     console.error('文件验证失败:', { filename: file.originalname, error: error.message });
     cb(new Error(error.message), false);
   }
-};
+}
 
 // 创建multer实例
 const upload = multer({
@@ -77,35 +80,35 @@ const uploadErrorHandler = async (ctx, next) => {
         ctx.status = 413;
         ctx.body = {
           code: 413,
-          message: '文件大小超过限制。请上传小于20MB的图片。'
+          message: getLocalizedString(ctx.locale, 'upload.size_exceeded')
         };
       } else if (err.code === 'LIMIT_FILE_COUNT') {
         ctx.status = 400;
         ctx.body = {
           code: 400,
-          message: '文件数量超过限制。'
+          message: getLocalizedString(ctx.locale, 'upload.max_files')
         };
       } else {
         ctx.status = 400;
         ctx.body = {
           code: 400,
-          message: '文件上传错误: ' + err.message
+          message: err.message || getLocalizedString(ctx.locale, 'upload.size_exceeded')
         };
       }
     } else if (err) {
       ctx.status = 400;
       ctx.body = {
         code: 400,
-        message: err.message || '文件上传失败'
+        message: err.message || getLocalizedString(ctx.locale, 'upload.size_exceeded')
       };
     }
   }
-};
+}
 
 // 验证已上传的文件
-function validateUploadedFile(file) {
+function validateUploadedFile(file, locale = 'zh') {
   try {
-    validateFile(file);
+    validateFile(file, locale);
     return { valid: true };
   } catch (error) {
     return { valid: false, error: error.message };
@@ -113,15 +116,15 @@ function validateUploadedFile(file) {
 }
 
 // 验证多个已上传的文件
-function validateUploadedFiles(files) {
+function validateUploadedFiles(files, locale = 'zh') {
   const results = [];
   
   if (!files || files.length === 0) {
-    return { valid: false, error: '没有上传文件' };
+    return { valid: false, error: getLocalizedString(locale, 'upload.no_file') };
   }
   
   for (const file of files) {
-    const result = validateUploadedFile(file);
+    const result = validateUploadedFile(file, locale);
     results.push({
       filename: file.originalname,
       ...result

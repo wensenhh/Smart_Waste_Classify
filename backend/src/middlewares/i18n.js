@@ -238,7 +238,7 @@ const exportTranslations = async (lang) => {
  */
 const getLocalizedString = (ctx, key, replacements = {}) => {
   // 从上下文获取语言
-  const lang = ctx.lang || i18nConfig.defaultLanguage;
+  const lang = ctx.lang || i18nConfig.defaultLocale;
   return translate(key, lang, replacements);
 };
 

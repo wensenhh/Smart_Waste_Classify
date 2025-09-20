@@ -3,6 +3,8 @@
  * 用于获取用户IP地址和基于IP的国家信息
  */
 
+const { getLocalizedString } = require('../middlewares/i18n'); // 导入国际化函数
+
 /**
  * 从请求头中提取用户IP地址
  * @param {Object} ctx - Koa上下文对象
@@ -31,16 +33,17 @@ const getUserIP = (ctx) => {
  * 注意：实际项目中，这里应该调用IP地理位置API来获取准确的国家信息
  * 由于是示例实现，这里提供一个简化版本
  * @param {string} ip - IP地址
+ * @param {string} locale - 语言环境
  * @returns {string} 国家名称
  */
-const getCountryByIP = async (ip) => {
+const getCountryByIP = async (ip, locale = 'zh') => {
   try {
     // 这里应该是调用IP地理位置API的逻辑
     // 由于是演示，我们返回一个默认值
     
     // 对于本地IP，返回"China"
     if (ip === '127.0.0.1' || ip.startsWith('192.168.') || ip.startsWith('10.')) {
-      return 'China';
+      return getLocalizedString(locale, 'countries.china');
     }
     
     // TODO: 实际项目中，这里应该调用第三方IP地理位置服务API
@@ -50,36 +53,38 @@ const getCountryByIP = async (ip) => {
     // return data.country_name;
     
     // 暂时返回默认值
-    return 'Unknown';
+    return getLocalizedString(locale, 'countries.unknown');
   } catch (error) {
     console.error('获取IP地理位置信息失败:', error);
-    return 'Unknown';
+    return getLocalizedString(locale, 'countries.unknown');
   }
 };
 
 /**
  * 基于区号获取国家信息
  * @param {string} phoneCode - 手机号区号（如：+86）
+ * @param {string} locale - 语言环境
  * @returns {string} 国家名称
  */
-const getCountryByPhoneCode = (phoneCode) => {
-  // 简化的区号到国家映射
-  const countryMap = {
-    '+1': 'United States',
-    '+86': 'China',
-    '+44': 'United Kingdom',
-    '+81': 'Japan',
-    '+82': 'South Korea',
-    '+65': 'Singapore',
-    '+61': 'Australia',
-    '+49': 'Germany',
-    '+33': 'France',
-    '+852': 'Hong Kong',
-    '+853': 'Macau',
-    '+886': 'Taiwan'
+const getCountryByPhoneCode = (phoneCode, locale = 'zh') => {
+  // 简化的区号到国家键映射
+  const countryKeyMap = {
+    '+1': 'countries.united_states',
+    '+86': 'countries.china',
+    '+44': 'countries.united_kingdom',
+    '+81': 'countries.japan',
+    '+82': 'countries.south_korea',
+    '+65': 'countries.singapore',
+    '+61': 'countries.australia',
+    '+49': 'countries.germany',
+    '+33': 'countries.france',
+    '+852': 'countries.hong_kong',
+    '+853': 'countries.macau',
+    '+886': 'countries.taiwan'
   };
   
-  return countryMap[phoneCode] || 'Unknown';
+  const countryKey = countryKeyMap[phoneCode];
+  return countryKey ? getLocalizedString(locale, countryKey) : getLocalizedString(locale, 'countries.unknown');
 };
 
 module.exports = {

@@ -112,5 +112,110 @@
     "welcome": "Smart Waste Classification System Backend API",
     "version": "Current version: 1.0.0",
     "status": "Service running normally"
+  },
+  
+  "external_api": {
+    "unavailable": "External recognition service is temporarily unavailable, please try again later",
+    "invalid_response": "External API returned invalid result format",
+    "recognition_failed": "External API recognition failed",
+    "upload_failed": "Image upload successful but URL not returned"
+  },
+  
+  "upload": {
+    "unsupported_type": "Unsupported file type. Please upload JPEG, PNG, GIF or WebP images.",
+    "size_exceeded": "File size exceeded limit. Please upload images smaller than 5MB.",
+    "no_file": "No files uploaded",
+    "max_files": "Maximum number of files exceeded",
+    "directory_creation_failed": "Failed to create file upload directory"
+  },
+  
+  "security": {
+    "invalid_token": "Please provide a valid authentication token",
+    "expired_token": "Authentication has expired, please log in again",
+    "bad_token": "Invalid authentication token",
+    "auth_failed": "Authentication failed",
+    "not_authorized": "You need to authenticate first",
+    "insufficient_permissions": "Insufficient permissions to access this resource"
+  },
+  
+  "recognition": {
+    "success": "Recognition successful",
+    "failed": "Recognition failed",
+    "no_image": "Please upload an image",
+    "invalid_image": "Invalid image file",
+    "image_too_large": "Image file too large",
+    "history_empty": "Recognition history is empty",
+    "history_loaded": "Recognition history loaded successfully",
+    "image_required": "Please upload an image",
+    "keyword_required": "Search keyword is required",
+    "search_success": "Search successful",
+    "search_error": "Search failed",
+    "categories_fetched": "Waste categories fetched successfully",
+    "categories_error": "Failed to fetch waste categories",
+    "category_not_found": "Waste category not found",
+    "category_fetched": "Waste category fetched successfully",
+    "category_error": "Failed to fetch waste category",
+    "waste_item_not_found": "Waste item not found",
+    "waste_item_fetched": "Waste item fetched successfully",
+    "waste_item_error": "Failed to fetch waste item",
+    "history_fetched": "Recognition history fetched successfully",
+    "history_error": "Failed to fetch recognition history",
+    "record_not_found": "Recognition record not found",
+    "record_fetched": "Recognition record fetched successfully",
+    "record_error": "Failed to fetch recognition record",
+    "delete_failed": "Failed to delete recognition record",
+    "delete_success": "Recognition record deleted successfully",
+    "delete_error": "Failed to delete recognition record",
+    "invalid_record_ids": "Invalid record IDs",
+    "batch_delete_success": "Batch deletion of recognition records successful",
+    "batch_delete_error": "Failed to batch delete recognition records",
+    "stats_fetched": "Waste category statistics fetched successfully",
+    "stats_error": "Failed to fetch waste category statistics",
+    "admin_records_fetched": "Admin records fetched successfully",
+    "admin_records_error": "Failed to fetch admin records",
+    "admin_delete_success": "Admin deletion successful",
+    "admin_delete_error": "Failed to delete admin records",
+    "system_stats_fetched": "System recognition statistics fetched successfully",
+    "system_stats_error": "Failed to fetch system recognition statistics"
+  },
+  
+  "user": {
+    "register_success": "Registration successful",
+    "register_failed": "Registration failed",
+    "login_success": "Login successful",
+    "login_failed": "Login failed, username or password is incorrect",
+    "logout_success": "Logout successful",
+    "profile_updated": "Profile updated successfully",
+    "password_updated": "Password updated successfully",
+    "phone_exist": "Phone number already exists",
+    "user_not_exist": "User does not exist",
+    "invalid_phone": "Invalid phone number",
+    "invalid_password": "Invalid password format",
+    "password_too_short": "Password cannot be less than 8 characters",
+    "password_too_long": "Password cannot be more than 32 characters",
+    "password_require_uppercase": "Password must contain uppercase letters",
+    "password_require_lowercase": "Password must contain lowercase letters",
+    "password_require_number": "Password must contain numbers",
+    "password_require_special": "Password must contain special characters",
+    "avatar_uploaded": "Avatar uploaded successfully",
+    "already_favorited": "Already added to favorites",
+    "favorite_not_found": "Favorite does not exist",
+    "account_inactive": "Account has been deactivated"
+  },
+  
+  "countries": {
+    "china": "China",
+    "united_states": "United States",
+    "united_kingdom": "United Kingdom",
+    "japan": "Japan",
+    "south_korea": "South Korea",
+    "singapore": "Singapore",
+    "australia": "Australia",
+    "germany": "Germany",
+    "france": "France",
+    "hong_kong": "Hong Kong",
+    "macau": "Macau",
+    "taiwan": "Taiwan",
+    "unknown": "Unknown"
   }
 }
