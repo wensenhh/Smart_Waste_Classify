@@ -445,7 +445,7 @@ const logout = () => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  background: linear-gradient(135deg, #64408b 0%, #1b5bc9 100%);
   color: white;
 }
 
