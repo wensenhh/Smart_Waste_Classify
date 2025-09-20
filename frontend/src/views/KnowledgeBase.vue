@@ -64,10 +64,21 @@
         </div>
 
         <!-- 空状态 -->
-        <div v-if="filteredKnowledgeItems.length === 0" class="empty-state">
+        <div v-if="filteredKnowledgeItems.length === 0 && !loading" class="empty-state">
           <div class="empty-icon">📚</div>
           <div class="empty-text">暂无相关知识</div>
           <div class="empty-hint">请尝试其他搜索关键词或分类</div>
+        </div>
+        
+        <!-- 加载更多 -->
+        <div v-if="loadingMore" class="loading-more">
+          <div class="loading-spinner small"></div>
+          <span class="loading-more-text">加载更多...</span>
+        </div>
+        
+        <!-- 没有更多数据 -->
+        <div v-if="!hasMoreData && filteredKnowledgeItems.length > 0" class="no-more-data">
+          没有更多数据了
         </div>
       </section>
     </main>
@@ -112,7 +123,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import NavBar from '../components/NavBar.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
@@ -125,12 +136,13 @@ const searchQuery = ref('');
 const selectedCategory = ref('all');
 const selectedKnowledgeItem = ref(null);
 const loading = ref(false);
+const loadingMore = ref(false);
 const error = ref('');
 
 // 重试操作
 const handleRetry = async () => {
   await fetchCategories();
-  await fetchKnowledgeItems(selectedCategory.value, searchQuery.value);
+  await fetchKnowledgeItems(selectedCategory.value, searchQuery.value, true);
 };
 
 // 分类列表
@@ -138,9 +150,14 @@ const categories = ref([
   { id: 'all', name: '全部' }
 ]);
 
+// 分页相关状态
+const currentPage = ref(1);
+const pageSize = ref(10);
+const hasMoreData = ref(true);
+
 // 知识库数据
-const knowledgeItems = ref([]);
-const filteredKnowledgeItems = ref([]);
+const allKnowledgeItems = ref([]); // 存储所有加载的数据
+const filteredKnowledgeItems = ref([]); // 当前显示的数据
 
 // 从API获取分类列表
 const fetchCategories = async () => {
@@ -178,23 +195,85 @@ const fetchCategories = async () => {
   }
 };
 
-// 从API获取知识库数据
-const fetchKnowledgeItems = async (categoryId = 'all', keyword = '') => {
+// 从API获取知识库数据并处理分页
+const fetchKnowledgeItems = async (categoryId = 'all', keyword = '', resetData = false) => {
   try {
-    loading.value = true;
+    // 如果是重置数据，初始化分页状态
+    if (resetData) {
+      allKnowledgeItems.value = [];
+      currentPage.value = 1;
+      hasMoreData.value = true;
+      filteredKnowledgeItems.value = [];
+    }
+
+    // 如果已经没有更多数据或正在加载中，则不再请求
+    if (!hasMoreData.value || (resetData ? loading.value : loadingMore.value)) {
+      return;
+    }
+
+    // 设置加载状态
+    resetData ? (loading.value = true) : (loadingMore.value = true);
     error.value = '';
     
     // 统一调用接口，传递categoryId参数和keyword参数
     const response = await wasteApi.knowledge.getCategoryBySlug(categoryId, keyword.trim());
-    // 直接使用response.data，因为后端返回的就是数组
-    filteredKnowledgeItems.value = Array.isArray(response.data) ? response.data : [];
+    const allItems = Array.isArray(response.data) ? response.data : [];
+
+    // 计算当前页应该显示的数据
+    if (resetData) {
+      allKnowledgeItems.value = allItems;
+    }
+
+    // 根据当前页和每页数量计算要显示的数据
+    const startIndex = (currentPage.value - 1) * pageSize.value;
+    const endIndex = startIndex + pageSize.value;
+    const currentPageItems = allItems.slice(startIndex, endIndex);
+
+    // 更新显示的数据
+    if (resetData) {
+      filteredKnowledgeItems.value = currentPageItems;
+    } else {
+      // 上拉加载时，将新数据追加到现有数据后面
+      filteredKnowledgeItems.value = [...filteredKnowledgeItems.value, ...currentPageItems];
+    }
+
+    // 检查是否还有更多数据
+    hasMoreData.value = endIndex < allItems.length;
   
   } catch (err) {
     error.value = '获取知识库数据失败，请稍后重试';
     console.error('Failed to fetch knowledge items:', err);
-    filteredKnowledgeItems.value = [];
+    if (resetData) {
+      filteredKnowledgeItems.value = [];
+    }
   } finally {
-    loading.value = false;
+    // 重置加载状态
+    resetData ? (loading.value = false) : (loadingMore.value = false);
+  }
+};
+
+// 加载更多数据
+const loadMoreData = async () => {
+  if (!loadingMore.value && hasMoreData.value) {
+    currentPage.value++;
+    await fetchKnowledgeItems(selectedCategory.value, searchQuery.value, false);
+  }
+};
+
+// 滚动事件处理函数
+const handleScroll = () => {
+  // 如果没有更多数据或正在加载中，则不执行
+  if (!hasMoreData.value || loadingMore.value) {
+    return;
+  }
+  
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+  const clientHeight = document.documentElement.clientHeight || window.innerHeight;
+  
+  // 当滚动到距离底部50px时，加载更多数据
+  if (scrollTop + clientHeight >= scrollHeight - 50) {
+    loadMoreData();
   }
 };
 
@@ -236,13 +315,14 @@ const navItems = [
 const handleSearch = async (searchValue) => {
   // 如果Header组件传递了搜索值，则使用该值；否则使用当前的searchQuery.value
   const keyword = searchValue !== undefined ? searchValue : searchQuery.value;
-  await fetchKnowledgeItems(selectedCategory.value, keyword);
+  searchQuery.value = keyword;
+  await fetchKnowledgeItems(selectedCategory.value, keyword, true);
 };
 
 // 选择分类
 const selectCategoryHandler = async (categoryId) => {
   selectedCategory.value = categoryId;
-  await fetchKnowledgeItems(categoryId, searchQuery.value);
+  await fetchKnowledgeItems(categoryId, searchQuery.value, true);
 };
 
 // 查看知识详情
@@ -295,6 +375,14 @@ const truncateText = (text, length) => {
 onMounted(async () => {
   // 只获取分类数据，不自动加载垃圾信息
   await fetchCategories();
+  
+  // 添加滚动事件监听器
+  window.addEventListener('scroll', handleScroll);
+});
+
+// 组件卸载时移除事件监听器
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
@@ -355,6 +443,36 @@ onMounted(async () => {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
+}
+
+.loading-spinner.small {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+
+/* 加载更多样式 */
+.loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.loading-more-text {
+  margin-left: 10px;
+}
+
+/* 没有更多数据样式 */
+.no-more-data {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
 }
 
 @keyframes spin {
