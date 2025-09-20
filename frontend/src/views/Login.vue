@@ -705,6 +705,19 @@ const resetPassword = async () => {
   cursor: not-allowed;
 }
 
+/* 隐藏密码框自带的眼睛图标 */
+input[type="password"]::-webkit-toggle-password { /* Chrome */
+  -webkit-appearance: none !important;
+  display: none !important;
+}
+input[type="password"]::-moz-ui-password { /* Firefox */
+  -moz-appearance: none !important;
+  display: none !important;
+}
+input[type="password"]::-ms-reveal { /* Edge */
+  display: none !important;
+}
+
 /* 响应式设计 */
 @media (max-width: 480px) {
   .login-card {
