@@ -48,8 +48,21 @@ $shadow-sm: 0 2px 4px $shadow-color;
 $shadow-md: 0 4px 8px $shadow-color;
 $shadow-lg: 0 8px 16px $shadow-color;
 
+// 引入自定义字体
+@font-face {
+  font-family: 'AlibabaPuHuiTi';
+  src: url('/font/AlibabaPuHuiTi-3-115-Black.eot');
+  src: url('/font/AlibabaPuHuiTi-3-115-Black.eot?#iefix') format('embedded-opentype'),
+       url('/font/AlibabaPuHuiTi-3-115-Black.woff2') format('woff2'),
+       url('/font/AlibabaPuHuiTi-3-115-Black.woff') format('woff'),
+       url('/font/AlibabaPuHuiTi-3-115-Black.ttf') format('truetype'),
+       url('/font/AlibabaPuHuiTi-3-115-Black.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 // 字体
-$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+$font-family: 'AlibabaPuHuiTi', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
   'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 $font-size-xs: 12px;
 $font-size-sm: 14px;
