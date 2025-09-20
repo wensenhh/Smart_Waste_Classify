@@ -1,5 +1,4 @@
 // 错误处理中间件
-const logger = require('../utils/logger');
 const { getLocalizedString } = require('./i18n');
 
 const errorHandler = async (ctx, next) => {  try {

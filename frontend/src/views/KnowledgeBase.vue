@@ -51,15 +51,15 @@
               class="item-type-badge"
               :class="getTypeClass(item.type || item.category?.name)"
             >
-              {{ item.type || item.category?.name }}
+              {{ item.subCategory || item.category?.name }}
             </div>
           </div>
           <div class="item-content">
             {{ truncateText(item.description, 80) }}
           </div>
           <div class="item-footer">
-            <span class="item-source">{{ $t('knowledge.source') }}{{ item.source || $t('knowledge.systemData') }}</span>
-          <span class="item-view-count">{{ item.viewCount || 0 }} {{ $t('common.views') }}</span>
+            <span class="item-source">{{ $t('recognition.suggestion') }}：{{ item.suggestion || $t('knowledge.systemData') }}</span>
+          <!-- <span class="item-view-count">{{ item.viewCount || 0 }} {{ $t('common.views') }}</span> -->
           </div>
         </div>
 
@@ -99,7 +99,7 @@
             class="detail-type-badge"
             :class="getTypeClass(selectedKnowledgeItem.type || selectedKnowledgeItem.category?.name)"
           >
-            {{ selectedKnowledgeItem.type || selectedKnowledgeItem.category?.name }}
+            {{ selectedKnowledgeItem.subCategory || selectedKnowledgeItem.category?.name }}
           </div>
           <div class="detail-description">
             {{ selectedKnowledgeItem.description }}
@@ -759,7 +759,7 @@ onUnmounted(() => {
 
 .item-type-badge.other,
 .detail-type-badge.other {
-  background-color: #9E9E9E;
+  background-color: #61b852;
   color: white;
 }
 </style>

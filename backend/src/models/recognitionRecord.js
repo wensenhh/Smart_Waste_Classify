@@ -1,6 +1,7 @@
 // 垃圾识别记录模型
 const db = require('../utils/db');
 const crypto = require('crypto'); // 使用Node.js内置模块生成UUID
+const { getLocalizedString } = require('../middlewares/i18n'); // 导入本地化函数
 
 /**
  * 垃圾识别记录模型
@@ -76,9 +77,10 @@ class RecognitionRecord {
           recognition_type,
           city,
           waste_type,
-          related_knowledge
+          related_knowledge,
+          category
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       // 再次检查关键参数，确保它们不为undefined
@@ -99,7 +101,8 @@ class RecognitionRecord {
         'image_recognition', // 默认识别类型
         'unknown', // 默认城市
         wasteType, // 垃圾类型
-        relatedKnowledge // 相关知识（富文本）
+        relatedKnowledge, // 相关知识（富文本）
+        category // 垃圾类别
       ];
 
       const result = await db.query(query, params);
@@ -188,13 +191,13 @@ class RecognitionRecord {
         id: record.id,
         userId: record.user_id,
         imageUrl: record.image_url,
-        name: record.waste_name || getLocalizedString({ lang: 'zh' }, 'recognition.unknown_waste'), // 垃圾名称（优先使用直接存储的，否则从关联表获取）
+        name: record.waste_name || '未知垃圾', // 直接使用中文默认值
         confidence: record.confidence || 0, // 识别置信度
         timestamp: record.recognized_at ? new Date(record.recognized_at).toISOString() : null, // 格式化识别时间为ISO 8601
-        category: record.category_name || getLocalizedString({ lang: 'zh' }, 'common.unknown'), // 垃圾类别名称
+        category: record.category_name || '未知', // 直接使用中文默认值
         categoryId: record.category_id, // 垃圾类别ID
         // 保留向后兼容的字段名
-        wasteType: record.waste_name || getLocalizedString({ lang: 'zh' }, 'recognition.unknown_waste'),
+        wasteType: record.waste_name || '未知垃圾',
         recognizedAt: record.recognized_at ? new Date(record.recognized_at).toISOString() : null // 格式化识别时间为ISO 8601
       }));
     } catch (error) {

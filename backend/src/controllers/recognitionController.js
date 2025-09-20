@@ -1,7 +1,8 @@
 // 垃圾识别控制器
 const wasteRecognitionService = require('../services/wasteRecognitionService');
 const recognitionRecordModel = require('../models/recognitionRecord');
-const wasteCategoryModel = require('../models/wasteCategory');
+const wasteCategoryDatabaseModel = require('../models/wasteCategoryDatabaseModel');
+const wasteItemDatabaseModel = require('../models/wasteItemDatabaseModel');
 const { deleteFile } = require('../utils/fileUpload');
 const { getLocalizedString } = require('../middlewares/i18n');
 const axios = require('axios');
@@ -258,8 +259,8 @@ class RecognitionController {
     try {
       const lang = ctx.query.lang || 'zh';
       
-      // 获取本地化的垃圾类别
-      const categories = wasteCategoryModel.getLocalizedCategories(lang);
+      // 从数据库获取本地化的垃圾类别
+      const categories = await wasteCategoryDatabaseModel.getLocalizedCategories(lang);
 
       // 返回垃圾类别列表
       ctx.status = 200;
@@ -282,58 +283,85 @@ class RecognitionController {
     try {
       const { categoryId } = ctx.params;
       const lang = ctx.query.lang || 'zh';
-      const { keyword } = ctx.query;
+      const { keyword, page = 1, pageSize = 20 } = ctx.query;
       let wasteItems = [];
+      let totalResults = 0;
       
       // 处理搜索关键词
       const searchLower = keyword && keyword.trim() !== '' ? keyword.toLowerCase().trim() : null;
+      // 处理分页参数
+      const pageNum = parseInt(page) || 1;
+      const pageSizeNum = parseInt(pageSize) || 20;
+      const offset = (pageNum - 1) * pageSizeNum;
+      
       // 处理特殊情况：当categoryId为'all'时，返回所有类别的垃圾项
       if (categoryId === 'all') {
-        // 获取所有垃圾类别
-        const categories = wasteCategoryModel.getAllCategories();
-        
-        // 遍历所有类别，获取每个类别下的垃圾项并合并
-        for (const categoryKey of Object.keys(categories)) {
-          const categoryItems = wasteRecognitionService.getWasteItemsByCategory(categoryKey, lang);
+        if (searchLower) {
+          // 如果有关键词，使用数据库搜索功能
+          const searchResults = await wasteItemDatabaseModel.searchWasteItems(keyword, lang);
+          totalResults = searchResults.length;
           
-          // 如果有关键词，在添加到结果集前先进行过滤，减少内存使用
-          if (searchLower) {
-            const filteredItems = categoryItems.filter(item => {
-              const nameLower = item.name?.toLowerCase() || '';
-              const descriptionLower = item.description?.toLowerCase() || '';
-              return nameLower.includes(searchLower) || descriptionLower.includes(searchLower);
-            });
-            wasteItems = [...wasteItems, ...filteredItems];
-          } else {
-            wasteItems = [...wasteItems, ...categoryItems];
-          }
+          // 对搜索结果进行格式化，确保包含相同的字段
+          const formattedResults = searchResults.map(item => ({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            category_id: item.category_id,
+            // 使用搜索结果中已包含的字段值
+            sub_category: item.sub_category || '',
+            suggestion: item.suggestion || '',
+            image_url: item.image_url || ''
+          }));
+          
+          // 应用分页
+          const paginatedItems = formattedResults.slice(offset, offset + pageSizeNum);
+          
+          // 格式化结果，确保包含与无搜索时相同的字段名
+          wasteItems = paginatedItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            subCategory: item.sub_category,
+            suggestion: item.suggestion,
+            imageUrl: item.image_url
+          }));
+        } else {
+          // 从数据库获取所有垃圾项
+          const allItems = await wasteItemDatabaseModel.getAllWasteItems();
+          totalResults = allItems.length;
+          
+          // 应用分页
+          const paginatedItems = allItems.slice(offset, offset + pageSizeNum);
+          
+          // 格式化结果，确保包含name、subCategory和description字段
+          wasteItems = paginatedItems.map(item => ({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            subCategory: item.sub_category,
+            suggestion: item.suggestion,
+            imageUrl: item.image_url
+          }));
         }
       } else {
-        // 正常情况：获取本地化的垃圾类别
-        const category = wasteCategoryModel.getLocalizedCategory(categoryId, lang);
+        // 正常情况：从数据库获取本地化的垃圾类别
+        const category = await wasteCategoryDatabaseModel.getLocalizedCategory(categoryId, lang);
 
         if (!category) {
           ctx.throw(404, getLocalizedString(ctx, 'recognition.categoryNotFound'));
         }
 
-        // 获取该类别下的所有垃圾项
-        wasteItems = wasteRecognitionService.getWasteItemsByCategory(categoryId, lang);
+        // 从数据库获取该类别下的所有垃圾项
+        wasteItems = await wasteItemDatabaseModel.getWasteItemsByCategory(categoryId, lang);
+        totalResults = wasteItems.length;
+        // 应用分页
+        wasteItems = wasteItems.slice(offset, offset + pageSizeNum);
       }
 
-      // 如果有关键词参数，根据关键词过滤结果（对于非'all'情况）
-      if (searchLower && categoryId !== 'all') {
-        wasteItems = wasteItems.filter(item => {
-          const nameLower = item.name?.toLowerCase() || '';
-          const descriptionLower = item.description?.toLowerCase() || '';
-          const suggestionLower = item.suggestion?.toLowerCase() || '';
-          // 扩展搜索范围，包括suggestion字段以提高匹配准确性
-          return nameLower.includes(searchLower) || 
-                 descriptionLower.includes(searchLower) || 
-                 suggestionLower.includes(searchLower);
-        });
-      }
+      // 计算总页数
+      const totalPages = Math.ceil(totalResults / pageSizeNum);
 
-      // 返回垃圾列表数组作为data，并添加搜索结果统计信息
+      // 返回垃圾列表数组作为data，并添加搜索结果统计信息和分页信息
       ctx.status = 200;
       ctx.body = {
         success: true,
@@ -341,7 +369,13 @@ class RecognitionController {
         searchInfo: {
           keyword: keyword || '',
           category: categoryId,
-          totalResults: wasteItems.length
+          totalResults: totalResults
+        },
+        pagination: {
+          page: pageNum,
+          pageSize: pageSizeNum,
+          total: totalResults,
+          totalPages: totalPages
         },
         message: getLocalizedString(ctx, 'recognition.categoryFetched')
       };
@@ -360,8 +394,8 @@ class RecognitionController {
       const { wasteItemId } = ctx.params;
       const lang = ctx.query.lang || 'zh';
 
-      // 获取垃圾详情信息
-      const wasteItem = wasteRecognitionService.getWasteInfo(wasteItemId, lang);
+      // 从数据库获取垃圾详情信息
+      const wasteItem = await wasteItemDatabaseModel.getLocalizedWasteItem(wasteItemId, lang);
 
       if (!wasteItem) {
         ctx.throw(404, getLocalizedString(ctx, 'recognition.wasteItemNotFound'));
