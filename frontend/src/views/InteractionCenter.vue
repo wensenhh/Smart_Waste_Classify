@@ -72,7 +72,7 @@
           <div v-for="achievement in recentAchievements" :key="achievement.id" class="achievement-item">
             <div class="achievement-icon">{{ achievement.icon }}</div>
             <div class="achievement-info">
-              <div class="achievement-name">{{ achievement.name }}</div>
+              <div class="achievement-name">{{ $t('interaction.achievements.' + achievement.key) }}</div>
               <div class="achievement-date">{{ achievement.date }}</div>
             </div>
             <div class="achievement-progress" v-if="achievement.progress">
@@ -97,10 +97,10 @@
           <div v-for="topic in hotTopics" :key="topic.id" class="topic-item">
             <div class="topic-rank">{{ topic.rank }}</div>
             <div class="topic-content">
-              <div class="topic-title">{{ topic.title }}</div>
+              <div class="topic-title">{{ $t('interaction.topics.' + topic.key) }}</div>
               <div class="topic-stats">
-                <span class="topic-views">{{ topic.views }} 浏览</span>
-                <span class="topic-comments">{{ topic.comments }} 评论</span>
+                <span class="topic-views">{{ topic.views }} {{ $t('interaction.views') }}</span>
+                <span class="topic-comments">{{ topic.comments }} {{ $t('interaction.comments') }}</span>
               </div>
             </div>
           </div>
@@ -121,8 +121,8 @@
             <div v-for="achievement in allAchievements" :key="achievement.id" class="achievement-item">
               <div class="achievement-icon">{{ achievement.icon }}</div>
               <div class="achievement-info">
-                <div class="achievement-name">{{ achievement.name }}</div>
-                <div class="achievement-description">{{ achievement.description }}</div>
+                <div class="achievement-name">{{ $t('interaction.achievements.' + achievement.key) }}</div>
+                <div class="achievement-description">{{ $t('interaction.achievementDescriptions.' + achievement.key) }}</div>
                 <div class="achievement-status" :class="{ completed: achievement.completed }">
                   {{ achievement.completed ? $t('interaction.completed') : $t('interaction.notCompleted') }}
                 </div>
@@ -184,21 +184,21 @@ const navItems = [
 const recentAchievements = ref([
   {
     id: 1,
-    name: '垃圾分类达人',
+    key: 'wasteSortingMaster',
     icon: '🏅',
     date: '2025-06-15',
     progress: 85
   },
   {
     id: 2,
-    name: '环保小卫士',
+    key: 'environmentalGuardian',
     icon: '🌱',
     date: '2025-06-10',
     progress: 60
   },
   {
     id: 3,
-    name: '知识竞赛优胜者',
+    key: 'knowledgeChampion',
     icon: '🎯',
     date: '2025-06-05',
     progress: 100
@@ -209,35 +209,35 @@ const recentAchievements = ref([
 const allAchievements = ref([
   {
     id: 1,
-    name: '垃圾分类达人',
+    key: 'wasteSortingMaster',
     icon: '🏅',
     description: '正确分类垃圾100次',
     completed: false
   },
   {
     id: 2,
-    name: '环保小卫士',
+    key: 'environmentalGuardian',
     icon: '🌱',
     description: '连续使用app7天',
     completed: true
   },
   {
     id: 3,
-    name: '知识竞赛优胜者',
+    key: 'knowledgeChampion',
     icon: '🎯',
     description: '参与知识竞赛并获得满分',
     completed: true
   },
   {
     id: 4,
-    name: '社区活跃分子',
+    key: 'communityActivist',
     icon: '👥',
     description: '在社区分享10篇环保文章',
     completed: false
   },
   {
     id: 5,
-    name: '垃圾识别专家',
+    key: 'wasteRecognitionExpert',
     icon: '🔍',
     description: '识别50种不同类型的垃圾',
     completed: false
@@ -249,35 +249,35 @@ const hotTopics = ref([
   {
     id: 1,
     rank: 1,
-    title: '如何有效减少家庭垃圾产生？',
+    key: 'reduceHouseholdWaste',
     views: 1250,
     comments: 152
   },
   {
     id: 2,
     rank: 2,
-    title: '马来西亚垃圾分类新政策解读',
+    key: 'malaysiaPolicy',
     views: 1020,
     comments: 98
   },
   {
     id: 3,
     rank: 3,
-    title: '厨余垃圾堆肥实用技巧分享',
+    key: 'compostingTips',
     views: 890,
     comments: 76
   },
   {
     id: 4,
     rank: 4,
-    title: '塑料替代品使用体验讨论',
+    key: 'plasticAlternatives',
     views: 750,
     comments: 65
   },
   {
     id: 5,
     rank: 5,
-    title: '回收物品DIY创意展示',
+    key: 'recyclingDIY',
     views: 680,
     comments: 112
   }

@@ -184,6 +184,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useI18nStore } from '../stores/i18n';
+import { useI18n } from 'vue-i18n';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import Header from '../components/Header.vue';
 import popupManager from '../utils/popup.js';
@@ -193,15 +194,16 @@ const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
 const i18nStore = useI18nStore();
+const { t } = useI18n();
 
 // 响应式状态
 const showEditProfileModal = ref(false);
 
 // 从store获取用户信息
 const userInfo = ref(userStore.getUserInfo || {
-  name: '环保小卫士',
+  name: t('profile.defaultName'),
   email: 'eco.warrior@example.com',
-  city: '吉隆坡',
+  city: t('profile.defaultCity'),
   avatar: '👤'
 });
 
@@ -216,19 +218,19 @@ const userStats = ref({
 const achievements = ref(userStore.getAchievements || [
   {
     id: 1,
-    name: '垃圾分类达人',
+    name: t('profile.wasteSortingExpert'),
     icon: '🏅',
     date: '2025-06-15'
   },
   {
     id: 2,
-    name: '连续使用7天',
+    name: t('profile.continuousUsage'),
     icon: '🔥',
     date: '2025-06-14'
   },
   {
     id: 3,
-    name: '知识竞赛优胜者',
+    name: t('profile.knowledgeCompetitionWinner'),
     icon: '🎯',
     date: '2025-06-10'
   }
@@ -239,26 +241,26 @@ const recentActivities = ref([
   {
     id: 1,
     icon: '🔍',
-    text: '识别了一个塑料瓶',
-    time: '今天 14:30'
+    text: t('profile.recognizedPlasticBottle'),
+    time: `${t('profile.today')} 14:30`
   },
   {
     id: 2,
     icon: '📚',
-    text: '学习了垃圾分类知识',
-    time: '昨天 09:45'
+    text: t('profile.learnedWasteKnowledge'),
+    time: `${t('profile.yesterday')} 09:45`
   },
   {
     id: 3,
     icon: '🎮',
-    text: '参与了每日一题挑战',
-    time: '2天前'
+    text: t('profile.participatedDailyChallenge'),
+    time: `2${t('profile.daysAgo')}`
   },
   {
     id: 4,
     icon: '🏆',
-    text: '获得了垃圾分类达人成就',
-    time: '3天前'
+    text: t('profile.earnedWasteSortingAchievement'),
+    time: `3${t('profile.daysAgo')}`
   }
 ]);
 

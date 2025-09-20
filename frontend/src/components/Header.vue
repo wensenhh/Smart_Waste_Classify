@@ -111,8 +111,9 @@ const handleSearch = () => {
 }
 
 .app-title {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
+  color: #fff;
   margin: 0;
 }
 

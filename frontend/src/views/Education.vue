@@ -7,7 +7,7 @@
     <main class="main-content">
       <!-- 学习路径选择 -->
       <section class="learning-paths">
-        <h2>{{ $t('education.learningPaths') }}</h2>
+        <h2>{{ $t('education.learningPathsTitle') }}</h2>
         <div class="paths-container">
           <div 
             v-for="path in learningPaths"
@@ -91,6 +91,7 @@
 <script>
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import Header from '../components/Header.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import popupManager from '../utils/popup.js';
@@ -104,6 +105,7 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const { t } = useI18n();
 
     // 导航项
     const navItems = [
@@ -144,22 +146,22 @@ export default {
       {
         id: 1,
         icon: '🎓',
-        title: '垃圾分类入门',
-        description: '从基础开始学习垃圾分类的重要性和方法',
+        title: t('education.learningPaths.beginner'),
+        description: t('education.learningPaths.beginnerDesc'),
         progress: 75
       },
       {
         id: 2,
         icon: '🔬',
-        title: '可回收资源利用',
-        description: '深入了解各类可回收物的回收流程和再利用技术',
+        title: t('education.learningPaths.recyclable'),
+        description: t('education.learningPaths.recyclableDesc'),
         progress: 40
       },
       {
         id: 3,
         icon: '🌱',
-        title: '环保生活方式',
-        description: '学习如何在日常生活中践行环保理念，减少垃圾产生',
+        title: t('education.learningPaths.greenLiving'),
+        description: t('education.learningPaths.greenLivingDesc'),
         progress: 20
       }
     ]);
@@ -169,26 +171,26 @@ export default {
       {
         id: 1,
         icon: '📊',
-        title: '垃圾分类数据分析',
-        description: '通过数据分析了解垃圾分类的现状和趋势',
-        duration: '45 分钟',
-        level: '中级'
+        title: t('education.courses.dataAnalysis'),
+        description: t('education.courses.dataAnalysisDesc'),
+        duration: t('education.courses.duration45'),
+        level: t('education.courses.intermediate')
       },
       {
         id: 2,
         icon: '🔄',
-        title: '塑料回收与再利用',
-        description: '探索塑料回收的最新技术和创新应用',
-        duration: '60 分钟',
-        level: '初级'
+        title: t('education.courses.plasticRecycling'),
+        description: t('education.courses.plasticRecyclingDesc'),
+        duration: t('education.courses.duration60'),
+        level: t('education.courses.beginner')
       },
       {
         id: 3,
         icon: '🍃',
-        title: '家庭堆肥指南',
-        description: '学习如何在家中进行厨余垃圾堆肥，变废为宝',
-        duration: '30 分钟',
-        level: '入门'
+        title: t('education.courses.homeComposting'),
+        description: t('education.courses.homeCompostingDesc'),
+        duration: t('education.courses.duration30'),
+        level: t('education.courses.introductory')
       }
     ]);
 
@@ -197,30 +199,30 @@ export default {
       {
         id: 1,
         icon: '🎬',
-        title: '家庭垃圾分类实践',
+        title: t('education.videos.householdSorting'),
         duration: '5:30',
         views: '2.5k'
       },
       {
         id: 2,
-        icon: '🎬',
-        title: '回收物品创意改造',
-        duration: '8:15',
-        views: '1.8k'
+        icon: '🎨',
+        title: t('education.videos.creativeRecycling'),
+        duration: '8:45',
+        views: '3.8k'
       },
       {
         id: 3,
-        icon: '🎬',
-        title: '环保产品选购指南',
-        duration: '6:45',
-        views: '3.2k'
+        icon: '🛒',
+        title: t('education.videos.greenProducts'),
+        duration: '4:20',
+        views: '1.9k'
       },
       {
         id: 4,
-        icon: '🎬',
-        title: '儿童环保教育活动',
-        duration: '4:20',
-        views: '1.5k'
+        icon: '🧒',
+        title: t('education.videos.kidsEducation'),
+        duration: '7:10',
+        views: '5.2k'
       }
     ]);
 

@@ -144,29 +144,52 @@ const zh = {
     sortingGuide: '分类指南'
   },
   interaction: {
-    title: '互动中心',
-    dailyCheckin: '每日签到',
-    pointTask: '积分任务',
-    rankingList: '排行榜',
-    friendList: '好友列表',
-    shareAchievement: '分享成就',
-    dailyQuestion: '每日一题',
-    dailyQuestionDesc: '每天学习一个垃圾分类小知识',
-    wasteChallenge: '垃圾挑战',
-    wasteChallengeDesc: '测试你的垃圾分类知识水平',
-    communityShare: '社区分享',
-    communityShareDesc: '与其他用户分享垃圾分类经验',
-    greenActivities: '环保活动',
-    greenActivitiesDesc: '参与线下环保志愿活动',
-    yourAchievements: '你的成就',
-    allAchievements: '全部成就',
-    completed: '已完成',
-    notCompleted: '未完成',
-    hotTopics: '热门话题'
+      title: '互动中心',
+      dailyCheckin: '每日签到',
+      pointTask: '积分任务',
+      rankingList: '排行榜',
+      friendList: '好友列表',
+      shareAchievement: '分享成就',
+      dailyQuestion: '每日一题',
+      dailyQuestionDesc: '每天学习一个垃圾分类小知识',
+      wasteChallenge: '垃圾挑战',
+      wasteChallengeDesc: '测试你的垃圾分类知识水平',
+      communityShare: '社区分享',
+      communityShareDesc: '与其他用户分享垃圾分类经验',
+      greenActivities: '环保活动',
+      greenActivitiesDesc: '参与线下环保志愿活动',
+      yourAchievements: '你的成就',
+      allAchievements: '全部成就',
+      completed: '已完成',
+      notCompleted: '未完成',
+      hotTopics: '热门话题',
+      views: '浏览',
+      comments: '评论',
+    achievements: {
+      wasteSortingMaster: '垃圾分类达人',
+      environmentalGuardian: '环保小卫士',
+      knowledgeChampion: '知识竞赛优胜者',
+      communityActivist: '社区活跃分子',
+      wasteRecognitionExpert: '垃圾识别专家'
+    },
+    achievementDescriptions: {
+      wasteSortingMaster: '正确分类垃圾100次',
+      environmentalGuardian: '连续使用应用7天',
+      knowledgeChampion: '参与知识竞赛并获得满分',
+      communityActivist: '在社区分享10篇环保文章',
+      wasteRecognitionExpert: '识别50种不同类型的垃圾'
+    },
+    topics: {
+      reduceHouseholdWaste: '如何有效减少家庭垃圾产生？',
+      malaysiaPolicy: '马来西亚新垃圾分类政策解读',
+      compostingTips: '厨余垃圾堆肥实用技巧',
+      plasticAlternatives: '可替代塑料使用经验探讨',
+      recyclingDIY: '回收物品DIY创意展示'
+    }
   },
   education: {
     title: '宣传教育',
-    learningPaths: '学习路径',
+    learningPathsTitle: '学习路径',
     popularCourses: '热门课程',
     videoTutorials: '视频教程',
     completed: '已完成',
@@ -175,7 +198,35 @@ const zh = {
     propagandaArticles: '宣传文章',
     educationVideos: '教育视频',
     activityCenter: '活动中心',
-    lightPopularization: '轻量化科普'
+    lightPopularization: '轻量化科普',
+    learningPaths: {
+      beginner: '垃圾分类入门',
+      beginnerDesc: '从基础开始学习垃圾分类的重要性和方法',
+      recyclable: '可回收资源利用',
+      recyclableDesc: '深入了解各类可回收物的回收流程和再利用技术',
+      greenLiving: '环保生活方式',
+      greenLivingDesc: '学习如何在日常生活中践行环保理念，减少垃圾产生'
+    },
+    courses: {
+      dataAnalysis: '垃圾分类数据分析',
+      dataAnalysisDesc: '通过数据分析了解垃圾分类的现状和趋势',
+      plasticRecycling: '塑料回收与再利用',
+      plasticRecyclingDesc: '探索塑料回收的最新技术和创新应用',
+      homeComposting: '家庭堆肥指南',
+      homeCompostingDesc: '学习如何在家中进行厨余垃圾堆肥，变废为宝',
+      duration30: '30 分钟',
+      duration45: '45 分钟',
+      duration60: '60 分钟',
+      introductory: '入门',
+      beginner: '初级',
+      intermediate: '中级'
+    },
+    videos: {
+      householdSorting: '家庭垃圾分类实践',
+      creativeRecycling: '回收物品创意改造',
+      greenProducts: '环保产品选购指南',
+      kidsEducation: '儿童环保教育活动'
+    }
   },
   profile: {
     title: '个人中心',
@@ -197,6 +248,24 @@ const zh = {
     city: '城市',
     enterCity: '请输入城市',
     avatar: '头像',
+    // 默认用户信息
+    defaultName: '环保小卫士',
+    defaultCity: '吉隆坡',
+    // 成就相关
+    achievements: '成就',
+    wasteSortingExpert: '垃圾分类达人',
+    continuousUsage: '连续使用7天',
+    knowledgeCompetitionWinner: '知识竞赛优胜者',
+    // 最近活动相关
+    recentActivities: '最近活动',
+    recognizedPlasticBottle: '识别了一个塑料瓶',
+    learnedWasteKnowledge: '学习了垃圾分类知识',
+    participatedDailyChallenge: '参与了每日一题挑战',
+    earnedWasteSortingAchievement: '获得了垃圾分类达人成就',
+    // 时间相关
+    today: '今天',
+    yesterday: '昨天',
+    daysAgo: '天前',
     notifications: '通知设置',
     privacy: '隐私设置',
     helpCenter: '帮助中心',
@@ -389,29 +458,52 @@ const en = {
     sortingGuide: 'Sorting Guide'
   },
   interaction: {
-    title: 'Interaction Center',
-    dailyCheckin: 'Daily Check-in',
-    pointTask: 'Point Tasks',
-    rankingList: 'Ranking List',
-    friendList: 'Friend List',
-    shareAchievement: 'Share Achievement',
-    dailyQuestion: 'Daily Question',
-    dailyQuestionDesc: 'Learn one waste classification knowledge every day',
-    wasteChallenge: 'Waste Challenge',
-    wasteChallengeDesc: 'Test your waste classification knowledge',
-    communityShare: 'Community Share',
-    communityShareDesc: 'Share waste classification experience with other users',
-    greenActivities: 'Green Activities',
-    greenActivitiesDesc: 'Participate in offline environmental volunteer activities',
-    yourAchievements: 'Your Achievements',
-    allAchievements: 'All Achievements',
-    completed: 'Completed',
-    notCompleted: 'Not Completed',
-    hotTopics: 'Hot Topics'
+      title: 'Interaction Center',
+      dailyCheckin: 'Daily Check-in',
+      pointTask: 'Point Tasks',
+      rankingList: 'Ranking List',
+      friendList: 'Friend List',
+      shareAchievement: 'Share Achievement',
+      dailyQuestion: 'Daily Question',
+      dailyQuestionDesc: 'Learn one waste classification knowledge every day',
+      wasteChallenge: 'Waste Challenge',
+      wasteChallengeDesc: 'Test your waste classification knowledge',
+      communityShare: 'Community Share',
+      communityShareDesc: 'Share waste classification experience with other users',
+      greenActivities: 'Green Activities',
+      greenActivitiesDesc: 'Participate in offline environmental volunteer activities',
+      yourAchievements: 'Your Achievements',
+      allAchievements: 'All Achievements',
+      completed: 'Completed',
+      notCompleted: 'Not Completed',
+      hotTopics: 'Hot Topics',
+      views: 'views',
+      comments: 'comments',
+    achievements: {
+      wasteSortingMaster: 'Waste Sorting Master',
+      environmentalGuardian: 'Environmental Guardian',
+      knowledgeChampion: 'Knowledge Champion',
+      communityActivist: 'Community Activist',
+      wasteRecognitionExpert: 'Waste Recognition Expert'
+    },
+    achievementDescriptions: {
+      wasteSortingMaster: 'Correctly sort waste 100 times',
+      environmentalGuardian: 'Use the app continuously for 7 days',
+      knowledgeChampion: 'Participate in the knowledge competition and get full marks',
+      communityActivist: 'Share 10 environmental articles in the community',
+      wasteRecognitionExpert: 'Recognize 50 different types of waste'
+    },
+    topics: {
+      reduceHouseholdWaste: 'How to effectively reduce household waste generation?',
+      malaysiaPolicy: 'Interpretation of Malaysia\'s new waste classification policy',
+      compostingTips: 'Practical tips for kitchen waste composting',
+      plasticAlternatives: 'Discussion on plastic alternatives usage experience',
+      recyclingDIY: 'Recycled items DIY creative display'
+    }
   },
   education: {
     title: 'Education',
-    learningPaths: 'Learning Paths',
+    learningPathsTitle: 'Learning Paths',
     popularCourses: 'Popular Courses',
     videoTutorials: 'Video Tutorials',
     completed: 'Completed',
@@ -420,7 +512,35 @@ const en = {
     propagandaArticles: 'Propaganda Articles',
     educationVideos: 'Education Videos',
     activityCenter: 'Activity Center',
-    lightPopularization: 'Lightweight Popularization'
+    lightPopularization: 'Lightweight Popularization',
+    learningPaths: {
+      beginner: 'Waste Classification Basics',
+      beginnerDesc: 'Learn the importance and methods of waste classification from the basics',
+      recyclable: 'Recyclable Resource Utilization',
+      recyclableDesc: 'Deeply understand the recycling process and reuse technology of various recyclables',
+      greenLiving: 'Green Lifestyle',
+      greenLivingDesc: 'Learn how to practice environmental protection concepts in daily life and reduce waste generation'
+    },
+    courses: {
+      dataAnalysis: 'Waste Classification Data Analysis',
+      dataAnalysisDesc: 'Understand the current status and trends of waste classification through data analysis',
+      plasticRecycling: 'Plastic Recycling and Reuse',
+      plasticRecyclingDesc: 'Explore the latest technologies and innovative applications of plastic recycling',
+      homeComposting: 'Home Composting Guide',
+      homeCompostingDesc: 'Learn how to compost kitchen waste at home and turn waste into treasure',
+      duration30: '30 minutes',
+      duration45: '45 minutes',
+      duration60: '60 minutes',
+      introductory: 'Introductory',
+      beginner: 'Beginner',
+      intermediate: 'Intermediate'
+    },
+    videos: {
+      householdSorting: 'Household Waste Sorting Practice',
+      creativeRecycling: 'Creative Recycling of Recycled Items',
+      greenProducts: 'Green Product Purchasing Guide',
+      kidsEducation: 'Environmental Education Activities for Children'
+    }
   },
   profile: {
     title: 'Profile',
@@ -442,6 +562,24 @@ const en = {
     city: 'City',
     enterCity: 'Enter city',
     avatar: 'Avatar',
+    // Default user info
+    defaultName: 'Eco Warrior',
+    defaultCity: 'Kuala Lumpur',
+    // Achievements
+    achievements: 'Achievements',
+    wasteSortingExpert: 'Waste Sorting Expert',
+    continuousUsage: 'Used for 7 Consecutive Days',
+    knowledgeCompetitionWinner: 'Knowledge Competition Winner',
+    // Recent activities
+    recentActivities: 'Recent Activities',
+    recognizedPlasticBottle: 'Recognized a plastic bottle',
+    learnedWasteKnowledge: 'Learned waste sorting knowledge',
+    participatedDailyChallenge: 'Participated in daily challenge',
+    earnedWasteSortingAchievement: 'Earned waste sorting expert achievement',
+    // Time related
+    today: 'Today',
+    yesterday: 'Yesterday',
+    daysAgo: 'days ago',
     notifications: 'Notifications',
     privacy: 'Privacy',
     helpCenter: 'Help Center',
@@ -634,18 +772,52 @@ const ms = {
     sortingGuide: 'Panduan Pengasingan'
   },
   interaction: {
+    title: 'Pusat Interaksi',
     dailyCheckin: 'Presence Harian',
     pointTask: 'Tugasan Poin',
     rankingList: 'Senarai Peringkat',
     friendList: 'Senarai Rakan',
     shareAchievement: 'Kongsi pencapaian',
+    dailyQuestion: 'Soalan Harian',
+    dailyQuestionDesc: 'Belajar satu pengetahuan pengasingan sisa setiap hari',
+    wasteChallenge: 'Cabaran Sisa',
+    wasteChallengeDesc: 'Uji tahap pengetahuan pengasingan sisa anda',
+    communityShare: 'Kongsi Komuniti',
+    communityShareDesc: 'Kongsi pengalaman pengasingan sisa dengan pengguna lain',
+    greenActivities: 'Aktiviti Hijau',
+    greenActivitiesDesc: 'Sertai aktiviti sukarelawan alam sekitar luar',
+    yourAchievements: 'Pencapaian Anda',
     allAchievements: 'Semua Pencapaian',
     completed: 'Selesai',
-    notCompleted: 'Belum Selesai'
+    notCompleted: 'Belum Selesai',
+    hotTopics: 'Topik Popular',
+    views: 'pandangan',
+    comments: 'komen',
+    achievements: {
+      wasteSortingMaster: 'Tuan Rumah Pengasingan Sisa',
+      environmentalGuardian: 'Pembela Alam Sekitar',
+      knowledgeChampion: 'Juara Pertandingan Pengetahuan',
+      communityActivist: 'Aktivis Komuniti',
+      wasteRecognitionExpert: 'Pakar Kenali Sisa'
+    },
+    achievementDescriptions: {
+      wasteSortingMaster: 'Mengasingkan sisa dengan betul 100 kali',
+      environmentalGuardian: 'Gunakan aplikasi secara berterusan selama 7 hari',
+      knowledgeChampion: 'Sertai pertandingan pengetahuan dan dapatkan markah penuh',
+      communityActivist: 'Kongsi 10 artikel alam sekitar dalam komuniti',
+      wasteRecognitionExpert: 'Kenali 50 jenis sisa yang berbeza'
+    },
+    topics: {
+      reduceHouseholdWaste: 'Bagaimana mengurangkan penjanaan sisa rumah secara berkesan?',
+      malaysiaPolicy: 'Tafsiran polisi pengasingan sisa baru Malaysia',
+      compostingTips: 'Tips praktikal pengkomposan sisa dapur',
+      plasticAlternatives: 'Perbincangan pengalaman penggunaan alternatif plastik',
+      recyclingDIY: 'Pameran kreatif DIY untuk barangan kitar semula'
+    }
   },
   education: {
     title: 'Pendidikan',
-    learningPaths: 'Laluan Pembelajaran',
+    learningPathsTitle: 'Laluan Pembelajaran',
     popularCourses: 'Kursus Popular',
     videoTutorials: 'Tutorial Video',
     completed: 'Selesai',
@@ -654,7 +826,35 @@ const ms = {
     propagandaArticles: 'Artikel Propaganda',
     educationVideos: 'Video Pendidikan',
     activityCenter: 'Pusat Aktiviti',
-    lightPopularization: 'Pemasaran Ringkas'
+    lightPopularization: 'Pemasaran Ringkas',
+    learningPaths: {
+      beginner: 'Asas Pengasingan Sisa',
+      beginnerDesc: 'Belajar kepentingan dan kaedah pengasingan sisa dari asas',
+      recyclable: 'Penggunaan Sumber Dapat Dikitar Semula',
+      recyclableDesc: 'Memahami dengan mendalam proses kitar semula dan teknologi penggunaan semula pelbagai barangan yang boleh dikitar semula',
+      greenLiving: 'Gaya Hidup Hijau',
+      greenLivingDesc: 'Belajar cara mengamalkan konsep penjagaan alam dalam kehidupan harian dan mengurangkan penjanaan sisa'
+    },
+    courses: {
+      dataAnalysis: 'Analisis Data Pengasingan Sisa',
+      dataAnalysisDesc: 'Memahami status semasa dan trend pengasingan sisa melalui analisis data',
+      plasticRecycling: 'Plastik Kitar Semula dan Penggunaan Semula',
+      plasticRecyclingDesc: 'Jelajahi teknologi terkini dan aplikasi inovatif kitar semula plastik',
+      homeComposting: 'Panduan Pengkomposan Rumah',
+      homeCompostingDesc: 'Belajar cara membuat kompos sisa dapur di rumah dan menukar sisa kepada harta',
+      duration30: '30 minit',
+      duration45: '45 minit',
+      duration60: '60 minit',
+      introductory: 'Pengenalan',
+      beginner: 'Pemula',
+      intermediate: 'Menengah'
+    },
+    videos: {
+      householdSorting: 'Amalan Pengasingan Sisa Rumah',
+      creativeRecycling: 'Kitar Semula Kreatif Barangan Dikitar Semula',
+      greenProducts: 'Panduan Membeli Produk Hijau',
+      kidsEducation: 'Aktiviti Pendidikan Alam Sekitar untuk Kanak-kanak'
+    }
   },
   profile: {
     title: 'Profil',
@@ -681,7 +881,23 @@ const ms = {
     avatar: 'Avatar',
     notifications: 'Pemberitahuan',
     privacy: 'Privasi',
-    helpCenter: 'Pusat Bantuan'
+    helpCenter: 'Pusat Bantuan',
+    // Maklumat pengguna lalai
+    defaultName: 'Pembela Alam',
+    defaultCity: 'Kuala Lumpur',
+    // Pencapaian
+    wasteSortingExpert: 'Pakar Pengasingan Sisa',
+    continuousUsage: 'Digunakan selama 7 Hari Berturut-turut',
+    knowledgeCompetitionWinner: 'Pemenang Pertandingan Pengetahuan',
+    // Aktiviti terkini
+    recognizedPlasticBottle: 'Mengiktiraf botol plastik',
+    learnedWasteKnowledge: 'Belajar pengetahuan pengasingan sisa',
+    participatedDailyChallenge: 'Mengambil bahagian dalam cabaran harian',
+    earnedWasteSortingAchievement: 'Mendapat pencapaian pakar pengasingan sisa',
+    // Berkaitan masa
+    today: 'Hari ini',
+    yesterday: 'Kemarin',
+    daysAgo: 'hari yang lalu',
   },
   question: {
     questionTitle: 'Soalan Harian',
