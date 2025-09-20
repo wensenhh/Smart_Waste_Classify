@@ -1,6 +1,6 @@
 <template>
   <!-- 底部导航栏 -->
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" :class="{ 'ios-device': isIOSDevice }">
     <div 
       v-for="item in navItems"
       :key="item.name"
@@ -15,8 +15,19 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+
+// 检测是否为iOS设备
+const isIOSDevice = ref(false);
+
+onMounted(() => {
+  // 使用navigator.userAgent检测iOS设备
+  const userAgent = navigator.userAgent;
+  // 检测iPhone、iPad或iPod
+  isIOSDevice.value = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+});
 
 const props = defineProps({
   // 可以通过props自定义导航项，默认为空数组
@@ -90,6 +101,18 @@ const navigateTo = (routeName) => {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+}
+
+/* 为iOS设备添加底部padding以适配安全区域 */
+.ios-device {
+  padding-bottom: 34px;
+}
+
+/* 确保在小屏幕上的兼容性 */
+@media (max-width: 480px) {
+ .ios-device {
+    padding-bottom: 34px;
+  }
 }
 
 .nav-item {
