@@ -41,7 +41,7 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB
+    fileSize: 20 * 1024 * 1024, // 5MB
     fieldNameSize: 100, // 字段名最大长度
     fieldSize: 1024 * 1024, // 非文件字段值最大长度
     fields: 5, // 非文件字段最大数量
@@ -71,12 +71,13 @@ const uploadErrorHandler = async (ctx, next) => {
   try {
     await next();
   } catch (err) {
-    if (err instanceof multer.MulterError) {
+    // 在@koa/multer中，通过检查err.code来识别multer错误，而不是通过instanceof
+    if (err && err.code && (err.code.startsWith('LIMIT_') || err.name === 'MulterError')) {
       if (err.code === 'LIMIT_FILE_SIZE') {
         ctx.status = 413;
         ctx.body = {
           code: 413,
-          message: '文件大小超过限制。请上传小于5MB的图片。'
+          message: '文件大小超过限制。请上传小于20MB的图片。'
         };
       } else if (err.code === 'LIMIT_FILE_COUNT') {
         ctx.status = 400;

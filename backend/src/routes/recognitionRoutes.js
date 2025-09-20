@@ -2,7 +2,7 @@
 const Router = require('@koa/router');
 const recognitionController = require('../controllers/recognitionController');
 const { jwtAuth, authorize } = require('../middlewares/security');
-const { uploadMiddleware } = require('../middlewares/upload');
+const { uploadMiddleware, uploadErrorHandler } = require('../middlewares/upload');
 const { validateRequest } = require('../middlewares/validation');
 
 const router = new Router();
@@ -21,9 +21,11 @@ router.post('/identify',
 );
 
 // 受保护路由 - 需要登录才能上传图片并调用外部接口识别
+// 注意：这里需要使用uploadErrorHandler来正确处理文件上传错误
 router.post('/upload', 
-  jwtAuth,
+  uploadErrorHandler,
   uploadMiddleware.single('image'),
+  jwtAuth,
   validateRequest({ 
     image: 'required|file'
   }),

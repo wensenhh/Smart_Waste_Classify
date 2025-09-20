@@ -5,7 +5,7 @@ import errorHandler from './errorHandler';
 // 创建axios实例
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api', // 使用环境变量配置的API基础URL
-  timeout: 10000 // 请求超时时间
+  timeout: 40000 // 请求超时时间，设置为40秒
 });
 
 // 请求拦截器
