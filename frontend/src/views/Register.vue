@@ -58,7 +58,7 @@
                 type="text"
                 v-model="searchKeyword"
                 @input="filterCountries"
-                placeholder="搜索国家/地区..."
+                :placeholder="$t('register.searchCountry')"
                 class="search-input"
               />
             </div>

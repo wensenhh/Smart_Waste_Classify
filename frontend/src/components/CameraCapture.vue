@@ -1,19 +1,19 @@
 <template>
   <div v-if="show" class="modal-overlay" @click="close">
     <div class="modal-content camera-modal" @click.stop>
-      <h3 class="modal-title">{{ title || '拍照识别' }}</h3>
+      <h3 class="modal-title">{{ title || t('cameraCapture.title') }}</h3>
       
       <!-- Safari浏览器的特殊授权界面 - 仅在初始化失败时显示 -->
       <div v-if="isSafari && safariInitFailed" class="safari-authorization">
         <div class="safari-icon">🔒</div>
-        <p class="safari-message">我们无法访问您的摄像头</p>
-        <p class="safari-submessage">请点击下方按钮授权访问您的相机</p>
+        <p class="safari-message">{{ t('cameraCapture.noAccess') }}</p>
+        <p class="safari-submessage">{{ t('cameraCapture.authorizePrompt') }}</p>
         <div class="safari-guide">
-          <p>1. 点击下方按钮</p>
-          <p>2. 在弹出的提示框中选择"允许"</p>
+          <p>{{ t('cameraCapture.step1') }}</p>
+          <p>{{ t('cameraCapture.step2') }}</p>
         </div>
         <button class="authorize-btn" @click="requestCameraAuthorization">
-          授权访问摄像头
+          {{ t('cameraCapture.authorizeBtn') }}
         </button>
       </div>
       
@@ -35,8 +35,8 @@
       <!-- 控制按钮区域 -->
       <div v-if="!isSafari || cameraAuthorized" class="camera-controls">
         <button class="cancel-btn" @click="close">
-          {{ cancelText || '取消' }}
-        </button>
+            {{ cancelText || t('common.cancel') }}
+          </button>
         <button class="capture-btn" @click="captureImage">
           <div class="capture-icon">📸</div>
         </button>
@@ -47,7 +47,10 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import popupManager from '../utils/popup.js';
+
+const { t } = useI18n();
 
 const props = defineProps({
   show: {
@@ -93,9 +96,9 @@ const requestCameraAuthorization = async () => {
         
         // 为Safari浏览器提供更友好的错误信息和替代方案
         if (isSafari.value) {
-          popupManager.error('您的Safari浏览器可能不支持此功能\n请确保您使用的是最新版本的Safari浏览器\n并检查设备设置中是否允许网站访问摄像头');
+          popupManager.error(t('cameraCapture.safariNotSupported'));
         } else {
-          popupManager.error('您的浏览器不支持摄像头功能，推荐使用最新版Chrome或Safari浏览器');
+          popupManager.error(t('cameraCapture.browserNotSupported'));
         }
         return;
       }
@@ -119,14 +122,14 @@ const requestCameraAuthorization = async () => {
   } catch (error) {
     console.error('授权请求失败:', error);
     if (error.name === 'NotAllowedError') {
-        popupManager.error('您已拒绝摄像头访问权限\n请在Safari设置中手动授予权限\n设置路径: 设置 > Safari > 网站设置 > 相机');
+        popupManager.error(t('cameraCapture.permissionDenied'));
       } else if (error.name === 'NotFoundError') {
-        popupManager.error('未找到可用的摄像头设备');
+        popupManager.error(t('cameraCapture.noCameraFound'));
       } else if (error.name === 'NotReadableError') {
-        popupManager.error('摄像头被其他应用占用，请关闭其他应用后重试');
+        popupManager.error(t('cameraCapture.cameraInUse'));
       } else {
         // 提供更通用的错误信息，避免显示技术性错误
-        popupManager.error('无法访问摄像头，请检查您的浏览器设置和设备权限');
+        popupManager.error(t('cameraCapture.cannotAccessCamera'));
       }
   }
 };

@@ -28,10 +28,10 @@
       <div v-if="showFooter" class="modal-footer">
         <slot name="footer">
           <button v-if="showCancelButton" class="modal-button cancel" @click="handleCancel">
-            {{ cancelText }}
+            {{ getCancelText }}
           </button>
           <button v-if="showConfirmButton" class="modal-button confirm" @click="handleConfirm" :disabled="confirmLoading">
-            {{ confirmText }}
+            {{ getConfirmText }}
           </button>
         </slot>
       </div>
@@ -41,15 +41,31 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineOptions({
   name: 'Modal'
 });
 
+const { t } = useI18n();
+
+// 使用组件内部的ref存储默认文本
+const cancelTextDefault = ref(t('common.cancel'));
+const confirmTextDefault = ref(t('common.confirm'));
+
+// 监听语言变化，更新默认文本
+watch(() => t('common.cancel'), (newValue) => {
+  cancelTextDefault.value = newValue;
+});
+
+watch(() => t('common.confirm'), (newValue) => {
+  confirmTextDefault.value = newValue;
+});
+
 const props = defineProps({
   visible: {
     type: Boolean,
-    default: false
+    required: true
   },
   title: {
     type: String,
@@ -81,11 +97,11 @@ const props = defineProps({
   },
   cancelText: {
     type: String,
-    default: '取消'
+    default: undefined
   },
   confirmText: {
     type: String,
-    default: '确定'
+    default: undefined
   },
   confirmLoading: {
     type: Boolean,
@@ -114,6 +130,11 @@ const props = defineProps({
     default: 1000
   }
 });
+
+// 计算属性来获取按钮文本
+const getCancelText = computed(() => props.cancelText || cancelTextDefault.value);
+const getConfirmText = computed(() => props.confirmText || confirmTextDefault.value);
+
 
 const emit = defineEmits(['close', 'cancel', 'confirm', 'update:visible']);
 

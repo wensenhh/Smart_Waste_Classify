@@ -37,33 +37,33 @@ export const STATUS_CODES = {
   API_ERROR: 1006
 };
 
-// 错误信息映射表
-export const ERROR_MESSAGES = {
-  // HTTP状态码对应的错误信息
-  [STATUS_CODES.BAD_REQUEST]: '请求参数错误，请检查您的输入',
-  [STATUS_CODES.UNAUTHORIZED]: '登录状态已失效，请重新登录',
-  [STATUS_CODES.FORBIDDEN]: '您没有权限执行此操作',
-  [STATUS_CODES.NOT_FOUND]: '请求的资源不存在',
-  [STATUS_CODES.METHOD_NOT_ALLOWED]: '不支持的请求方法',
-  [STATUS_CODES.REQUEST_TIMEOUT]: '请求超时，请稍后再试',
-  [STATUS_CODES.CONFLICT]: '请求发生冲突，请稍后再试',
-  [STATUS_CODES.PAYLOAD_TOO_LARGE]: '上传文件过大，请尝试较小的文件',
-  [STATUS_CODES.UNSUPPORTED_MEDIA_TYPE]: '不支持的文件类型',
-  [STATUS_CODES.TOO_MANY_REQUESTS]: '请求过于频繁，请稍后再试',
-  [STATUS_CODES.INTERNAL_SERVER_ERROR]: '服务器内部错误，请稍后再试',
-  [STATUS_CODES.NOT_IMPLEMENTED]: '功能尚未实现',
-  [STATUS_CODES.BAD_GATEWAY]: '网关错误，请稍后再试',
-  [STATUS_CODES.SERVICE_UNAVAILABLE]: '服务器暂时不可用，请稍后再试',
-  [STATUS_CODES.GATEWAY_TIMEOUT]: '网关超时，请稍后再试',
+// 错误信息映射表的键名（用于i18n）
+export const ERROR_KEYS = {
+  // HTTP状态码对应的错误键名
+  [STATUS_CODES.BAD_REQUEST]: 'error.badRequest',
+  [STATUS_CODES.UNAUTHORIZED]: 'error.unauthorized',
+  [STATUS_CODES.FORBIDDEN]: 'error.forbidden',
+  [STATUS_CODES.NOT_FOUND]: 'error.notFound',
+  [STATUS_CODES.METHOD_NOT_ALLOWED]: 'error.methodNotAllowed',
+  [STATUS_CODES.REQUEST_TIMEOUT]: 'error.requestTimeout',
+  [STATUS_CODES.CONFLICT]: 'error.conflict',
+  [STATUS_CODES.PAYLOAD_TOO_LARGE]: 'error.payloadTooLarge',
+  [STATUS_CODES.UNSUPPORTED_MEDIA_TYPE]: 'error.unsupportedMediaType',
+  [STATUS_CODES.TOO_MANY_REQUESTS]: 'error.tooManyRequests',
+  [STATUS_CODES.INTERNAL_SERVER_ERROR]: 'error.internalServerError',
+  [STATUS_CODES.NOT_IMPLEMENTED]: 'error.notImplemented',
+  [STATUS_CODES.BAD_GATEWAY]: 'error.badGateway',
+  [STATUS_CODES.SERVICE_UNAVAILABLE]: 'error.serviceUnavailable',
+  [STATUS_CODES.GATEWAY_TIMEOUT]: 'error.gatewayTimeout',
   
-  // 业务错误对应的错误信息
-  [STATUS_CODES.VALIDATION_ERROR]: '数据验证失败',
-  [STATUS_CODES.AUTH_FAILED]: '认证失败',
-  [STATUS_CODES.TOKEN_EXPIRED]: '令牌已过期，请重新登录',
-  [STATUS_CODES.PERMISSION_DENIED]: '权限不足',
-  [STATUS_CODES.DATA_NOT_FOUND]: '未找到相关数据',
-  [STATUS_CODES.LIMIT_EXCEEDED]: '超过限制',
-  [STATUS_CODES.API_ERROR]: 'API错误'
+  // 业务错误对应的错误键名
+  [STATUS_CODES.VALIDATION_ERROR]: 'error.validationError',
+  [STATUS_CODES.AUTH_FAILED]: 'error.authFailed',
+  [STATUS_CODES.TOKEN_EXPIRED]: 'error.tokenExpired',
+  [STATUS_CODES.PERMISSION_DENIED]: 'error.permissionDenied',
+  [STATUS_CODES.DATA_NOT_FOUND]: 'error.dataNotFound',
+  [STATUS_CODES.LIMIT_EXCEEDED]: 'error.limitExceeded',
+  [STATUS_CODES.API_ERROR]: 'error.apiError'
 };
 
 // 通用错误处理器
@@ -76,7 +76,16 @@ export const handleError = (error) => {
   if (error.response) {
     const { status, data } = error.response;
     const code = data?.code || status;
-    const message = data?.message || ERROR_MESSAGES[code] || ERROR_MESSAGES[status] || `请求失败: ${status}`;
+    
+    // 如果error对象中包含i18n实例，则使用它来翻译错误消息
+    const t = error.i18n?.t || ((key) => key);
+    
+    // 尝试从响应数据中获取消息，如果没有则使用翻译
+    let message = data?.message;
+    if (!message) {
+      const errorKey = ERROR_KEYS[code] || ERROR_KEYS[status];
+      message = errorKey ? t(errorKey) : `请求失败: ${status}`;
+    }
     
     return { 
       type: 'HTTP_ERROR', 
@@ -89,17 +98,19 @@ export const handleError = (error) => {
   
   // 处理请求超时或网络错误
   if (error.request) {
+    const t = error.i18n?.t || ((key) => key);
     return {
       type: 'NETWORK_ERROR',
       code: STATUS_CODES.REQUEST_TIMEOUT,
-      message: '网络连接失败，请检查您的网络设置'
+      message: t('error.networkError')
     };
   }
   
   // 处理请求配置错误
+  const t = error.i18n?.t || ((key) => key);
   return {
     type: 'CONFIG_ERROR',
-    message: '请求配置错误'
+    message: t('error.configError')
   };
 };
 
@@ -179,7 +190,7 @@ export const handleSpecificErrors = (error, options = {}) => {
 // 默认导出
 export default {
   STATUS_CODES,
-  ERROR_MESSAGES,
+  ERROR_KEYS,
   handleError,
   showErrorMessage,
   handleSpecificErrors

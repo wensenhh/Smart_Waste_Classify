@@ -11,7 +11,7 @@
     <!-- 错误消息 -->
     <div v-if="error" class="error-message">
       {{ error }}
-      <button class="retry-btn" @click="handleRetry">重试</button>
+      <button class="retry-btn" @click="handleRetry">{{ $t('common.retry') }}</button>
     </div>
 
 
@@ -21,7 +21,7 @@
       <!-- 加载状态 -->
       <div v-if="loading && filteredKnowledgeItems.length === 0" class="loading-state">
         <div class="loading-spinner"></div>
-        <div class="loading-text">加载中...</div>
+        <div class="loading-text">{{ $t('knowledge.loading') }}</div>
       </div>
 
       <!-- 分类标签 -->
@@ -58,27 +58,27 @@
             {{ truncateText(item.description, 80) }}
           </div>
           <div class="item-footer">
-            <span class="item-source">来源：{{ item.source || '系统数据' }}</span>
-            <span class="item-view-count">{{ item.viewCount || 0 }} 次浏览</span>
+            <span class="item-source">{{ $t('knowledge.source') }}{{ item.source || $t('knowledge.systemData') }}</span>
+          <span class="item-view-count">{{ item.viewCount || 0 }} {{ $t('common.views') }}</span>
           </div>
         </div>
 
         <!-- 空状态 -->
         <div v-if="filteredKnowledgeItems.length === 0 && !loading" class="empty-state">
           <div class="empty-icon">📚</div>
-          <div class="empty-text">暂无相关知识</div>
-          <div class="empty-hint">请尝试其他搜索关键词或分类</div>
+          <div class="empty-text">{{ $t('knowledge.noKnowledge') }}</div>
+          <div class="empty-hint">{{ $t('knowledge.tryOtherKeywords') }}</div>
         </div>
         
         <!-- 加载更多 -->
         <div v-if="loadingMore" class="loading-more">
           <div class="loading-spinner small"></div>
-          <span class="loading-more-text">加载更多...</span>
+          <span class="loading-more-text">{{ $t('knowledge.loadingMore') }}</span>
         </div>
         
         <!-- 没有更多数据 -->
         <div v-if="!hasMoreData && filteredKnowledgeItems.length > 0" class="no-more-data">
-          没有更多数据了
+          {{ $t('knowledge.noMoreData') }}
         </div>
       </section>
     </main>
@@ -105,16 +105,16 @@
             {{ selectedKnowledgeItem.description }}
           </div>
           <div class="detail-content">
-            <h4>处理方法</h4>
-            <p>{{ selectedKnowledgeItem.treatment || selectedKnowledgeItem.suggestion || '暂无相关信息' }}</p>
+            <h4>{{ $t('knowledge.treatmentMethod') }}</h4>
+            <p>{{ selectedKnowledgeItem.treatment || selectedKnowledgeItem.suggestion || $t('knowledge.noRelatedInfo') }}</p>
           </div>
           <div class="detail-content">
-            <h4>注意事项</h4>
-            <p>{{ selectedKnowledgeItem.precautions || '暂无相关信息' }}</p>
+            <h4>{{ $t('knowledge.precautions') }}</h4>
+            <p>{{ selectedKnowledgeItem.precautions || $t('knowledge.noRelatedInfo') }}</p>
           </div>
           <div class="detail-footer">
-            <span class="detail-source">来源：{{ selectedKnowledgeItem.source || '系统数据' }}</span>
-            <span class="detail-date">更新时间：{{ selectedKnowledgeItem.updateDate || '暂无' }}</span>
+            <span class="detail-source">{{ $t('knowledge.source') }}{{ selectedKnowledgeItem.source || $t('knowledge.systemData') }}</span>
+            <span class="detail-date">{{ $t('knowledge.updateTime') }}{{ selectedKnowledgeItem.updateDate || $t('knowledge.noUpdateTime') }}</span>
           </div>
         </div>
       </div>
@@ -123,12 +123,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import NavBar from '../components/NavBar.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import Header from '../components/Header.vue';
 import wasteApi from '../services/wasteApi';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
@@ -146,9 +149,9 @@ const handleRetry = async () => {
 };
 
 // 分类列表
-const categories = ref([
-  { id: 'all', name: '全部' }
-]);
+  const categories = ref([
+    { id: 'all', name: t('knowledge.allCategories') }
+  ]);
 
 // 分页相关状态
 const currentPage = ref(1);
@@ -188,7 +191,7 @@ const fetchCategories = async () => {
       }
     }
   } catch (err) {
-    error.value = '获取分类列表失败，请稍后重试';
+    error.value = $t('error.fetchCategoriesFailed');
     console.error('Failed to fetch categories:', err);
   } finally {
     loading.value = false;
@@ -241,7 +244,7 @@ const fetchKnowledgeItems = async (categoryId = 'all', keyword = '', resetData =
     hasMoreData.value = endIndex < allItems.length;
   
   } catch (err) {
-    error.value = '获取知识库数据失败，请稍后重试';
+    error.value = $t('error.fetchKnowledgeFailed');
     console.error('Failed to fetch knowledge items:', err);
     if (resetData) {
       filteredKnowledgeItems.value = [];
@@ -353,11 +356,12 @@ const navigateTo = (routeName) => {
 
 // 获取类型样式类
 const getTypeClass = (type) => {
+  // 创建一个映射，使用翻译键来匹配垃圾类型
   const typeMap = {
-    '可回收物': 'recyclable',
-    '厨余垃圾': 'kitchen',
-    '有害垃圾': 'hazardous',
-    '其他垃圾': 'other'
+    [t('knowledge.recyclableWaste')]: 'recyclable',
+    [t('knowledge.kitchenWaste')]: 'kitchen',
+    [t('knowledge.hazardousWaste')]: 'hazardous',
+    [t('knowledge.otherWaste')]: 'other'
   };
   return typeMap[type] || 'other';
 };

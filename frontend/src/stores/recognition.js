@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { wasteApi } from '../services/wasteApi';
+import { useI18n } from 'vue-i18n';
 import errorHandler from '../services/errorHandler';
 import popupManager from '../utils/popup.js';
 
@@ -69,15 +70,15 @@ export const useRecognitionStore = defineStore('recognition', {
         // 添加防御性检查，确保errorHandler存在且handleSpecificErrors是函数
         if (errorHandler && typeof errorHandler.handleSpecificErrors === 'function') {
           try {
-            errorHandler.handleSpecificErrors(error);
+            // 为错误对象添加i18n实例
+            const enhancedError = { ...error, i18n: useI18n() };
+            errorHandler.handleSpecificErrors(enhancedError);
           } catch (handlerError) {
             console.error('错误处理器执行失败:', handlerError);
           }
         } else {
           console.error('errorHandler或handleSpecificErrors方法不存在');
         }
-        // 使用简单的错误消息显示方式
-        popupManager.error('获取识别记录失败，请稍后再试');
         throw error;
       } finally {
         this.loading = false;
