@@ -186,6 +186,7 @@ import { useUserStore } from '../stores/user';
 import { useI18nStore } from '../stores/i18n';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import Header from '../components/Header.vue';
+import popupManager from '../utils/popup.js';
 
 // 设置路由和存储
 const router = useRouter();
@@ -368,7 +369,7 @@ const saveProfileChanges = () => {
   });
   
   closeEditProfileModal();
-  window.$popup.success('个人资料已更新！');
+  popupManager.success('个人资料已更新！');
 };
 
 // 打开语言设置
@@ -386,7 +387,7 @@ const closeLanguageModal = () => {
 const saveLanguageSettings = () => {
   if (selectedLanguage.value !== i18nStore.getLocale) {
     i18nStore.setLocale(selectedLanguage.value);
-    window.$popup.success('语言设置已更新！');
+    popupManager.success('语言设置已更新！');
   }
   closeLanguageModal();
 };

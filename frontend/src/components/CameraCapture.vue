@@ -47,6 +47,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
+import popupManager from '../utils/popup.js';
 
 const props = defineProps({
   show: {
@@ -92,9 +93,9 @@ const requestCameraAuthorization = async () => {
         
         // 为Safari浏览器提供更友好的错误信息和替代方案
         if (isSafari.value) {
-          window.$popup.error('您的Safari浏览器可能不支持此功能\n请确保您使用的是最新版本的Safari浏览器\n并检查设备设置中是否允许网站访问摄像头');
+          popupManager.error('您的Safari浏览器可能不支持此功能\n请确保您使用的是最新版本的Safari浏览器\n并检查设备设置中是否允许网站访问摄像头');
         } else {
-          window.$popup.error('您的浏览器不支持摄像头功能，推荐使用最新版Chrome或Safari浏览器');
+          popupManager.error('您的浏览器不支持摄像头功能，推荐使用最新版Chrome或Safari浏览器');
         }
         return;
       }
@@ -118,14 +119,14 @@ const requestCameraAuthorization = async () => {
   } catch (error) {
     console.error('授权请求失败:', error);
     if (error.name === 'NotAllowedError') {
-        window.$popup.error('您已拒绝摄像头访问权限\n请在Safari设置中手动授予权限\n设置路径: 设置 > Safari > 网站设置 > 相机');
+        popupManager.error('您已拒绝摄像头访问权限\n请在Safari设置中手动授予权限\n设置路径: 设置 > Safari > 网站设置 > 相机');
       } else if (error.name === 'NotFoundError') {
-        window.$popup.error('未找到可用的摄像头设备');
+        popupManager.error('未找到可用的摄像头设备');
       } else if (error.name === 'NotReadableError') {
-        window.$popup.error('摄像头被其他应用占用，请关闭其他应用后重试');
+        popupManager.error('摄像头被其他应用占用，请关闭其他应用后重试');
       } else {
         // 提供更通用的错误信息，避免显示技术性错误
-        window.$popup.error('无法访问摄像头，请检查您的浏览器设置和设备权限');
+        popupManager.error('无法访问摄像头，请检查您的浏览器设置和设备权限');
       }
   }
 };
@@ -145,7 +146,7 @@ const initializeCamera = async () => {
           safariInitFailed.value = true;
           return;
         } else {
-          window.$popup.error('您的浏览器不支持摄像头功能，推荐使用Chrome或Safari浏览器');
+          popupManager.error('您的浏览器不支持摄像头功能，推荐使用Chrome或Safari浏览器');
           emit('close');
           return;
         }
@@ -237,13 +238,13 @@ const initializeCamera = async () => {
     } else {
       // 其他浏览器的错误提示
       if (error.name === 'NotAllowedError') {
-        window.$popup.error('请允许应用访问您的摄像头');
+        popupManager.error('请允许应用访问您的摄像头');
       } else if (error.name === 'NotFoundError') {
-        window.$popup.error('未找到可用的摄像头设备');
+        popupManager.error('未找到可用的摄像头设备');
       } else if (error.name === 'NotReadableError') {
-        window.$popup.error('摄像头被其他应用占用，请关闭其他应用后重试');
+        popupManager.error('摄像头被其他应用占用，请关闭其他应用后重试');
       } else {
-        window.$popup.error('初始化摄像头失败: ' + error.message);
+        popupManager.error('初始化摄像头失败: ' + error.message);
       }
       emit('close');
     }

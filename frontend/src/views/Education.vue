@@ -93,6 +93,7 @@ import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import Header from '../components/Header.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
+import popupManager from '../utils/popup.js';
 
 export default {
   name: 'Education',
@@ -240,7 +241,7 @@ export default {
     const enrollCourse = (courseId) => {
       // 这里可以实现课程注册逻辑
       console.log(`Enroll course: ${courseId}`);
-      window.$popup.success('课程注册成功！');
+      popupManager.success('课程注册成功！');
     };
 
     // 截断文本

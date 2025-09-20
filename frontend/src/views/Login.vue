@@ -162,10 +162,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useI18n } from 'vue-i18n';
+import popupManager from '../utils/popup.js';
 import { rememberCredentials, getRememberedCredentials } from '../utils/cookieUtils';
 
 defineOptions({
@@ -257,12 +258,12 @@ const navigateToRegister = () => {
 // 第三方登录
 const loginWithGoogle = () => {
   console.log('Login with Google');
-  window.$popup.info(t('login.googleLoginComingSoon'));
+  popupManager.info(t('login.googleLoginComingSoon'));
 };
 
 const loginWithFacebook = () => {
   console.log('Login with Facebook');
-  window.$popup.info(t('login.facebookLoginComingSoon'));
+  popupManager.info(t('login.facebookLoginComingSoon'));
 };
 
 // 关闭忘记密码弹窗
@@ -284,11 +285,11 @@ const resetPassword = async () => {
     
     // 实际项目中这里应该调用API发送重置密码邮件
     
-    window.$popup.success(t('login.resetLinkSent'));
+    popupManager.success(t('login.resetLinkSent'));
     closeForgotPassword();
   } catch (error) {
     console.error('Reset password failed:', error);
-    window.$popup.error(t('login.resetFailed'));
+    popupManager.error(t('login.resetFailed'));
   } finally {
     isResettingPassword.value = false;
   }

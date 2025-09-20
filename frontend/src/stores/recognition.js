@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { wasteApi } from '../services/wasteApi';
 import errorHandler from '../services/errorHandler';
+import popupManager from '../utils/popup.js';
 
 // 垃圾识别状态管理store
 export const useRecognitionStore = defineStore('recognition', {
@@ -76,9 +77,7 @@ export const useRecognitionStore = defineStore('recognition', {
           console.error('errorHandler或handleSpecificErrors方法不存在');
         }
         // 使用简单的错误消息显示方式
-        if (window.$popup) {
-          window.$popup.error('获取识别记录失败，请稍后再试');
-        }
+        popupManager.error('获取识别记录失败，请稍后再试');
         throw error;
       } finally {
         this.loading = false;

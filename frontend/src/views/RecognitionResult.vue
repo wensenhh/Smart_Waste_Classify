@@ -166,6 +166,8 @@ import { useRecognitionStore } from '../stores/recognition';
 import Header from '../components/Header.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 
+import popupManager from '../utils/popup.js'
+
 export default {
   name: 'RecognitionResult',
   components: {
@@ -188,7 +190,7 @@ export default {
           await recognitionStore.fetchRecognitionById(id);
         } catch (error) {
           console.error('获取识别记录失败:', error);
-          window.$popup.error('获取识别记录失败，请返回首页重试');
+          popupManager.error('获取识别记录失败，请返回首页重试');
         }
       }
     });
@@ -217,7 +219,7 @@ export default {
     // 分享结果
     const shareResult = () => {
       // 实际项目中可以调用系统分享API
-      window.$popup.success('分享功能已触发');
+      popupManager.success('分享功能已触发');
     };
 
     // 提交反馈类型
@@ -234,10 +236,10 @@ export default {
       );
       
       if (result) {
-        window.$popup.success('感谢您的反馈！');
+        popupManager.success('感谢您的反馈！');
         closeFeedback();
       } else {
-        window.$popup.error('反馈提交失败，请重试');
+        popupManager.error('反馈提交失败，请重试');
       }
     };
 
