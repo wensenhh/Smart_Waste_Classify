@@ -125,7 +125,9 @@ const zh = {
     scanButton: '拍照识别',
     uploadButton: '上传图片识别',
     recentActivity: '最近识别记录',
-    noRecord: '暂无记录'
+    noRecord: '无记录',
+    loadingMore: '加载更多...',
+    noMoreData: '没有更多数据了'
   },
   recognition: {
     analyzing: '正在分析...',
@@ -368,7 +370,9 @@ const en = {
     scanButton: 'Photo recognition',
     uploadButton: 'Upload Image to Recognize',
     recentActivity: 'Recent Recognition Records',
-    noRecord: 'No records'
+    noRecord: 'No records',
+    loadingMore: 'Loading more...',
+    noMoreData: 'No more data'
   },
   recognition: {
     analyzing: 'Analyzing...',
@@ -611,7 +615,9 @@ const ms = {
     scanButton: 'Kenal pasti gambar foto',
     uploadButton: 'Muat Naik Imej untuk Kenali',
     recentActivity: 'Rekod Pengiktirafan Terkini',
-    noRecord: 'Tiada rekod'
+    noRecord: 'Tiada rekod',
+    loadingMore: 'Memuatkan lebih...',
+    noMoreData: 'Tiada lagi data'
   },
   recognition: {
     analyzing: 'Sedang menganalisis...',

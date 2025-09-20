@@ -51,7 +51,7 @@ class RecognitionController {
       console.log('接收到垃圾识别请求:', requestInfo);
       
       // 3. 调用外部垃圾识别接口
-      const externalApiUrl = 'http://43.217.144.41:5000/classify';
+      const externalApiUrl = 'http://43.217.144.41:5001/classify';
       const formData = new FormData();
       formData.append('image', file.buffer, { filename: file.originalname, contentType: file.mimetype });
       formData.append('lang', lang); // 添加语言参数到外部API请求中
@@ -93,10 +93,9 @@ class RecognitionController {
       } catch (uploadError) {
         console.error('图片上传失败:', uploadError);
         // 为了确保记录完整，即使上传失败也生成一个默认的图片URL
+        // 使用与fileUpload.js一致的URL构建逻辑
         const baseUrl = process.env.BASE_URL || 
-                      (process.env.NODE_ENV === 'development' ? 
-                      `http://localhost:${process.env.PORT || 3002}` : 
-                      'https://api.example.com');
+                      `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3000}`;
         imageUrl = `${baseUrl}/static/default/placeholder.svg`;
       }
       
@@ -126,7 +125,7 @@ class RecognitionController {
         await recognitionRecordModel.createRecord({
           userId: userId || null, // 即使路由要求登录，仍保留此检查以增强健壮性
           imageUrl: imageUrl || null,
-          wasteType: recognitionResult.waste_name || '未知',
+          wasteType: recognitionResult.category || 'unknown',
           category: recognitionResult.category_name || '未知',
           confidence: recognitionResult.confidence || 0,
           description: recognitionResult.classification_reason || '无',

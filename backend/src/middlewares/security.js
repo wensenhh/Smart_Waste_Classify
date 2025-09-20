@@ -93,10 +93,19 @@ exports.jwtAuth = async (ctx, next) => {
       if (securityConfig.jwt.cookieEnabled) {
         // 解析expiresIn字符串为毫秒数
         let maxAge = 24 * 60 * 60 * 1000; // 默认24小时
-        if (securityConfig.jwt.expiresIn.endsWith('h')) {
-          maxAge = parseInt(securityConfig.jwt.expiresIn) * 60 * 60 * 1000;
-        } else if (securityConfig.jwt.expiresIn.endsWith('d')) {
-          maxAge = parseInt(securityConfig.jwt.expiresIn) * 24 * 60 * 60 * 1000;
+        
+        // 处理不同格式的过期时间设置
+        if (typeof securityConfig.jwt.expiresIn === 'string') {
+          if (securityConfig.jwt.expiresIn.endsWith('h')) {
+            maxAge = parseInt(securityConfig.jwt.expiresIn) * 60 * 60 * 1000;
+          } else if (securityConfig.jwt.expiresIn.endsWith('d')) {
+            maxAge = parseInt(securityConfig.jwt.expiresIn) * 24 * 60 * 60 * 1000;
+          } else if (securityConfig.jwt.expiresIn.endsWith('s')) {
+            maxAge = parseInt(securityConfig.jwt.expiresIn) * 1000;
+          }
+        } else if (typeof securityConfig.jwt.expiresIn === 'number') {
+          // 如果是数字，默认视为秒
+          maxAge = securityConfig.jwt.expiresIn * 1000;
         }
         
         ctx.cookies.set('token', newToken, {

@@ -23,52 +23,19 @@ export const useRecognitionStore = defineStore('recognition', {
 
   actions: {
     // 初始化识别记录
-    initializeRecognitions() {
-      const savedRecognitions = localStorage.getItem('recentRecognitions');
-      if (savedRecognitions) {
-        this.recentRecognitions = JSON.parse(savedRecognitions);
-      } else {
-        // 添加模拟数据，让页面不那么空
-        const mockRecognitions = [
-          {
-            type: '可回收物',
-            name: '塑料瓶',
-            confidence: 0.95,
-            suggestion: '请清洗后投入可回收物垃圾桶',
-            category: 'PET塑料',
-            imageUrl: 'https://picsum.photos/300/300?random=1',
-            timestamp: new Date(Date.now() - 30 * 60 * 1000).toISOString() // 30分钟前
-          },
-          {
-            type: '厨余垃圾',
-            name: '苹果核',
-            confidence: 0.98,
-            suggestion: '请投入厨余垃圾垃圾桶',
-            category: '果皮果核',
-            imageUrl: 'https://picsum.photos/300/300?random=2',
-            timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() // 2小时前
-          },
-          {
-            type: '有害垃圾',
-            name: '电池',
-            confidence: 0.92,
-            suggestion: '请投入有害垃圾专用垃圾桶',
-            category: '干电池',
-            imageUrl: 'https://picsum.photos/300/300?random=3',
-            timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() // 1天前
-          },
-          {
-            type: '其他垃圾',
-            name: '纸巾',
-            confidence: 0.90,
-            suggestion: '请投入其他垃圾垃圾桶',
-            category: '纸类废弃物',
-            imageUrl: 'https://picsum.photos/300/300?random=4',
-            timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() // 3天前
-          }
-        ];
-        this.recentRecognitions = mockRecognitions;
-        localStorage.setItem('recentRecognitions', JSON.stringify(this.recentRecognitions));
+    async initializeRecognitions() {
+      try {
+        // 从API获取历史记录
+        await this.fetchHistoryRecognitions();
+      } catch (error) {
+        console.error('获取历史记录失败:', error);
+        // 如果API调用失败，尝试从localStorage读取
+        const savedRecognitions = localStorage.getItem('recentRecognitions');
+        if (savedRecognitions) {
+          this.recentRecognitions = JSON.parse(savedRecognitions);
+        } else {
+          this.recentRecognitions = [];
+        }
       }
       
       // 初始化当前城市
@@ -76,6 +43,70 @@ export const useRecognitionStore = defineStore('recognition', {
       if (savedCity) {
         this.currentCity = savedCity;
       }
+    },
+    
+    // 从API获取历史识别记录
+    async fetchHistoryRecognitions(page = 1, pageSize = 10, append = false) {
+      try {
+        this.loading = true;
+        const response = await wasteApi.recognition.getIdentifyRecord({ page, pageSize });
+        
+        if (response && response.success && response.data) {
+          const apiResults = response.data.list || response.data || [];
+          
+          // 转换API返回的数据格式
+          const formattedResults = apiResults.map(item => ({
+            type: item.category_name || item.type,  // 垃圾类型
+            name: item.waste_name || item.name,     // 垃圾名称
+            confidence: item.confidence || 0,       // 识别置信度
+            suggestion: item.disposal_advice || item.suggestion || '', // 处理建议
+            category: item.category || '',          // 垃圾类别
+            imageUrl: this.getFullImageUrl(item.imageUrl), // 图片URL
+            timestamp: item.created_at || item.timestamp, // 时间戳
+            historyId: item.id || item.historyId     // 历史记录ID
+          }));
+          
+          // 根据是否是追加模式决定如何更新列表
+          if (append) {
+            this.recentRecognitions.push(...formattedResults);
+          } else {
+            this.recentRecognitions = formattedResults;
+          }
+          
+          // 保存到本地存储
+          localStorage.setItem('recentRecognitions', JSON.stringify(this.recentRecognitions));
+          
+          return {
+            results: formattedResults,
+            hasMore: formattedResults.length === pageSize, // 判断是否还有更多数据
+            total: response.data.total || 0
+          };
+        } else {
+          throw new Error(response?.message || '获取历史记录失败');
+        }
+      } catch (error) {
+        console.error('获取历史记录失败:', error);
+        errorHandler.handleSpecificErrors(error);
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    // 获取完整的图片URL
+    getFullImageUrl(imageUrl) {
+      if (!imageUrl) return '';
+      
+      // 检查是否已经是完整的URL
+      if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+        return imageUrl;
+      }
+      
+      // 组合成完整URL
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+      const baseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
+      const path = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+      return `${baseUrl}${path}`;
     },
 
     // 设置当前城市

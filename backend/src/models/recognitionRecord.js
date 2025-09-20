@@ -72,9 +72,10 @@ class RecognitionRecord {
           environmental_tip,
           recognized_at,
           recognition_type,
-          city
+          city,
+          waste_type
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       // 再次检查关键参数，确保它们不为undefined
@@ -93,7 +94,8 @@ class RecognitionRecord {
         environmentalTip,
         currentTime, // 使用JavaScript生成的当前时间
         'image_recognition', // 默认识别类型
-        'unknown' // 默认城市
+        'unknown', // 默认城市
+        wasteType // 垃圾类型
       ];
 
       const result = await db.query(query, params);
@@ -151,38 +153,51 @@ class RecognitionRecord {
       
       const { limit = 10, offset = 0, sortBy = 'recognized_at', sortOrder = 'DESC' } = options;
       
-      // 为了修复参数错误，暂时简化查询逻辑
-      // 只使用用户ID作为参数，LIMIT和OFFSET直接嵌入SQL
+      // 确保limit和offset是数字类型
+      const numericLimit = parseInt(limit, 10) || 10;
+      const numericOffset = parseInt(offset, 10) || 0;
+      
+      // 查询语句，将LIMIT和OFFSET直接拼接到SQL中以避免参数顺序问题
       const query = `
-        SELECT * FROM ${this.tableName}
-        WHERE user_id = ?
-        ORDER BY recognized_at DESC
-        LIMIT ${ limit } OFFSET 0
+        SELECT 
+          rr.id, 
+          rr.user_id, 
+          rr.image_url, 
+          COALESCE(rr.waste_name, wi.name) AS waste_name, 
+          rr.confidence, 
+          rr.recognized_at, 
+          COALESCE(wc.name, '未知') AS category_name,
+          wc.id AS category_id
+        FROM ${this.tableName} rr
+        LEFT JOIN waste_items wi ON rr.waste_item_id = wi.id
+        LEFT JOIN waste_categories wc ON wi.category_id = wc.id
+        WHERE rr.user_id = ?
+        ORDER BY ${sortBy} ${sortOrder.toUpperCase()}
+        LIMIT ${numericLimit} OFFSET ${numericOffset}
       `;
       
-      // 只传递用户ID作为参数
-      const params = [userId];
+      // 执行查询，只传递userId参数
+      const results = await db.query(query, [userId]);
       
-      // 执行查询
-      const results = await db.query(query, params);
-      
-      // 格式化返回数据
+      // 格式化返回数据，确保包含所需的字段
       return results.map(record => ({
         id: record.id,
         userId: record.user_id,
         imageUrl: record.image_url,
-        wasteType: record.waste_type,
-        category: record.category,
-        confidence: record.confidence,
-        description: record.description,
-        recognizedAt: record.recognized_at,
-        createdAt: record.created_at
+        name: record.waste_name || '未知垃圾', // 垃圾名称（优先使用直接存储的，否则从关联表获取）
+        confidence: record.confidence || 0, // 识别置信度
+        timestamp: record.recognized_at ? new Date(record.recognized_at).toISOString() : null, // 格式化识别时间为ISO 8601
+        category: record.category_name || '未知', // 垃圾类别名称
+        categoryId: record.category_id, // 垃圾类别ID
+        // 保留向后兼容的字段名
+        wasteType: record.waste_name || '未知垃圾',
+        recognizedAt: record.recognized_at ? new Date(record.recognized_at).toISOString() : null // 格式化识别时间为ISO 8601
       }));
     } catch (error) {
       console.error('获取用户识别记录失败:', error);
       console.error('错误详情:', error.sqlMessage || error.message);
       console.error('错误代码:', error.code);
-      console.error('SQL语句:', error.sql || query);
+      console.error('SQL语句:', error.sql);
       throw error;
     }
   }

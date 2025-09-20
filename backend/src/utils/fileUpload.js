@@ -183,7 +183,7 @@ async function uploadFile(fileBuffer, originalName, options = {}) {
     // 获取基础URL（优先使用环境变量中的BASE_URL，否则从环境变量构建）
     // 完全从环境变量中读取，不硬编码任何URL
     const baseUrl = process.env.BASE_URL || 
-                   `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3002}`;
+                   `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3000}`;
     
     // 构建完整的文件URL（简化路径，不添加/static/uploads前缀）
     const fileUrl = `${baseUrl}/${relativePath}`;

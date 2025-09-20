@@ -55,12 +55,12 @@
       <section class="recent-section">
         <h2 class="section-title">{{ $t('home.recentActivity') }}</h2>
         <div class="recent-list">
-          <div v-if="recognitionStore.getRecentRecognitions.length === 0" class="no-record">
+          <div v-if="recognitionStore.getRecentRecognitions.length === 0 && !recognitionStore.loading" class="no-record">
             {{ $t('home.noRecord') }}
           </div>
           <div 
             v-for="(item, index) in recognitionStore.getRecentRecognitions"
-            :key="index"
+            :key="item.historyId || index"
             class="recent-item"
             @click="viewRecognitionResult(item)"
           >
@@ -68,8 +68,18 @@
             <div class="item-info">
               <div class="item-name">{{ item.name }}</div>
               <div class="item-type">{{ item.type }}</div>
+              <div class="item-confidence">{{ $t('recognition.confidence') }}: {{ (item.confidence * 100).toFixed(0) }}%</div>
               <div class="item-time">{{ formatTime(item.timestamp) }}</div>
             </div>
+          </div>
+          <!-- 加载更多指示器 -->
+          <div v-if="loadingMore" class="loading-more">
+            <div class="loading-spinner small"></div>
+            <span>{{ $t('home.loadingMore') }}</span>
+          </div>
+          <!-- 没有更多数据提示 -->
+          <div v-if="!hasMore && recognitionStore.getRecentRecognitions.length > 0" class="no-more">
+            {{ $t('home.noMoreData') }}
           </div>
         </div>
       </section>
@@ -108,7 +118,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useRecognitionStore } from '../stores/recognition';
 import { useI18nStore } from '../stores/i18n';
@@ -124,10 +134,63 @@ const fileInput = ref(null);
 const languageSelectorVisible = ref(false);
 const cameraCaptureVisible = ref(false);
 
+// 上拉加载更多相关状态
+const currentPage = ref(1);
+const hasMore = ref(true);
+const loadingMore = ref(false);
+const pageSize = 10;
+
 // 初始化
 onMounted(() => {
   recognitionStore.initializeRecognitions();
+  // 添加滚动监听
+  window.addEventListener('scroll', handleScroll);
 });
+
+// 组件卸载时移除滚动监听
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
+
+// 处理滚动事件，实现上拉加载更多
+const handleScroll = async () => {
+  // 如果已经没有更多数据或正在加载中，则不执行
+  if (!hasMore.value || loadingMore.value || recognitionStore.loading) {
+    return;
+  }
+  
+  // 计算是否滚动到了底部附近
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+  const clientHeight = document.documentElement.clientHeight || window.innerHeight;
+  
+  // 当滚动到距离底部100px时触发加载
+  if (scrollTop + clientHeight >= scrollHeight - 100) {
+    await loadMoreData();
+  }
+};
+
+// 加载更多数据
+const loadMoreData = async () => {
+  try {
+    loadingMore.value = true;
+    currentPage.value++;
+    
+    const result = await recognitionStore.fetchHistoryRecognitions(
+      currentPage.value,
+      pageSize,
+      true // 追加模式
+    );
+    
+    // 根据返回结果判断是否还有更多数据
+    hasMore.value = result.hasMore;
+  } catch (error) {
+    console.error('加载更多数据失败:', error);
+    currentPage.value--; // 加载失败时恢复页码
+  } finally {
+    loadingMore.value = false;
+  }
+};
 
 // 开始拍照识别
 const startScan = async () => {
@@ -245,6 +308,7 @@ const selectLanguage = (languageCode) => {
 .main-content {
   flex: 1;
   padding: 20px;
+  padding-bottom: 60px;
   overflow-y: auto;
 }
 
@@ -349,6 +413,13 @@ const selectLanguage = (languageCode) => {
   font-size: 14px;
   opacity: 0.8;
   margin-bottom: 5px;
+}
+
+.item-confidence {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 5px;
+  color: #4ade80;
 }
 
 .item-time {
@@ -462,5 +533,28 @@ const selectLanguage = (languageCode) => {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* 加载更多样式 */
+.loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.loading-spinner.small {
+  width: 20px;
+  height: 20px;
+  border-width: 2px;
+}
+
+.no-more {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
 }
 </style>

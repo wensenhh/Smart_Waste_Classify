@@ -5,14 +5,18 @@ const db = require('./src/utils/db');
 
 /**
  * 运行SQL迁移脚本
- * 用于执行add_recognition_fields.sql文件中的SQL语句
+ * 可以通过命令行参数指定要执行的SQL文件，默认为add_recognition_fields.sql
  */
 async function runSqlMigration() {
   console.log('开始运行SQL迁移脚本...');
   
   try {
-    // 读取SQL文件内容
-    const sqlFilePath = path.join(__dirname, 'database', 'add_recognition_fields.sql');
+    // 获取命令行参数，默认为add_recognition_fields.sql
+    const args = process.argv.slice(2);
+    const sqlFileName = args[0] || 'add_recognition_fields.sql';
+    const sqlFilePath = path.join(__dirname, 'database', sqlFileName);
+    
+    console.log(`正在执行SQL文件: ${sqlFileName}`);
     const sqlContent = fs.readFileSync(sqlFilePath, 'utf8');
     
     console.log('SQL文件读取成功，开始处理SQL语句');

@@ -210,7 +210,7 @@ if (import.meta.env.DEV) {
 
 <style scoped lang="scss">
 // 导入全局变量
-@import '../style.scss';
+@use '../style.scss' as s;
 
 .modal-overlay {
   position: fixed;
@@ -223,18 +223,18 @@ if (import.meta.env.DEV) {
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  animation: fadeIn $transition-normal ease;
+  animation: fadeIn s.$transition-normal ease;
 }
 
 .modal-container {
   background: white;
-  border-radius: $border-radius-medium;
+  border-radius: s.$border-radius-medium;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   max-width: 90%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  animation: slideIn $transition-normal ease;
+  animation: slideIn s.$transition-normal ease;
   
   // 大小样式
   &.small {
@@ -274,13 +274,13 @@ if (import.meta.env.DEV) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-md $spacing-lg;
-  border-bottom: 1px solid $border-color;
+  padding: s.$spacing-md s.$spacing-lg;
+  border-bottom: 1px solid s.$border-color;
   
   .modal-title {
-    font-size: $font-size-md;
+    font-size: s.$font-size-md;
     font-weight: 600;
-    color: $text-primary;
+    color: s.$text-primary;
     margin: 0;
   }
   
@@ -289,19 +289,19 @@ if (import.meta.env.DEV) {
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: $text-disabled;
+    color: s.$text-disabled;
     padding: 0;
     width: 24px;
     height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: $border-radius-full;
-    transition: all $transition-normal;
+    border-radius: s.$border-radius-full;
+    transition: all s.$transition-normal;
     
     &:hover {
-      background-color: $background-secondary;
-      color: $text-secondary;
+      background-color: s.$background-secondary;
+      color: s.$text-secondary;
     }
   }
 }
@@ -309,7 +309,7 @@ if (import.meta.env.DEV) {
 // 模态框内容
 .modal-body {
   flex: 1;
-  padding: $spacing-lg;
+  padding: s.$spacing-lg;
   overflow-y: auto;
 }
 
@@ -319,36 +319,36 @@ if (import.meta.env.DEV) {
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  padding: $spacing-md $spacing-lg;
-  border-top: 1px solid $border-color;
+  padding: s.$spacing-md s.$spacing-lg;
+  border-top: 1px solid s.$border-color;
   
   .modal-button {
     padding: 8px 16px;
-    border: 1px solid $border-color;
-    border-radius: $border-radius-small;
-    font-size: $font-size-sm;
+    border: 1px solid s.$border-color;
+    border-radius: s.$border-radius-small;
+    font-size: s.$font-size-sm;
     font-weight: 500;
     cursor: pointer;
-    transition: all $transition-normal;
+    transition: all s.$transition-normal;
     
     &.cancel {
       background-color: white;
-      color: $text-primary;
+      color: s.$text-primary;
       
       &:hover:not(:disabled) {
-        border-color: $primary-color;
-        color: $primary-color;
+        border-color: s.$primary-color;
+        color: s.$primary-color;
       }
     }
     
     &.confirm {
-      background-color: $primary-color;
-      border-color: $primary-color;
+      background-color: s.$primary-color;
+      border-color: s.$primary-color;
       color: white;
       
       &:hover:not(:disabled) {
-        background-color: $primary-dark;
-        border-color: $primary-dark;
+        background-color: s.$primary-dark;
+        border-color: s.$primary-dark;
       }
     }
     
