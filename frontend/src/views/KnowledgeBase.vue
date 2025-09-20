@@ -498,6 +498,14 @@ onUnmounted(() => {
   margin-bottom: 20px;
   overflow-x: auto;
   padding-bottom: 10px;
+  /* 隐藏滚动条 - Chrome, Safari, Opera */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Chrome, Safari, Opera 滚动条样式 */
+.category-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .category-tab {
