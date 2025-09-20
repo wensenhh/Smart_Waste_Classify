@@ -632,13 +632,23 @@ export default {
 
 /* 修复Header组件的字体高度居中问题 */
 .result-page-header {
-  height: 56px;
-  padding: 0 10px;
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: space-between; /* 水平分布元素 */
+  padding: 10px;
+  min-height: 56px; /* 最小高度保证足够空间 */
+  box-sizing: border-box;
 }
 
 .page-title {
-  line-height: 56px;
   margin: 0;
+}
+
+/* 确保返回按钮也垂直居中 */
+.back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .empty-state {
