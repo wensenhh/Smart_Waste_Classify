@@ -162,10 +162,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../stores/user';
 import { useI18n } from 'vue-i18n';
+import { rememberCredentials, getRememberedCredentials } from '../utils/cookieUtils';
 
 defineOptions({
   name: 'Login'
@@ -189,6 +190,16 @@ const showPassword = ref(false);
 const showPasswordTooltip = ref(false);
 const loginError = ref('');
 
+// 组件挂载时检查是否有记住的凭证
+onMounted(() => {
+  const credentials = getRememberedCredentials();
+  if (credentials) {
+    username.value = credentials.username;
+    password.value = credentials.password;
+    rememberMe.value = true;
+  }
+});
+
 // 清除登录错误
 const clearLoginError = () => {
   loginError.value = '';
@@ -210,6 +221,8 @@ const handleLogin = async () => {
     });
     
     if (loginSuccess) {
+      // 登录成功后，根据用户选择记住或忘记密码
+      rememberCredentials(username.value, password.value, rememberMe.value);
       // 登录成功后跳转到首页
       router.push({ name: 'Home' });
     } else {
