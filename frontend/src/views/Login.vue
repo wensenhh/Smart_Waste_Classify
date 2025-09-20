@@ -227,12 +227,31 @@ const handleLogin = async () => {
       // 登录成功后跳转到首页
       router.push({ name: 'Home' });
     } else {
-      // 显示具体的错误信息
-      loginError.value = userStore.error || '登录失败：账号或密码错误';
+      // 根据不同错误类型显示友好的错误信息
+      if (userStore.error) {
+        if (userStore.error.includes('validation_error') || 
+            userStore.error.includes('VALIDATION_ERROR')) {
+          loginError.value = '请输入用户名和密码';
+        } else if (userStore.error.includes('login_failed') || 
+                   userStore.error.includes('ACCOUNT_INACTIVE')) {
+          loginError.value = '账号或密码错误，请重新输入';
+        } else {
+          loginError.value = '登录失败，请稍后再试';
+        }
+      } else {
+        loginError.value = '账号或密码错误，请重新输入';
+      }
     }
   } catch (error) {
     console.error('Login failed:', error);
-    loginError.value = '登录失败：网络错误或服务器问题';
+    // 网络错误处理
+    if (error.toString().includes('Network Error')) {
+      loginError.value = '网络连接失败，请检查您的网络设置';
+    } else if (error.toString().includes('timeout')) {
+      loginError.value = '请求超时，请稍后再试';
+    } else {
+      loginError.value = '服务器暂时不可用，请稍后再试';
+    }
   } finally {
     isLoggingIn.value = false;
   }
