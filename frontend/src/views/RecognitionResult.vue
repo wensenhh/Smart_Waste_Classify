@@ -64,7 +64,7 @@
       <section class="knowledge-section" v-if="recognitionStore.getRecognitionResult">
         <h3 class="section-title">相关知识</h3>
         <div class="knowledge-content">
-          <p>{{ recognitionStore.getRecognitionResult.tips }}</p>
+          <div v-html="recognitionStore.getRecognitionResult.tips"></div>
         </div>
       </section>
 
@@ -160,8 +160,8 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useRecognitionStore } from '../stores/recognition';
 import Header from '../components/Header.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
@@ -174,10 +174,24 @@ export default {
   },
   setup() {
     const router = useRouter();
+    const route = useRoute();
     const recognitionStore = useRecognitionStore();
     const showFeedback = ref(false);
     const feedbackType = ref(null); // null, true(正确), false(错误)
     const feedbackComment = ref('');
+    
+    // 页面加载时检查路由参数并获取识别记录
+    onMounted(async () => {
+      const { id } = route.params;
+      if (id) {
+        try {
+          await recognitionStore.fetchRecognitionById(id);
+        } catch (error) {
+          console.error('获取识别记录失败:', error);
+          window.$popup.error('获取识别记录失败，请返回首页重试');
+        }
+      }
+    });
 
     // 返回上一页
     const goBack = () => {

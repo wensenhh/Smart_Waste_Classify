@@ -29,15 +29,7 @@ const routes = [
       requiresAuth: false
     }
   },
-  {
-    path: '/recognition-result',
-    name: 'RecognitionResult',
-    component: () => import('../views/RecognitionResult.vue'),
-    meta: {
-      title: '识别结果',
-      requiresAuth: false
-    }
-  },
+  {    path: '/recognition-result/:id?',    name: 'RecognitionResult',    component: () => import('../views/RecognitionResult.vue'),    meta: {      title: '识别结果',      requiresAuth: false    }  },
   {
     path: '/knowledge-base',
     name: 'KnowledgeBase',

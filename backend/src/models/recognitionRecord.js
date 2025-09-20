@@ -26,6 +26,7 @@ class RecognitionRecord {
    * @param {string} [recordData.disposalMethod] - 处理方式
    * @param {string} [recordData.aiModel] - AI模型
    * @param {string} [recordData.environmentalTip] - 环保提示
+   * @param {string} [recordData.relatedKnowledge] - 相关知识（富文本）
    * @returns {Promise<Object>} 创建的记录
    */
   async createRecord(recordData) {
@@ -43,7 +44,8 @@ class RecognitionRecord {
         classificationReason = '无',
         disposalMethod = 'unknown',
         aiModel = 'unknown',
-        environmentalTip = '无'
+        environmentalTip = '无',
+        relatedKnowledge = '无'
       } = recordData || {};
 
       // 生成UUID作为记录ID
@@ -73,9 +75,10 @@ class RecognitionRecord {
           recognized_at,
           recognition_type,
           city,
-          waste_type
+          waste_type,
+          related_knowledge
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       // 再次检查关键参数，确保它们不为undefined
@@ -95,7 +98,8 @@ class RecognitionRecord {
         currentTime, // 使用JavaScript生成的当前时间
         'image_recognition', // 默认识别类型
         'unknown', // 默认城市
-        wasteType // 垃圾类型
+        wasteType, // 垃圾类型
+        relatedKnowledge // 相关知识（富文本）
       ];
 
       const result = await db.query(query, params);
@@ -243,6 +247,7 @@ class RecognitionRecord {
       }
       
       const record = results[0];
+      console.log('获取到的记录:', record);
       return {
         id: record.id,
         userId: record.user_id,
@@ -252,7 +257,14 @@ class RecognitionRecord {
         confidence: record.confidence,
         description: record.description,
         suggestion: record.suggestion,
-        createdAt: new Date(record.created_at)
+        createdAt: new Date(record.created_at),
+        // 添加缺少的字段，确保前端能正确获取所有数据
+        wasteName: record.waste_name,
+        classificationReason: record.classification_reason,
+        disposalMethod: record.disposal_method,
+        aiModel: record.ai_model,
+        environmentalTip: record.environmental_tip,
+        relatedKnowledge: record.related_knowledge || '无'
       };
     } catch (error) {
       console.error('获取识别记录详情失败:', error);
