@@ -6,22 +6,10 @@ const RateLimit = require('koa-ratelimit');
 const RedisStore = RateLimit.RedisStore;
 const securityConfig = require('../config/security');
 
-// 自定义错误类
-class UnauthorizedError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'UnauthorizedError';
-  }
-}
+// 从errorHandler导入统一的错误类
+const { UnauthorizedError, ForbiddenError } = require('./errorHandler');
 
-class ForbiddenError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'ForbiddenError';
-  }
-}
-
-// 导出错误类
+// 重新导出错误类
 exports.UnauthorizedError = UnauthorizedError;
 exports.ForbiddenError = ForbiddenError;
 

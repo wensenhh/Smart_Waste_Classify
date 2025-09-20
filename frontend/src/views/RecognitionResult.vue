@@ -20,6 +20,9 @@
             :src="recognitionStore.getRecognitionResult.imageUrl" 
             :alt="recognitionStore.getRecognitionResult.name"
             class="result-image"
+            @click="showFullImage"
+            style="cursor: pointer;"
+            title="点击放大查看"
           />
         </div>
 
@@ -156,6 +159,14 @@
         返回首页
       </button>
     </div>
+
+    <!-- 图片查看器 -->
+    <ImageViewer
+      :show="showImageViewer"
+      :imageUrl="recognitionStore.getRecognitionResult?.imageUrl || ''"
+      :altText="recognitionStore.getRecognitionResult?.name || '识别图片'"
+      @close="closeImageViewer"
+    />
   </div>
 </template>
 
@@ -165,6 +176,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useRecognitionStore } from '../stores/recognition';
 import Header from '../components/Header.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
+import ImageViewer from '../components/ImageViewer.vue';
 
 import popupManager from '../utils/popup.js'
 
@@ -172,7 +184,8 @@ export default {
   name: 'RecognitionResult',
   components: {
     Header,
-    BottomNavBar
+    BottomNavBar,
+    ImageViewer
   },
   setup() {
     const router = useRouter();
@@ -181,6 +194,7 @@ export default {
     const showFeedback = ref(false);
     const feedbackType = ref(null); // null, true(正确), false(错误)
     const feedbackComment = ref('');
+    const showImageViewer = ref(false); // 控制图片查看器的显示/隐藏
     
     // 页面加载时检查路由参数并获取识别记录
     onMounted(async () => {
@@ -250,6 +264,16 @@ export default {
       feedbackComment.value = '';
     };
 
+    // 显示图片查看器
+    const showFullImage = () => {
+      showImageViewer.value = true;
+    };
+
+    // 关闭图片查看器
+    const closeImageViewer = () => {
+      showImageViewer.value = false;
+    };
+
     return {
       recognitionStore,
       showFeedback,
@@ -261,7 +285,10 @@ export default {
       shareResult,
       submitFeedback,
       confirmFeedback,
-      closeFeedback
+      closeFeedback,
+      showImageViewer,
+      showFullImage,
+      closeImageViewer
     };
   }
 };

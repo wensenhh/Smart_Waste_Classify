@@ -181,9 +181,16 @@ async function uploadFile(fileBuffer, originalName, options = {}) {
     const relativePath = normalizedRelativeTargetDir ? `${normalizedRelativeTargetDir}/${filename}` : filename;
     
     // 获取基础URL（优先使用环境变量中的BASE_URL，否则从环境变量构建）
-    // 完全从环境变量中读取，不硬编码任何URL
+    // 完全从环境变量中读取，不硬编码任何URL，根据环境决定是否添加端口号
     const baseUrl = process.env.BASE_URL || 
-                   `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3000}`;
+                   (() => {
+                     const protocol = process.env.PROTOCOL || 'http';
+                     const host = process.env.HOST || 'localhost';
+                     const port = process.env.PORT || '3000';
+                     // 只有在端口不是默认端口（80或443）且端口存在时才添加端口
+                     const portStr = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                     return `${protocol}://${host}${portStr}`;
+                   })();
     
     // 构建完整的文件URL（简化路径，不添加/static/uploads前缀）
     const fileUrl = `${baseUrl}/${relativePath}`;
@@ -203,9 +210,16 @@ async function uploadFile(fileBuffer, originalName, options = {}) {
 async function deleteFile(fileUrl) {
   try {
     // 从URL中提取文件路径（移除基础URL部分）
-    // 完全从环境变量中读取，不硬编码任何URL
+    // 完全从环境变量中读取，不硬编码任何URL，根据环境决定是否添加端口号
     const baseUrl = process.env.BASE_URL || 
-                   `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3002}`;
+                   (() => {
+                     const protocol = process.env.PROTOCOL || 'http';
+                     const host = process.env.HOST || 'localhost';
+                     const port = process.env.PORT || '3002';
+                     // 只有在端口不是默认端口（80或443）且端口存在时才添加端口
+                     const portStr = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                     return `${protocol}://${host}${portStr}`;
+                   })();
     const relativePath = fileUrl.replace(baseUrl + '/', '');
     const filePath = path.join(uploadDir, relativePath);
 
@@ -234,9 +248,16 @@ async function deleteFile(fileUrl) {
 async function getFileInfo(fileUrl) {
   try {
     // 从URL中提取文件路径（移除基础URL部分）
-    // 完全从环境变量中读取，不硬编码任何URL
+    // 完全从环境变量中读取，不硬编码任何URL，根据环境决定是否添加端口号
     const baseUrl = process.env.BASE_URL || 
-                   `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3002}`;
+                   (() => {
+                     const protocol = process.env.PROTOCOL || 'http';
+                     const host = process.env.HOST || 'localhost';
+                     const port = process.env.PORT || '3002';
+                     // 只有在端口不是默认端口（80或443）且端口存在时才添加端口
+                     const portStr = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                     return `${protocol}://${host}${portStr}`;
+                   })();
     const relativePath = fileUrl.replace(baseUrl + '/', '');
     const filePath = path.join(uploadDir, relativePath);
 

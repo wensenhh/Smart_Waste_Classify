@@ -93,9 +93,16 @@ class RecognitionController {
       } catch (uploadError) {
         console.error('图片上传失败:', uploadError);
         // 为了确保记录完整，即使上传失败也生成一个默认的图片URL
-        // 使用与fileUpload.js一致的URL构建逻辑
+        // 根据环境决定是否添加端口号
         const baseUrl = process.env.BASE_URL || 
-                      `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}:${process.env.PORT || 3000}`;
+                      (() => {
+                        const protocol = process.env.PROTOCOL || 'http';
+                        const host = process.env.HOST || 'localhost';
+                        const port = process.env.PORT;
+                        // 只有在端口不是默认端口（80或443）且端口存在时才添加端口
+                        const portStr = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                        return `${protocol}://${host}${portStr}`;
+                      })();
         imageUrl = `${baseUrl}/static/default/placeholder.svg`;
       }
       
