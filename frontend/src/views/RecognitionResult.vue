@@ -629,6 +629,17 @@ export default {
   100% { transform: rotate(360deg); }
 }
 
+/* 修复Header组件的字体高度居中问题 */
+.result-page-header {
+  height: 56px;
+  padding: 0 10px;
+}
+
+.page-title {
+  line-height: 56px;
+  margin: 0;
+}
+
 .empty-state {
   display: flex;
   flex-direction: column;
