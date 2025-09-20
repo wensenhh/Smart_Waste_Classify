@@ -557,6 +557,14 @@ export default {
   gap: 15px;
   overflow-x: auto;
   padding-bottom: 10px;
+  /* 隐藏横向滚动条但保持滚动功能 */
+  -ms-overflow-style: none;  /* IE 和 Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Chrome、Safari 和 Opera */
+.achievements-list::-webkit-scrollbar {
+  display: none;
 }
 
 .achievement-item {
