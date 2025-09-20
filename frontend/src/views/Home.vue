@@ -281,7 +281,6 @@ const handleCameraClose = () => {
 
 // 选择语言
 const selectLanguage = (languageCode) => {
-  console.log('selectLanguage', languageCode);
   i18nStore.setLocale(languageCode);
   closeLanguageSelector();
 };

@@ -387,16 +387,20 @@ class RecognitionController {
   async getUserRecognitionHistory(ctx) {
     try {
       const userId = ctx.state.user.id;
-      const { page = 1, pageSize = 10, sortBy = 'recognized_at', sortOrder = 'DESC' } = ctx.query;
+      // 同时支持limit和pageSize参数，优先使用limit（与路由验证保持一致）
+      const { page = 1, limit = 10, pageSize, sortBy = 'recognized_at', sortOrder = 'DESC' } = ctx.query;
       const lang = ctx.query.lang || 'zh';
+      
+      // 确定最终使用的每页数量
+      const finalPageSize = parseInt(limit) || parseInt(pageSize) || 10;
 
-      // 获取用户识别历史
+      // 获取用户识别历史，确保使用DESC排序以实现时间最新的数据排在前面
       const result = await wasteRecognitionService.getUserRecognitionHistory(userId, {
         lang,
         page: parseInt(page),
-        pageSize: parseInt(pageSize),
+        pageSize: finalPageSize,
         sortBy,
-        sortOrder
+        sortOrder: 'DESC' // 强制使用降序排序
       });
 
       // 返回识别历史
