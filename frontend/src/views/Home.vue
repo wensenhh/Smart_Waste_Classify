@@ -224,9 +224,11 @@ const handleFileSelect = async (event) => {
 
 // 查看识别结果
 const viewRecognitionResult = (item) => {
-  // 设置当前识别结果
-  recognitionStore.recognitionResult = item;
-  router.push({ name: 'RecognitionResult' });
+  // 导航到识别结果页面并传递ID参数
+  router.push({
+    name: 'RecognitionResult',
+    params: { id: item.historyId }
+  });
 };
 
 // 格式化时间

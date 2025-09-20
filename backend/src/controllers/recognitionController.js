@@ -1,7 +1,6 @@
 // 垃圾识别控制器
 const wasteRecognitionService = require('../services/wasteRecognitionService');
 const recognitionRecordModel = require('../models/recognitionRecord');
-const wasteCategoryModel = require('../models/wasteCategory');
 const { deleteFile } = require('../utils/fileUpload');
 const { getLocalizedString } = require('../middlewares/i18n');
 const axios = require('axios');
@@ -116,7 +115,8 @@ class RecognitionController {
         model: apiInfo.model || 'unknown',
         version: apiInfo.version || 'unknown',
         imageUrl: imageUrl || null,
-        timestamp: new Date()
+        timestamp: new Date(),
+        related_knowledge: classification.related_knowledge || '无'
       };
       
       // 6. 保存识别记录到数据库（因为现在路由需要登录，所以userId不为空）
@@ -134,7 +134,8 @@ class RecognitionController {
           classificationReason: recognitionResult.classification_reason || '无',
           disposalMethod: recognitionResult.disposal_advice || '无',
           aiModel: recognitionResult.model || 'unknown',
-          environmentalTip: recognitionResult.environmental_tip || '无'
+          environmentalTip: recognitionResult.environmental_tip || '无',
+          relatedKnowledge: recognitionResult.related_knowledge || '无'
         });
         console.log('识别记录已保存到数据库:', { userId, wasteName: recognitionResult.waste_name });
       } catch (dbError) {
@@ -376,25 +377,38 @@ class RecognitionController {
         ctx.throw(404, getLocalizedString(ctx, 'recognition.recordNotFound'));
       }
 
-      // 本地化记录信息
-      const categoryInfo = wasteCategoryModel.getLocalizedCategory(record.category, lang);
-      const localizedRecord = {
-        ...record,
-        categoryName: categoryInfo?.name,
-        categoryIcon: categoryInfo?.icon,
-        categoryColor: categoryInfo?.color
+      // 构建与upload接口完全一致的数据格式
+      // 由于wasteCategoryModel文件不存在，直接使用record中的数据
+      const recognitionResult = {
+        waste_name: record.wasteName || record.wasteType || '未知',
+        category: record.wasteType || 'unknown',
+        category_name: record.category || '未知',
+        classification_reason: record.classificationReason || record.description || '无',
+        disposal_advice: record.disposalMethod || record.suggestion || '无',
+        environmental_tip: record.environmentalTip || '无',
+        confidence: Math.max(0, Math.min(1, record.confidence || 0)), // 确保置信度在0-1之间
+        method: 'record_retrieval',
+        model: record.aiModel || 'unknown',
+        version: '1.0.0',
+        imageUrl: record.imageUrl || null,
+        timestamp: new Date(record.createdAt),
+        related_knowledge: record.relatedKnowledge || '无'
       };
 
-      // 返回记录详情
+      // 返回记录详情，保持与upload接口相同的响应格式
       ctx.status = 200;
       ctx.body = {
         success: true,
-        data: localizedRecord,
+        data: recognitionResult,
         message: getLocalizedString(ctx, 'recognition.recordFetched')
       };
     } catch (error) {
       console.error('获取识别记录详情失败:', error);
-      ctx.throw(400, error.message || getLocalizedString(ctx, 'recognition.recordError'));
+      ctx.status = error.status || 400;
+      ctx.body = {
+        success: false,
+        message: error.message || getLocalizedString(ctx, 'recognition.recordError')
+      };
     }
   }
 

@@ -67,7 +67,10 @@ export const wasteApi = {
     // 获取系统统计数据（管理员）
     getStytemStats: () => api.get('/recognition/admin/system-stats'),
     // 反馈识别结果
-    feedback: (resultId, feedbackData) => api.post(`/recognition/${resultId}/feedback`, feedbackData)
+    feedback: (resultId, feedbackData) => api.post(`/recognition/${resultId}/feedback`, feedbackData),
+    
+    // 根据ID获取识别记录详情
+    getRecognitionById: (id) => api.get(`/recognition/history/${id}`)
   },
   
   // 知识相关API

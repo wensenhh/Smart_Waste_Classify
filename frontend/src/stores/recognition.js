@@ -22,6 +22,68 @@ export const useRecognitionStore = defineStore('recognition', {
   },
 
   actions: {
+    // 根据ID获取识别记录详情
+    async fetchRecognitionById(id) {
+      try {
+        this.loading = true;
+        this.error = null;
+        
+        // 调用API获取识别记录详情
+        const response = await wasteApi.recognition.getRecognitionById(id);
+        
+        if (response && response.success && response.data) {
+          const apiResult = response.data;
+          
+          // 处理imageUrl，确保它是完整的超链接形式
+          let imageUrl = apiResult.imageUrl || '';
+          
+          // 检查是否已经是完整的URL，如果不是则组合成完整URL
+          if (apiResult.imageUrl && !apiResult.imageUrl.startsWith('http://') && !apiResult.imageUrl.startsWith('https://')) {
+            // 获取API基础URL
+            const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+            // 确保URL格式正确（处理斜杠问题）
+            const baseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
+            const path = apiResult.imageUrl.startsWith('/') ? apiResult.imageUrl : `/${apiResult.imageUrl}`;
+            imageUrl = `${baseUrl}${path}`;
+          }
+          
+          this.recognitionResult = {
+            type: apiResult.category_name || apiResult.type,  // 垃圾类型
+            name: apiResult.waste_name || apiResult.name,     // 垃圾名称
+            confidence: apiResult.confidence || 0,            // 识别置信度
+            suggestion: apiResult.disposal_advice || apiResult.suggestion || '', // 处理建议
+            category: apiResult.category || '',               // 垃圾类别
+            imageUrl: imageUrl,                               // 图片URL
+            tips: apiResult.related_knowledge || apiResult.environmental_tip || apiResult.tips || '无', // 相关知识，优先使用related_knowledge
+            historyId: apiResult.id || apiResult.historyId,   // 历史记录ID
+            classificationReason: apiResult.classification_reason // 分类理由
+          };
+          
+          return this.recognitionResult;
+        } else {
+          throw new Error(response?.message || '获取识别记录失败');
+        }
+      } catch (error) {
+        console.error('获取识别记录详情失败:', error);
+        // 添加防御性检查，确保errorHandler存在且handleSpecificErrors是函数
+        if (errorHandler && typeof errorHandler.handleSpecificErrors === 'function') {
+          try {
+            errorHandler.handleSpecificErrors(error);
+          } catch (handlerError) {
+            console.error('错误处理器执行失败:', handlerError);
+          }
+        } else {
+          console.error('errorHandler或handleSpecificErrors方法不存在');
+        }
+        // 使用简单的错误消息显示方式
+        if (window.$popup) {
+          window.$popup.error('获取识别记录失败，请稍后再试');
+        }
+        throw error;
+      } finally {
+        this.loading = false;
+      }
+    },
     // 初始化识别记录
     async initializeRecognitions() {
       try {
@@ -63,7 +125,8 @@ export const useRecognitionStore = defineStore('recognition', {
             category: item.category || '',          // 垃圾类别
             imageUrl: this.getFullImageUrl(item.imageUrl), // 图片URL
             timestamp: item.created_at || item.timestamp, // 时间戳
-            historyId: item.id || item.historyId     // 历史记录ID
+            historyId: item.id || item.historyId,    // 历史记录ID
+            tips: item.related_knowledge || item.environmental_tip || item.tips || '无' // 相关知识，优先使用related_knowledge
           }));
           
           // 根据是否是追加模式决定如何更新列表
