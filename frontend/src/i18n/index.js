@@ -20,9 +20,9 @@ const zh = {
     categoryNews: '环保新闻',
     comments: '评论',
     addComment: '添加评论...',
-    minutesAgo: '分钟前',
-    hoursAgo: '小时前',
-    daysAgo: '天前'
+    minutesAgo: '{minutes}分钟前',
+    hoursAgo: '{hours}小时前',
+    daysAgo: '{days}天前'
   },
   register: {
     title: '智能垃圾分类系统',
@@ -334,9 +334,9 @@ const en = {
     categoryNews: 'Environmental News',
     comments: 'Comments',
     addComment: 'Add comment...',
-    minutesAgo: 'minutes ago',
-    hoursAgo: 'hours ago',
-    daysAgo: 'days ago'
+    minutesAgo: '{minutes} minutes ago',
+    hoursAgo: '{hours} hours ago',
+    daysAgo: '{days} days ago'
   },
   register: {
     title: 'Smart Waste Classification System',
@@ -648,9 +648,9 @@ const ms = {
     categoryNews: 'Berita Alam Sekitar',
     comments: 'Komen',
     addComment: 'Tambah komen...',
-    minutesAgo: 'minit yang lalu',
-    hoursAgo: 'jam yang lalu',
-    daysAgo: 'hari yang lalu'
+    minutesAgo: '{minutes} minit yang lalu',
+    hoursAgo: '{hours} jam yang lalu',
+    daysAgo: '{days} hari yang lalu'
   },
   register: {
     title: 'Sistem Pengelasan Sisa Pintar',

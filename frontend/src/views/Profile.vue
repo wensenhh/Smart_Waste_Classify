@@ -237,32 +237,32 @@ const achievements = ref(userStore.getAchievements || [
 ]);
 
 // 最近活动
-const recentActivities = ref([
-  {
-    id: 1,
-    icon: '🔍',
-    text: t('profile.recognizedPlasticBottle'),
-    time: `${t('profile.today')} 14:30`
-  },
-  {
-    id: 2,
-    icon: '📚',
-    text: t('profile.learnedWasteKnowledge'),
-    time: `${t('profile.yesterday')} 09:45`
-  },
-  {
-    id: 3,
-    icon: '🎮',
-    text: t('profile.participatedDailyChallenge'),
-    time: `2${t('profile.daysAgo')}`
-  },
-  {
-    id: 4,
-    icon: '🏆',
-    text: t('profile.earnedWasteSortingAchievement'),
-    time: `3${t('profile.daysAgo')}`
-  }
-]);
+  const recentActivities = ref([
+    {
+      id: 1,
+      icon: '🔍',
+      text: t('profile.recognizedPlasticBottle'),
+      time: `${t('profile.today')} 14:30`
+    },
+    {
+      id: 2,
+      icon: '📚',
+      text: t('profile.learnedWasteKnowledge'),
+      time: `${t('profile.yesterday')} 09:45`
+    },
+    {
+      id: 3,
+      icon: '🎮',
+      text: t('profile.participatedDailyChallenge'),
+      time: t('profile.daysAgo').replace('{days}', '2')
+    },
+    {
+      id: 4,
+      icon: '🏆',
+      text: t('profile.earnedWasteSortingAchievement'),
+      time: t('profile.daysAgo').replace('{days}', '3')
+    }
+  ]);
 
 // 页面加载时获取用户资料
 onMounted(async () => {

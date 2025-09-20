@@ -122,6 +122,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useRecognitionStore } from '../stores/recognition';
 import { useI18nStore } from '../stores/i18n';
+import { useI18n } from 'vue-i18n';
 import Header from '../components/Header.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import CameraCapture from '../components/CameraCapture.vue';
@@ -130,6 +131,7 @@ const router = useRouter();
 const route = useRoute();
 const recognitionStore = useRecognitionStore();
 const i18nStore = useI18nStore();
+const { t } = useI18n();
 const fileInput = ref(null);
 const languageSelectorVisible = ref(false);
 const cameraCaptureVisible = ref(false);
@@ -241,11 +243,11 @@ const formatTime = (timestamp) => {
   const days = Math.floor(diff / 86400000);
 
   if (minutes < 60) {
-    return `${minutes}分钟前`;
+    return t('community.minutesAgo', { minutes });
   } else if (hours < 24) {
-    return `${hours}小时前`;
+    return t('community.hoursAgo', { hours });
   } else if (days < 7) {
-    return `${days}天前`;
+    return t('community.daysAgo', { days });
   } else {
     return date.toLocaleDateString();
   }
@@ -360,7 +362,7 @@ const selectLanguage = (languageCode) => {
 .recent-section {
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  padding: 20px;
+  padding: 14px;
   backdrop-filter: blur(10px);
 }
 
