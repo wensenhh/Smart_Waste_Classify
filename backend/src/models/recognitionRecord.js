@@ -188,13 +188,13 @@ class RecognitionRecord {
         id: record.id,
         userId: record.user_id,
         imageUrl: record.image_url,
-        name: record.waste_name || '未知垃圾', // 垃圾名称（优先使用直接存储的，否则从关联表获取）
+        name: record.waste_name || getLocalizedString({ lang: 'zh' }, 'recognition.unknown_waste'), // 垃圾名称（优先使用直接存储的，否则从关联表获取）
         confidence: record.confidence || 0, // 识别置信度
         timestamp: record.recognized_at ? new Date(record.recognized_at).toISOString() : null, // 格式化识别时间为ISO 8601
-        category: record.category_name || '未知', // 垃圾类别名称
+        category: record.category_name || getLocalizedString({ lang: 'zh' }, 'common.unknown'), // 垃圾类别名称
         categoryId: record.category_id, // 垃圾类别ID
         // 保留向后兼容的字段名
-        wasteType: record.waste_name || '未知垃圾',
+        wasteType: record.waste_name || getLocalizedString({ lang: 'zh' }, 'recognition.unknown_waste'),
         recognizedAt: record.recognized_at ? new Date(record.recognized_at).toISOString() : null // 格式化识别时间为ISO 8601
       }));
     } catch (error) {

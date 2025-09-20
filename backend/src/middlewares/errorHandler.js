@@ -1,11 +1,10 @@
 // 错误处理中间件
-const errorHandler = async (ctx, next) => {
-  try {
+const logger = require('../utils/logger');
+const { getLocalizedString } = require('./i18n');
+
+const errorHandler = async (ctx, next) => {  try {
     await next();
   } catch (error) {
-    // 获取国际化翻译
-    const t = ctx.i18n ? ctx.i18n.t : (key) => key;
-    
     // 记录错误日志
     console.error('请求处理错误:', {
       url: ctx.request.url,
@@ -18,44 +17,52 @@ const errorHandler = async (ctx, next) => {
     
     // 设置默认错误状态和消息
     let status = 500;
-    let message = t('server_error');
+    let message = getLocalizedString(ctx, 'server_error');
     let errorCode = 'SERVER_ERROR';
     let data = null;
     
     // 根据错误类型设置不同的状态码和消息
+    // 检查错误消息是否为翻译键，如果是则进行翻译
+    const translateMessage = (key) => {
+      if (typeof key === 'string' && (key.includes('.') || ['success', 'error', 'server_error', 'validation_error', 'unauthorized', 'forbidden', 'not_found', 'request_too_frequent'].includes(key))) {
+        return getLocalizedString(ctx, key);
+      }
+      return key;
+    };
+
     if (error.name === 'ValidationError') {
       status = 400;
-      message = error.message || t('validation_error');
+      message = translateMessage(error.message || 'validation_error');
       errorCode = 'VALIDATION_ERROR';
       data = error.details || error.data;
     } else if (error.name === 'UnauthorizedError') {
       status = 401;
-      message = error.message || t('unauthorized');
+      message = translateMessage(error.message || 'unauthorized');
       errorCode = 'UNAUTHORIZED';
     } else if (error.name === 'ForbiddenError') {
       status = 403;
-      message = error.message || t('forbidden');
+      message = translateMessage(error.message || 'forbidden');
       errorCode = 'FORBIDDEN';
     } else if (error.name === 'NotFoundError') {
       status = 404;
-      message = error.message || t('not_found');
+      message = translateMessage(error.message || 'not_found');
       errorCode = 'NOT_FOUND';
     } else if (error.name === 'TooManyRequestsError') {
       status = 429;
-      message = error.message || t('request_too_frequent');
+      message = translateMessage(error.message || 'request_too_frequent');
       errorCode = 'TOO_MANY_REQUESTS';
     } else if (error.name === 'DatabaseError') {
       status = 500;
-      message = error.message || t('database.query_failed');
+      message = translateMessage(error.message || 'database.error');
       errorCode = 'DATABASE_ERROR';
     } else if (error.name === 'BadRequestError') {
       status = 400;
-      message = error.message || t('validation_error');
+      message = translateMessage(error.message || 'validation_error');
       errorCode = 'BAD_REQUEST';
     } else if (error.status) {
       // 如果错误对象中已包含状态码
       status = error.status;
-      message = error.message || t('server_error');
+      message = translateMessage(error.message || 'server_error');
       errorCode = error.errorCode || 'SERVER_ERROR';
     }
     
@@ -101,43 +108,43 @@ class AppError extends Error {
 }
 
 class ValidationError extends AppError {
-  constructor(message = '数据验证失败', details = null) {
+  constructor(message = 'validation_error', details = null) {
     super(message, 400, 'VALIDATION_ERROR', details);
   }
 }
 
 class UnauthorizedError extends AppError {
-  constructor(message = '未授权访问') {
+  constructor(message = 'unauthorized') {
     super(message, 401, 'UNAUTHORIZED', null);
   }
 }
 
 class ForbiddenError extends AppError {
-  constructor(message = '权限不足') {
+  constructor(message = 'forbidden') {
     super(message, 403, 'FORBIDDEN', null);
   }
 }
 
 class NotFoundError extends AppError {
-  constructor(message = '资源未找到') {
+  constructor(message = 'not_found') {
     super(message, 404, 'NOT_FOUND', null);
   }
 }
 
 class TooManyRequestsError extends AppError {
-  constructor(message = '请求过于频繁') {
+  constructor(message = 'request_too_frequent') {
     super(message, 429, 'TOO_MANY_REQUESTS', null);
   }
 }
 
 class DatabaseError extends AppError {
-  constructor(message = '数据库查询失败', error = null) {
+  constructor(message = 'database.error', error = null) {
     super(message, 500, 'DATABASE_ERROR', error);
   }
 }
 
 class BadRequestError extends AppError {
-  constructor(message = '请求参数错误') {
+  constructor(message = 'validation_error') {
     super(message, 400, 'BAD_REQUEST', null);
   }
 }

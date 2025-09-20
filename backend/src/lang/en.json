@@ -8,36 +8,7 @@
   "not_found": "Resource not found",
   "request_too_frequent": "Request too frequent, please try again later",
   
-  "user": {
-    "register_success": "Registration successful",
-    "register_failed": "Registration failed",
-    "login_success": "Login successful",
-    "login_failed": "Login failed, incorrect username or password",
-    "logout_success": "Logout successful",
-    "profile_updated": "Profile updated successfully",
-    "password_updated": "Password updated successfully",
-    "phone_exist": "Phone number already exists",
-    "user_not_exist": "User does not exist",
-    "invalid_phone": "Invalid phone number",
-    "invalid_password": "Invalid password format",
-    "password_too_short": "Password length cannot be less than 8 characters",
-    "password_too_long": "Password length cannot exceed 32 characters",
-    "password_require_uppercase": "Password must contain uppercase letters",
-    "password_require_lowercase": "Password must contain lowercase letters",
-    "password_require_number": "Password must contain numbers",
-    "password_require_special": "Password must contain special characters",
-    "avatar_uploaded": "Avatar uploaded successfully"
-  },
-  
-  "recognition": {
-    "success": "Recognition successful",
-    "failed": "Recognition failed",
-    "no_image": "Please upload an image",
-    "invalid_image": "Invalid image file",
-    "image_too_large": "Image file too large",
-    "history_empty": "Recognition history is empty",
-    "history_loaded": "Recognition history loaded successfully"
-  },
+
   
   "waste": {
     "recyclable": "Recyclable waste",
@@ -96,16 +67,22 @@
     "daily_question_loaded": "Daily question loaded successfully"
   },
   
-  "pagination": {
-    "page_invalid": "Invalid page number",
-    "limit_invalid": "Invalid page size"
+  "common": {
+    "none": "None",
+    "unknown": "Unknown"
   },
   
   "database": {
+    "error": "Database query failed",
     "connection_failed": "Database connection failed",
     "query_failed": "Database query failed",
     "transaction_failed": "Transaction execution failed",
     "connection_success": "Database connection successful"
+  },
+  
+  "pagination": {
+    "page_invalid": "Invalid page number",
+    "limit_invalid": "Invalid page size"
   },
   
   "api": {
@@ -146,6 +123,7 @@
     "image_too_large": "Image file too large",
     "history_empty": "Recognition history is empty",
     "history_loaded": "Recognition history loaded successfully",
+    "unknown_waste": "Unknown waste",
     "image_required": "Please upload an image",
     "keyword_required": "Search keyword is required",
     "search_success": "Search successful",

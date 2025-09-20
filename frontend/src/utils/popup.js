@@ -1,6 +1,27 @@
 import { createApp } from 'vue';
 import Modal from '../components/Modal.vue';
 import MessageToast from '../components/MessageToast.vue';
+import { useI18n } from 'vue-i18n';
+
+// 创建临时应用实例以获取i18n实例
+const getI18nInstance = () => {
+  // 尝试直接获取已存在的i18n实例
+  try {
+    return useI18n();
+  } catch (error) {
+    // 如果失败，返回一个包含默认翻译的简单对象
+    return {
+      t: (key) => {
+        const defaultTranslations = {
+          'common.cancel': 'Cancel',
+          'common.confirm': 'Confirm',
+          'common.confirmOperation': 'Confirm Operation'
+        };
+        return defaultTranslations[key] || key;
+      }
+    };
+  }
+};
 
 // 创建弹窗实例的函数
 const createInstance = (component, props, container) => {
@@ -27,6 +48,9 @@ const popupManager = {
     let instance = null;
     
     // 处理options
+    // 获取i18n实例用于翻译
+    const { t } = getI18nInstance();
+    
     const props = {
       visible: true,
       title: options.title || '',
@@ -37,8 +61,8 @@ const popupManager = {
       showFooter: options.showFooter !== false,
       showCancelButton: options.showCancelButton !== false,
       showConfirmButton: options.showConfirmButton !== false,
-      cancelText: options.cancelText || '取消',
-      confirmText: options.confirmText || '确定',
+      cancelText: options.cancelText || t('common.cancel'),
+      confirmText: options.confirmText || t('common.confirm'),
       confirmLoading: options.confirmLoading || false,
       size: options.size || 'medium',
       position: options.position || 'center',
@@ -178,14 +202,17 @@ const popupManager = {
   
   // 确认弹窗
   confirm(options = {}) {
+    // 获取i18n实例
+    const { t } = getI18nInstance();
+    
     return new Promise((resolve, reject) => {
       this.modal({
-        title: options.title || '确认操作',
+        title: options.title || t('common.confirmOperation'),
         content: options.content || '',
         showCancelButton: true,
         showConfirmButton: true,
-        cancelText: options.cancelText || '取消',
-        confirmText: options.confirmText || '确定',
+        cancelText: options.cancelText || t('common.cancel'),
+        confirmText: options.confirmText || t('common.confirm'),
         onConfirm: () => resolve(true),
         onCancel: () => reject(false),
         ...options

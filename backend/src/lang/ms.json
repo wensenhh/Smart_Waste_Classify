@@ -40,6 +40,7 @@
     "image_too_large": "Fail imej terlalu besar",
     "history_empty": "Sejarah pengenalan kosong",
     "history_loaded": "Sejarah pengenalan dimuatkan dengan berjaya",
+    "unknown_waste": "Sisa tidak diketahui",
     "image_required": "Sila muat naik imej",
     "keyword_required": "Kata kunci carian diperlukan",
     "search_success": "Carian berjaya",
@@ -135,12 +136,7 @@
     "limit_invalid": "Saiz halaman tidak sah"
   },
   
-  "database": {
-    "connection_failed": "Penyambungan pangkalan data gagal",
-    "query_failed": "Permintaan pangkalan data gagal",
-    "transaction_failed": "Eksekusi transaksi gagal",
-    "connection_success": "Penyambungan pangkalan data berjaya"
-  },
+
   
   "api": {
     "welcome": "API Backend Sistem Pengelasan Sisa Pintar",
@@ -161,6 +157,15 @@
     "no_file": "Tiada fail dimuat naik",
     "max_files": "Jumlah maksimum fail telah melebihi",
     "directory_creation_failed": "Gagal membuat direktori muat naik fail"
+  },
+  
+  "common": {
+    "none": "Tiada",
+    "unknown": "Tidak diketahui"
+  },
+  
+  "database": {
+    "error": "Permintaan pangkalan data gagal"
   },
   
   "security": {

@@ -30,6 +30,7 @@
             v-model="username"
             :placeholder="$t('login.enterUsername')"
             required
+            :x-moz-errormessage="t('login.enterUsername')"
             class="form-input"
             @focus="showPasswordTooltip = false; clearLoginError()"
           />
@@ -54,8 +55,9 @@
               v-model="password"
               :placeholder="$t('login.enterPassword')"
               required
-              class="form-input password-input"
-              @focus="clearLoginError()"
+            :x-moz-errormessage="t('login.enterPassword')"
+            class="form-input password-input"
+            @focus="clearLoginError()"
             />
             <button 
               type="button" 
@@ -144,7 +146,8 @@
               v-model="resetEmail"
               :placeholder="$t('login.enterEmail')"
               required
-              class="form-input"
+            :x-moz-errormessage="t('login.enterEmail')"
+            class="form-input"
             />
           </div>
           <button 
@@ -199,11 +202,67 @@ onMounted(() => {
     password.value = credentials.password;
     rememberMe.value = true;
   }
+  
+  // 添加自定义表单验证处理程序
+  // 捕获表单提交事件以自定义验证行为
+  const form = document.querySelector('.login-form');
+  if (form) {
+    form.addEventListener('invalid', handleInvalidInput, true);
+    form.addEventListener('submit', preventDefaultValidation);
+  }
+  
+  // 清理事件监听器
+  return () => {
+    if (form) {
+      form.removeEventListener('invalid', handleInvalidInput, true);
+      form.removeEventListener('submit', preventDefaultValidation);
+    }
+  };
 });
+
+// 阻止浏览器默认的验证行为
+const preventDefaultValidation = (event) => {
+  // 仅在有无效输入时阻止默认提交
+  const invalidInputs = Array.from(document.querySelectorAll('.login-form input:invalid'));
+  if (invalidInputs.length > 0) {
+    event.preventDefault();
+    // 聚焦第一个无效输入
+    invalidInputs[0].focus();
+  }
+};
+
+// 处理无效输入事件
+const handleInvalidInput = (event) => {
+  // 阻止浏览器显示默认错误信息
+  event.preventDefault();
+  
+  const input = event.target;
+  
+  // 根据不同的输入框显示相应的错误信息
+  if (input.id === 'username' && !input.value) {
+    loginError.value = t('login.enterUsername');
+  } else if (input.id === 'password' && !input.value) {
+    loginError.value = t('login.enterPassword');
+  } else if (input.id === 'resetEmail' && !input.value) {
+    // 对于忘记密码弹窗中的邮箱输入框
+    // 我们可以在这里添加自定义错误处理
+    popupManager.error(t('login.enterEmail'));
+  }
+};
+
+// 清除输入框的验证状态
+const clearValidation = (inputElement) => {
+  if (inputElement) {
+    inputElement.setCustomValidity('');
+  }
+};
 
 // 清除登录错误
 const clearLoginError = () => {
   loginError.value = '';
+  // 清除输入框的验证状态
+  clearValidation(document.getElementById('username'));
+  clearValidation(document.getElementById('password'));
 };
 
 // 处理登录
@@ -283,7 +342,23 @@ const closeForgotPassword = () => {
 
 // 重置密码
 const resetPassword = async () => {
-  if (isResettingPassword.value || !resetEmail.value) return;
+  // 清除邮箱输入框的验证状态
+  clearValidation(document.getElementById('resetEmail'));
+  
+  // 自定义验证
+  if (isResettingPassword.value) return;
+  
+  if (!resetEmail.value) {
+    popupManager.error(t('login.enterEmail'));
+    return;
+  }
+  
+  // 简单的邮箱格式验证
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(resetEmail.value)) {
+    popupManager.error(t('login.enterEmail'));
+    return;
+  }
   
   isResettingPassword.value = true;
   

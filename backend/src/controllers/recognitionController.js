@@ -143,7 +143,7 @@ class RecognitionController {
           disposalMethod: recognitionResult.disposal_advice || '无',
           aiModel: recognitionResult.model || 'unknown',
           environmentalTip: recognitionResult.environmental_tip || '无',
-          relatedKnowledge: recognitionResult.related_knowledge || '无'
+          relatedKnowledge: recognitionResult.related_knowledge || getLocalizedString(ctx, 'common.none')
         });
         console.log('识别记录已保存到数据库:', { userId, wasteName: recognitionResult.waste_name });
       } catch (dbError) {
