@@ -286,7 +286,7 @@ export default {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding:60px 0 80px;
+  padding:0 0 80px;
 }
 
 .result-page-header {
