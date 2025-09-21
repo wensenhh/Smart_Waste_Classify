@@ -201,21 +201,21 @@ const fetchCategories = async () => {
 // 从API获取知识库数据并处理分页
 const fetchKnowledgeItems = async (categoryId = 'all', keyword = '', resetData = false) => {
   try {
+    // 如果是重置数据（切换分类或搜索），即使正在加载也应该继续执行
+    // 只有在非重置数据且没有更多数据或正在加载更多时，才不再请求
+    if (!resetData && (!hasMoreData.value || loadingMore.value)) {
+      return;
+    }
+    
     // 设置加载状态（先于清空数据，避免闪烁）
     resetData ? (loading.value = true) : (loadingMore.value = true);
     error.value = '';
-    
     // 如果是重置数据，初始化分页状态
     if (resetData) {
       allKnowledgeItems.value = [];
       currentPage.value = 1;
       hasMoreData.value = true;
       filteredKnowledgeItems.value = [];
-    }
-
-    // 如果已经没有更多数据或正在加载中，则不再请求
-    if (!hasMoreData.value || (resetData ? loading.value : loadingMore.value)) {
-      return;
     }
 
     // 统一调用接口，传递categoryId参数和keyword参数
