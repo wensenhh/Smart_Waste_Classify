@@ -1,16 +1,7 @@
 <template>
   <div class="recognition-result-container">
-    <!-- 使用Header组件的custom模式 -->
-    <Header mode="custom">
-      <div class="result-page-header">
-        <button class="back-btn" @click="goBack">
-          <span class="back-icon">←</span>
-        </button>
-        <h1 class="page-title">{{ $t('recognition.resultTitle') }}</h1>
-        <div class="header-right"></div>
-      </div>
-    </Header>
-
+    <!-- 使用Header组件的默认模式 -->
+    <Header mode="default" :title="$t('recognition.resultTitle')" />
     <!-- 主要内容区域 -->
     <main class="main-content">
       <!-- 识别结果卡片 -->
@@ -209,11 +200,6 @@ export default {
       }
     });
 
-    // 返回上一页
-    const goBack = () => {
-      router.back();
-    };
-
     // 返回首页
     const goHome = () => {
       router.push({ name: 'Home' });
@@ -279,7 +265,6 @@ export default {
       showFeedback,
       feedbackType,
       feedbackComment,
-      goBack,
       goHome,
       getTypeClass,
       shareResult,
@@ -323,18 +308,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.page-title {
-  font-size: 20px;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.header-right {
-  width: 40px;
 }
 
 .main-content {
@@ -657,18 +630,6 @@ export default {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-/* 修复Header组件的字体高度居中问题 */
-.result-page-header {
-  display: flex;
-  align-items: center; /* 垂直居中 */
-  justify-content: space-between; /* 水平分布元素 */
-  box-sizing: border-box;
-}
-
-.page-title {
-  margin: 0;
 }
 
 /* 确保返回按钮也垂直居中 */
