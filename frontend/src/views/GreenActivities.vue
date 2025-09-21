@@ -1,6 +1,7 @@
 <template>
   <div class="green-activities-container">
-    <NavBar />
+    <!-- 使用Header组件的默认模式 -->
+    <Header mode="default" :title="$t('activities.title')" />
     <main class="activities-main">
       <!-- 页面标题 -->
       <div class="activities-header">

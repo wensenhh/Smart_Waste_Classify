@@ -1,6 +1,7 @@
 <template>
   <div class="community-share-container">
-    <NavBar />
+    <!-- 使用Header组件的默认模式 -->
+    <Header mode="default" :title="$t('community.title')" />
     <main class="community-main">
       <!-- 页面标题 -->
       <div class="community-header">

@@ -1,6 +1,7 @@
 <template>
   <div class="challenge-question-container">
-    <NavBar />
+    <!-- 使用Header组件的默认模式 -->
+    <Header mode="default" :title="$t('question.challengeTitle')" />
     <main class="challenge-main">
       <!-- 页面标题和关卡信息 -->
       <div class="challenge-header">
