@@ -13,7 +13,10 @@
       <div v-if="question" class="question-card">
         <div class="question-content">
           <h2>{{ $t('question.questionText') }}</h2>
-          <p class="question-text">{{ question.text }}</p>
+          <p class="question-text">
+            {{ question.text }}
+            Which of the following belongs to other waste?"
+          </p>
         </div>
 
         <!-- 选项区域 -->
