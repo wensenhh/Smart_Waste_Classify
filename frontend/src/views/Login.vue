@@ -181,8 +181,8 @@ const userStore = useUserStore();
 const { t } = useI18n();
 
 // 表单数据
-const username = ref('');
-const password = ref('');
+const username = ref('test');
+const password = ref('qq1234');
 const rememberMe = ref(false);
 const showForgotPassword = ref(false);
 const resetEmail = ref('');
