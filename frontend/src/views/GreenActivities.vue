@@ -261,6 +261,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   background-color: var(--background-secondary);
+  padding: 60px 0 80px;
 }
 
 .activities-main {

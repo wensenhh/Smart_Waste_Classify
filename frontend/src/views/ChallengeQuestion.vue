@@ -274,7 +274,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: #f5f7fa;
-  padding-bottom: 80px;
+  padding: 60px 0 80px;
 }
 
 .challenge-main {

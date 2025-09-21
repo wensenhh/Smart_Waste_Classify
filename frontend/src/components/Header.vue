@@ -92,6 +92,11 @@ const props = defineProps({
     type: String,
     default: '#fff'
   },
+  // 默认模式的标题背景色
+  defaultBacColor: {
+    type: String,
+    default: ''
+  },
 });
 
 const emit = defineEmits(['search', 'search-input']);
@@ -119,6 +124,11 @@ const goBack = () => {
 
 <style scoped>
 .header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
