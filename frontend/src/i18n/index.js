@@ -98,7 +98,8 @@ const zh = {
     permissionDenied: '您已拒绝摄像头访问权限\n请在Safari设置中手动授予权限\n设置路径: 设置 > Safari > 网站设置 > 相机',
     noCameraFound: '未找到可用的摄像头设备',
     cameraInUse: '摄像头被其他应用占用，请关闭其他应用后重试',
-    cannotAccessCamera: '无法访问摄像头，请检查您的浏览器设置和设备权限'
+    cannotAccessCamera: '无法访问摄像头，请检查您的浏览器设置和设备权限',
+    guideText: '请将垃圾放入框内'
   },
   common: {
     home: '首页',
@@ -110,6 +111,7 @@ const zh = {
     profile: '个人中心',
     dailyQuestion: '每日一答',
     challengeQuestion: '闯关答题',
+    mapView: '垃圾点位地图',
     search: '搜索',
     cancel: '取消',
     confirm: '确认',
@@ -468,7 +470,7 @@ const en = {
   },
   // Camera capture related
   cameraCapture: {
-    title: 'Photo Recognition',
+    title: 'Camera Capture',
     noAccess: 'We cannot access your camera',
     authorizePrompt: 'Please click the button below to authorize camera access',
     step1: '1. Click the button below',
@@ -478,8 +480,9 @@ const en = {
     browserNotSupported: 'Your browser does not support camera functionality, we recommend using the latest version of Chrome or Safari',
     permissionDenied: 'You have denied camera access permission\nPlease manually grant permission in Safari settings\nSettings path: Settings > Safari > Website Settings > Camera',
     noCameraFound: 'No available camera device found',
-    cameraInUse: 'Camera is occupied by another application, please close other applications and try again',
-    cannotAccessCamera: 'Cannot access the camera, please check your browser settings and device permissions'
+    cameraInUse: 'Camera is being used by another application, please close other applications and try again',
+    cannotAccessCamera: 'Cannot access camera, please check your browser settings and device permissions',
+    guideText: 'Please place the waste inside the frame'
   },
   common: {
     home: 'Home',
@@ -491,6 +494,7 @@ const en = {
     profile: 'Profile',
     dailyQuestion: 'Daily Question',
     challengeQuestion: 'Challenge Quiz',
+    mapView: 'Waste Location Map',
     search: 'Search',
     cancel: 'Cancel',
     confirm: 'Confirm',
@@ -867,7 +871,8 @@ const ms = {
     permissionDenied: 'Anda telah menafikan kebenaran akses kamera\nSila berikan kebenaran secara manual dalam tetapan Safari\nLaluan tetapan: Tetapan > Safari > Tetapan Laman Web > Kamera',
     noCameraFound: 'Tiada peranti kamera yang tersedia ditemui',
     cameraInUse: 'Kamera sedang digunakan oleh aplikasi lain, sila tutup aplikasi lain dan cuba lagi',
-    cannotAccessCamera: 'Tidak dapat mengakses kamera, sila periksa tetapan pelayar dan kebenaran peranti anda'
+    cannotAccessCamera: 'Tidak dapat mengakses kamera, sila periksa tetapan pelayar dan kebenaran peranti anda',
+    guideText: 'Sila letakkan sisa di dalam bingkai'
   },
   common: {
     home: 'Laman Utama',
@@ -879,6 +884,7 @@ const ms = {
     profile: 'Profil',
     dailyQuestion: 'Soalan Harian',
     challengeQuestion: 'Kuiz Cabaran',
+    mapView: 'Peta Lokasi Sisa',
     search: 'Cari',
     cancel: 'Batal',
     confirm: 'Sahkan',
