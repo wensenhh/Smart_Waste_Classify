@@ -13,6 +13,11 @@ dist-ssr
 backend/.jest-cache
 *.local
 hackathon.pem
+docs/backend_koa_implementation
+docs/project-analysis
+backend/database
+backend/docs
+backend/uploads
 
 # Editor directories and files
 .vscode/*
