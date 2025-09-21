@@ -93,12 +93,17 @@ const routes = [
       requiresAuth: false
     }
   },
-  {
-    path: '/green-activities',
-    name: 'GreenActivities',
-    component: () => import('../views/GreenActivities.vue'),
-    meta: {
+  {    path: '/green-activities',    name: 'GreenActivities',    component: () => import('../views/GreenActivities.vue'),    meta: {
       title: '环保活动',
+      requiresAuth: false
+    }
+  },
+  {
+    path: '/map-view',
+    name: 'MapView',
+    component: () => import('../views/MapView.vue'),
+    meta: {
+      title: '垃圾点位地图',
       requiresAuth: false
     }
   }
