@@ -143,7 +143,8 @@ class RecognitionController {
           disposalMethod: recognitionResult.disposal_advice || '无',
           aiModel: recognitionResult.model || 'unknown',
           environmentalTip: recognitionResult.environmental_tip || '无',
-          relatedKnowledge: recognitionResult.related_knowledge || getLocalizedString(ctx, 'common.none')
+          relatedKnowledge: recognitionResult.related_knowledge || getLocalizedString(ctx, 'common.none'),
+          categoryName: recognitionResult.category_name || '未知',
         });
         console.log('识别记录已保存到数据库:', { userId, wasteName: recognitionResult.waste_name });
       } catch (dbError) {
@@ -471,11 +472,11 @@ class RecognitionController {
       }
 
       // 构建与upload接口完全一致的数据格式
-      // 由于wasteCategoryModel文件不存在，直接使用record中的数据
+      // 使用record中的category_name字段
       const recognitionResult = {
         waste_name: record.wasteName || record.wasteType || '未知',
         category: record.wasteType || 'unknown',
-        category_name: record.category || '未知',
+        category_name: record.category_name || record.category || '未知',
         classification_reason: record.classificationReason || record.description || '无',
         disposal_advice: record.disposalMethod || record.suggestion || '无',
         environmental_tip: record.environmentalTip || '无',

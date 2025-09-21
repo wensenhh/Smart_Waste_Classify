@@ -46,7 +46,8 @@ class RecognitionRecord {
         disposalMethod = 'unknown',
         aiModel = 'unknown',
         environmentalTip = '无',
-        relatedKnowledge = '无'
+        relatedKnowledge = '无',
+        categoryName = '未知'
       } = recordData || {};
 
       // 生成UUID作为记录ID
@@ -77,9 +78,10 @@ class RecognitionRecord {
           recognition_type,
           city,
           waste_type,
-          related_knowledge
+          related_knowledge,
+          category_name
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       // 再次检查关键参数，确保它们不为undefined
@@ -100,7 +102,8 @@ class RecognitionRecord {
         'image_recognition', // 默认识别类型
         'unknown', // 默认城市
         wasteType, // 垃圾类型
-        relatedKnowledge // 相关知识（富文本）
+        relatedKnowledge, // 相关知识（富文本）
+        categoryName || '未知' // 垃圾类别名称，默认为'未知'
       ];
 
       const result = await db.query(query, params);
@@ -254,7 +257,8 @@ class RecognitionRecord {
         userId: record.user_id,
         imageUrl: record.image_url,
         wasteType: record.waste_type,
-        category: record.category,
+        category: record.category || '未知',
+        category_name: record.category_name || '未知',
         confidence: record.confidence,
         description: record.description,
         suggestion: record.suggestion,
