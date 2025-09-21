@@ -101,7 +101,7 @@ class RecognitionController {
                         const host = process.env.HOST || 'localhost';
                         const port = process.env.PORT;
                         // 只有在端口不是默认端口（80或443）且端口存在时才添加端口
-                        const portStr = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                        const portStr = port && port !== '80' && port !== '443' && port !== '3000' ? `:${port}` : '';
                         return `${protocol}://${host}${portStr}`;
                       })();
         imageUrl = `${baseUrl}/static/default/placeholder.svg`;

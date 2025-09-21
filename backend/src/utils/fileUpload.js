@@ -189,7 +189,7 @@ async function uploadFile(fileBuffer, originalName, options = {}) {
                      const host = process.env.HOST || 'localhost';
                      const port = process.env.PORT || '3000';
                      // 只有在端口不是默认端口（80或443）且端口存在时才添加端口
-                     const portStr = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                     const portStr = port && port !== '80' && port !== '443' && port !== '3000' ? `:${port}` : '';
                      return `${protocol}://${host}${portStr}`;
                    })();
     
@@ -218,7 +218,7 @@ async function deleteFile(fileUrl) {
                      const host = process.env.HOST || 'localhost';
                      const port = process.env.PORT || '3002';
                      // 只有在端口不是默认端口（80或443）且端口存在时才添加端口
-                     const portStr = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                     const portStr = port && port !== '80' && port !== '443' && port !== '3000' ? `:${port}` : '';
                      return `${protocol}://${host}${portStr}`;
                    })();
     const relativePath = fileUrl.replace(baseUrl + '/', '');
@@ -256,7 +256,7 @@ async function getFileInfo(fileUrl) {
                      const host = process.env.HOST || 'localhost';
                      const port = process.env.PORT || '3002';
                      // 只有在端口不是默认端口（80或443）且端口存在时才添加端口
-                     const portStr = port && port !== '80' && port !== '443' ? `:${port}` : '';
+                     const portStr = port && port !== '80' && port !== '443' && port !== '3000' ? `:${port}` : '';
                      return `${protocol}://${host}${portStr}`;
                    })();
     const relativePath = fileUrl.replace(baseUrl + '/', '');
