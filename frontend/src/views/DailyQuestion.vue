@@ -86,7 +86,6 @@
       </div>
     </main>
     <BottomNavBar />
-    <Footer />
   </div>
 </template>
 
@@ -94,14 +93,12 @@
 import { ref, onMounted, computed } from 'vue';
 import { useQuestionStore } from '../stores/question';
 import NavBar from '../components/NavBar.vue';
-import Footer from '../components/Footer.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 
 export default {
   name: 'DailyQuestion',
   components: {
     NavBar,
-    Footer,
     BottomNavBar
   },
   setup() {

@@ -69,7 +69,6 @@
       </div>
     </main>
     <BottomNavBar />
-    <Footer />
 
     <!-- 活动详情弹窗 -->
     <div v-if="showDetailModal" class="modal-overlay" @click="closeActivityDetail">
@@ -140,7 +139,6 @@ import { ref, computed, onMounted } from 'vue';
 import { useActivitiesStore } from '../stores/activities';
 import { useI18n } from 'vue-i18n';
 import NavBar from '../components/NavBar.vue';
-import Footer from '../components/Footer.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 
 defineOptions({

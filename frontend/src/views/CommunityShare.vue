@@ -56,7 +56,6 @@
       </div>
     </main>
     <BottomNavBar />
-    <Footer />
 
     <!-- 创建帖子弹窗 -->
     <div v-if="showCreatePostModal" class="modal-overlay" @click="closeCreatePostModal">
@@ -187,14 +186,12 @@ import { ref, onMounted } from 'vue';
 import { useCommunityStore } from '../stores/community';
 import { useI18n } from 'vue-i18n';
 import NavBar from '../components/NavBar.vue';
-import Footer from '../components/Footer.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 
 export default {
   name: 'CommunityShare',
   components: {
     NavBar,
-    Footer,
     BottomNavBar
   },
   setup() {

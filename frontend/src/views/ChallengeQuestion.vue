@@ -117,7 +117,6 @@
       </div>
     </main>
     <BottomNavBar />
-    <Footer />
   </div>
 </template>
 
@@ -126,14 +125,12 @@ import { ref, computed, onMounted } from 'vue';
 import { useQuestionStore } from '../stores/question';
 import { useUserStore } from '../stores/user';
 import NavBar from '../components/NavBar.vue';
-import Footer from '../components/Footer.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 
 export default {
   name: 'ChallengeQuestion',
   components: {
     NavBar,
-    Footer,
     BottomNavBar
   },
   setup() {
