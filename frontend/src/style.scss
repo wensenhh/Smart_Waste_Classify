@@ -164,6 +164,9 @@ $transition-slow: 0.5s ease-in-out;
 html {
   font-size: $font-size-md;
   scroll-behavior: smooth;
+  // 禁止缩放
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;
 }
 
 // 主体样式

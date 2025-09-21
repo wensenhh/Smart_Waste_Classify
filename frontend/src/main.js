@@ -44,3 +44,32 @@ app.mount('#app')
 
 // 导出popupManager，便于组合式API中使用
 export { popupManager }
+
+// 禁止双指缩放功能
+// 处理touchmove事件
+function handleTouchMove(e) {
+  // 防止双指缩放
+  if (e.touches.length > 1) {
+    e.preventDefault();
+  }
+}
+
+// 处理gesturestart事件
+function handleGestureStart(e) {
+  // 完全禁止手势操作
+  e.preventDefault();
+}
+
+// 处理gesturechange事件
+function handleGestureChange(e) {
+  // 完全禁止手势操作
+  e.preventDefault();
+}
+
+// 添加事件监听器
+if (typeof window !== 'undefined') {
+  // 使用passive: false确保preventDefault生效
+  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+  document.addEventListener('gesturestart', handleGestureStart, { passive: false });
+  document.addEventListener('gesturechange', handleGestureChange, { passive: false });
+}
