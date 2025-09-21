@@ -32,6 +32,17 @@
       </div>
     </template>
 
+    <!-- 默认header 左侧返回，中间标题名称 -->
+    <template v-else-if="mode === 'default'">
+      <div class="result-page-header">
+        <button class="back-btn" @click="goBack">
+          <span class="back-icon">←</span>
+        </button>
+        <h1 class="page-title">{{ title }}</h1>
+        <div class="header-right"></div>
+      </div>
+    </template>
+
     <!-- 自定义模式 -->
     <template v-else>
       <slot></slot>
@@ -41,13 +52,15 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const props = defineProps({
   // 模式：title | search | custom
   mode: {
     type: String,
     default: 'title',
-    validator: (value) => ['title', 'search', 'custom'].includes(value)
+    validator: (value) => ['title', 'search', 'default'].includes(value)
   },
   // 标题文本
   title: {
@@ -84,6 +97,19 @@ const searchQuery = ref(props.initialSearchQuery);
 const handleSearch = () => {
   emit('search', searchQuery.value);
 };
+
+// 返回上一页
+const goBack = () => {
+  if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
+    window.history.back();
+  } else {
+    // 如果没有历史记录，导航到首页
+    if (typeof router !== 'undefined') {
+      router.push({ name: 'Home' });
+    }
+  }
+};
+
 </script>
 
 <style scoped>
@@ -165,5 +191,42 @@ const handleSearch = () => {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+/* 修复Header组件的字体高度居中问题 */
+.result-page-header {
+  width: 100%;
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: flex-start; /* 从左侧开始布局 */
+  box-sizing: border-box;
+}
+
+/* 设置固定宽度给返回按钮 */
+.back-btn {
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; /* 固定宽度 */
+  height: 40px;
+  flex-shrink: 0; /* 防止按钮被压缩 */
+  color: #fff;
+}
+
+/* 让标题居中显示 */
+.page-title {
+  margin: 0;
+  flex: 1; /* 占据剩余空间 */
+  text-align: center; /* 文本内容居中 */
+  font-size: 18px; /* 与app-title保持一致的字体大小 */
+  font-weight: bold;
+  color: #fff;
+}
+
+/* 右侧占位元素，确保标题真正居中 */
+.header-right {
+  width: 40px; /* 与返回按钮相同的宽度 */
+  flex-shrink: 0; /* 防止被压缩 */
 }
 </style>
