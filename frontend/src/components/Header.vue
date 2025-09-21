@@ -70,7 +70,7 @@ const props = defineProps({
   // Logo路径
   logo: {
     type: String,
-    default: '/vite.svg'
+    default: '/logo.svg'
   },
   // 搜索占位符
   searchPlaceholder: {
@@ -164,6 +164,7 @@ const goBack = () => {
   background-color: rgba(255, 255, 255, 0.9);
   color: #333;
   outline: none;
+  max-width: 70%;
 }
 
 .search-input::placeholder {
@@ -180,6 +181,7 @@ const goBack = () => {
   color: white;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 30%;
 }
 
 .search-btn:hover:not(:disabled) {
