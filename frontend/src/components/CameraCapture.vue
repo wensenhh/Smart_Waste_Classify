@@ -52,6 +52,19 @@ import popupManager from '../utils/popup.js';
 
 const { t } = useI18n();
 
+// 添加响应式变量存储翻译后的引导文本
+const guideText = ref('');
+
+// 设置引导文本的翻译
+const setGuideText = () => {
+  guideText.value = t('cameraCapture.guideText');
+};
+
+// 当语言变更时更新引导文本
+watch(() => t('cameraCapture.guideText'), () => {
+  setGuideText();
+});
+
 const props = defineProps({
   show: {
     type: Boolean,
@@ -137,6 +150,9 @@ const requestCameraAuthorization = async () => {
 // 初始化摄像头
 const initializeCamera = async () => {
   if (!props.show || isInitialized) return;
+  
+  // 设置引导文本
+  setGuideText();
   
   console.log('开始初始化摄像头...');
   
@@ -469,7 +485,7 @@ watch(
 }
 
 .guide-frame::before {
-  content: '请将垃圾放入框内';
+  content: v-bind(guideText);
   position: absolute;
   top: -35px;
   left: 50%;
