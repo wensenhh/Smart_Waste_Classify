@@ -1,4 +1,5 @@
 <template>
+  <div style="width: 100%;">
   <header class="header">
     <!-- 标题模式 -->
     <template v-if="mode === 'title'">
@@ -48,6 +49,8 @@
       <slot></slot>
     </template>
   </header>
+  <div style="height: 60px;"></div>
+  </div>
 </template>
 
 <script setup>
