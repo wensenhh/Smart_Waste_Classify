@@ -1,7 +1,7 @@
 <template>
   <div class="challenge-question-container">
     <!-- 使用Header组件的默认模式 -->
-    <Header mode="default" :title="$t('question.challengeTitle')" />
+    <Header mode="default" defaultColor="#000" :title="$t('question.challengeTitle')" />
     <main class="challenge-main">
       <!-- 页面标题和关卡信息 -->
       <div class="challenge-header">
@@ -117,7 +117,6 @@
       </div>
     </main>
     <BottomNavBar />
-    <Footer />
   </div>
 </template>
 
@@ -126,14 +125,12 @@ import { ref, computed, onMounted } from 'vue';
 import { useQuestionStore } from '../stores/question';
 import { useUserStore } from '../stores/user';
 import NavBar from '../components/NavBar.vue';
-import Footer from '../components/Footer.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 
 export default {
   name: 'ChallengeQuestion',
   components: {
     NavBar,
-    Footer,
     BottomNavBar
   },
   setup() {
@@ -274,6 +271,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: #f5f7fa;
+  padding: 60px 0 80px;
 }
 
 .challenge-main {

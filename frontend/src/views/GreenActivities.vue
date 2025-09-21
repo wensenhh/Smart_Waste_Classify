@@ -1,7 +1,7 @@
 <template>
   <div class="green-activities-container">
     <!-- 使用Header组件的默认模式 -->
-    <Header mode="default" :title="$t('activities.title')" />
+    <Header mode="default" :title="$t('activities.title')" defaultColor="#000"/>
     <main class="activities-main">
       <!-- 页面标题 -->
       <div class="activities-header">
@@ -69,7 +69,6 @@
       </div>
     </main>
     <BottomNavBar />
-    <Footer />
 
     <!-- 活动详情弹窗 -->
     <div v-if="showDetailModal" class="modal-overlay" @click="closeActivityDetail">
@@ -140,7 +139,6 @@ import { ref, computed, onMounted } from 'vue';
 import { useActivitiesStore } from '../stores/activities';
 import { useI18n } from 'vue-i18n';
 import NavBar from '../components/NavBar.vue';
-import Footer from '../components/Footer.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 
 defineOptions({
@@ -261,6 +259,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   background-color: var(--background-secondary);
+  padding: 60px 0 80px;
 }
 
 .activities-main {

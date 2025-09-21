@@ -447,6 +447,7 @@ const logout = () => {
   min-height: 100vh;
   background: linear-gradient(135deg, #64408b 0%, #1b5bc9 100%);
   color: white;
+  padding-bottom: 80px;
 }
 
 

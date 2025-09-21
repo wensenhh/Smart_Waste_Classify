@@ -397,6 +397,7 @@ onUnmounted(() => {
   min-height: 100vh;
   background: linear-gradient(135deg, #1d5485 0%, #0f6f76 100%);
   color: white;
+  padding-bottom: 80px;
 }
 
 /* 错误消息样式 */

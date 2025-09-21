@@ -1,7 +1,7 @@
 <template>
   <div class="daily-question-container">
     <!-- 使用Header组件的默认模式 -->
-    <Header mode="default" :title="$t('question.questionTitle')" />
+    <Header mode="default" :title="$t('question.questionTitle')" defaultColor="#000"/>
     <main class="question-main">
       <!-- 页面标题 -->
       <div class="question-header">
@@ -13,7 +13,10 @@
       <div v-if="question" class="question-card">
         <div class="question-content">
           <h2>{{ $t('question.questionText') }}</h2>
-          <p class="question-text">{{ question.text }}</p>
+          <p class="question-text">
+            {{ question.text }}
+            Which of the following belongs to other waste?"
+          </p>
         </div>
 
         <!-- 选项区域 -->
@@ -86,7 +89,6 @@
       </div>
     </main>
     <BottomNavBar />
-    <Footer />
   </div>
 </template>
 
@@ -94,14 +96,12 @@
 import { ref, onMounted, computed } from 'vue';
 import { useQuestionStore } from '../stores/question';
 import NavBar from '../components/NavBar.vue';
-import Footer from '../components/Footer.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 
 export default {
   name: 'DailyQuestion',
   components: {
     NavBar,
-    Footer,
     BottomNavBar
   },
   setup() {
@@ -193,6 +193,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: var(--background-secondary);
+  padding: 60px 0 80px;
 }
 
 .question-main {
