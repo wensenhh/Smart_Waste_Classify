@@ -67,18 +67,34 @@ class WasteCategoryDatabaseModel {
 
   /**
    * 获取本地化的垃圾类别数据
-   * @param {string} lang - 语言代码 (zh/en)
+   * @param {string} lang - 语言代码 (zh/en/ms)
    * @returns {Promise<Object>} 本地化的垃圾类别数据
    */
   async getLocalizedCategories(lang = 'zh') {
     try {
-      const categories = await this.getAllCategories();
+      // 查询包含所有语言字段的类别数据
+      const query = `
+        SELECT id, name, title_en, title_ms, color, description, icon_url
+        FROM ${this.tableName}
+        ORDER BY id ASC
+      `;
+      const categories = await db.query(query);
+      
       const localized = {};
       
       for (const category of categories) {
+        // 根据语言参数选择对应的标题
+        let title = category.name; // 默认使用中文名称
+        
+        if (lang === 'en' && category.title_en) {
+          title = category.title_en; // 英文
+        } else if (lang === 'ms' && category.title_ms) {
+          title = category.title_ms; // 马来文
+        }
+        
         localized[category.id] = {
           id: category.id,
-          name: category.name,
+          name: title,
           description: category.description,
           color: category.color,
           icon: category.icon_url
@@ -95,17 +111,36 @@ class WasteCategoryDatabaseModel {
   /**
    * 获取本地化的单个垃圾类别
    * @param {string} categoryId - 垃圾类别ID
-   * @param {string} lang - 语言代码 (zh/en)
+   * @param {string} lang - 语言代码 (zh/en/ms)
    * @returns {Promise<Object|null>} 本地化的垃圾类别数据或null
    */
   async getLocalizedCategory(categoryId, lang = 'zh') {
     try {
-      const category = await this.getCategoryById(categoryId);
-      if (!category) return null;
+      // 查询包含所有语言字段的单个类别数据
+      const query = `
+        SELECT id, name, title_en, title_ms, color, description, icon_url
+        FROM ${this.tableName}
+        WHERE id = ?
+      `;
+      const params = [categoryId];
+      const results = await db.query(query, params);
+      
+      if (results.length === 0) return null;
+      
+      const category = results[0];
+      
+      // 根据语言参数选择对应的标题
+      let title = category.name; // 默认使用中文名称
+      
+      if (lang === 'en' && category.title_en) {
+        title = category.title_en; // 英文
+      } else if (lang === 'ms' && category.title_ms) {
+        title = category.title_ms; // 马来文
+      }
       
       return {
         id: category.id,
-        name: category.name,
+        name: title,
         description: category.description,
         color: category.color,
         icon: category.icon_url

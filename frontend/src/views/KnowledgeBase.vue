@@ -201,6 +201,10 @@ const fetchCategories = async () => {
 // 从API获取知识库数据并处理分页
 const fetchKnowledgeItems = async (categoryId = 'all', keyword = '', resetData = false) => {
   try {
+    // 设置加载状态（先于清空数据，避免闪烁）
+    resetData ? (loading.value = true) : (loadingMore.value = true);
+    error.value = '';
+    
     // 如果是重置数据，初始化分页状态
     if (resetData) {
       allKnowledgeItems.value = [];
@@ -214,10 +218,6 @@ const fetchKnowledgeItems = async (categoryId = 'all', keyword = '', resetData =
       return;
     }
 
-    // 设置加载状态
-    resetData ? (loading.value = true) : (loadingMore.value = true);
-    error.value = '';
-    
     // 统一调用接口，传递categoryId参数和keyword参数
     const response = await wasteApi.knowledge.getCategoryBySlug(categoryId, keyword.trim());
     const allItems = Array.isArray(response.data) ? response.data : [];

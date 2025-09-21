@@ -297,7 +297,7 @@ class RecognitionController {
       // 处理特殊情况：当categoryId为'all'时，返回所有类别的垃圾项
       if (categoryId === 'all') {
         if (searchLower) {
-          // 如果有关键词，使用数据库搜索功能
+          // 如果有关键词，使用数据库搜索功能并传入lang参数
           const searchResults = await wasteItemDatabaseModel.searchWasteItems(keyword, lang);
           totalResults = searchResults.length;
           
@@ -310,7 +310,8 @@ class RecognitionController {
             // 使用搜索结果中已包含的字段值
             sub_category: item.sub_category || '',
             suggestion: item.suggestion || '',
-            image_url: item.image_url || ''
+            image_url: item.image_url || '',
+            lang: item.lang || lang
           }));
           
           // 应用分页
@@ -323,11 +324,12 @@ class RecognitionController {
             description: item.description,
             subCategory: item.sub_category,
             suggestion: item.suggestion,
-            imageUrl: item.image_url
+            imageUrl: item.image_url,
+            lang: item.lang || lang
           }));
         } else {
-          // 从数据库获取所有垃圾项
-          const allItems = await wasteItemDatabaseModel.getAllWasteItems();
+          // 从数据库获取所有垃圾项并传入lang参数
+          const allItems = await wasteItemDatabaseModel.getAllWasteItems(lang);
           totalResults = allItems.length;
           
           // 应用分页
@@ -340,7 +342,8 @@ class RecognitionController {
             description: item.description,
             subCategory: item.sub_category,
             suggestion: item.suggestion,
-            imageUrl: item.image_url
+            imageUrl: item.image_url,
+            lang: item.lang || lang
           }));
         }
       } else {

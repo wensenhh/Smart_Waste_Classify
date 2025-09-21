@@ -79,5 +79,3 @@
 
 *   One-click Activity Configuration: Support quick setting of rules and push for "weekend classification challenge", "holiday waste special activity", etc.
 *   Minimalist Feedback Collection: Collect experience feedback from users through pop-ups (e.g., "Was the recognition accurate today? Rate 1-5 points"), quickly used for product iteration
-
-> (Note: Some content in the document may be AI-generated)
