@@ -276,6 +276,7 @@ export default {
   min-height: 100vh;
   background: linear-gradient(135deg, #0099F7 0%, #F11712 100%);
   color: white;
+  padding-bottom: 80px;
 }
 
 .main-content {

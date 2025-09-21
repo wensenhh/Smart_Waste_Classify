@@ -193,6 +193,7 @@ export default {
   display: flex;
   flex-direction: column;
   background-color: var(--background-secondary);
+  padding-bottom: 80px;
 }
 
 .question-main {
