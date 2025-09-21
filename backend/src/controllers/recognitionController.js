@@ -135,7 +135,6 @@ class RecognitionController {
           userId: userId || null, // 即使路由要求登录，仍保留此检查以增强健壮性
           imageUrl: imageUrl || null,
           wasteType: recognitionResult.category || 'unknown',
-          category: recognitionResult.category_name || '未知',
           confidence: recognitionResult.confidence || 0,
           description: recognitionResult.classification_reason || '无',
           suggestion: recognitionResult.disposal_advice || '无',

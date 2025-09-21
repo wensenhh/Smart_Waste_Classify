@@ -77,10 +77,9 @@ class RecognitionRecord {
           recognition_type,
           city,
           waste_type,
-          related_knowledge,
-          category
+          related_knowledge
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       // 再次检查关键参数，确保它们不为undefined
@@ -101,8 +100,7 @@ class RecognitionRecord {
         'image_recognition', // 默认识别类型
         'unknown', // 默认城市
         wasteType, // 垃圾类型
-        relatedKnowledge, // 相关知识（富文本）
-        category // 垃圾类别
+        relatedKnowledge // 相关知识（富文本）
       ];
 
       const result = await db.query(query, params);
