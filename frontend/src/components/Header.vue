@@ -36,9 +36,9 @@
     <template v-else-if="mode === 'default'">
       <div class="result-page-header">
         <button class="back-btn" @click="goBack">
-          <span class="back-icon">←</span>
+          <span class="back-icon" :style="{'color': defaultColor}">←</span>
         </button>
-        <h1 class="page-title">{{ title }}</h1>
+        <h1 class="page-title" :style="{'color': defaultColor}">{{ title }}</h1>
         <div class="header-right"></div>
       </div>
     </template>
@@ -86,7 +86,12 @@ const props = defineProps({
   loading: {
     type: Boolean,
     default: false
-  }
+  },
+  // 默认模式的字体颜色
+  defaultColor: {
+    type: String,
+    default: '#fff'
+  },
 });
 
 const emit = defineEmits(['search', 'search-input']);
@@ -211,7 +216,6 @@ const goBack = () => {
   width: 40px; /* 固定宽度 */
   height: 40px;
   flex-shrink: 0; /* 防止按钮被压缩 */
-  color: #fff;
 }
 
 /* 让标题居中显示 */
@@ -221,7 +225,6 @@ const goBack = () => {
   text-align: center; /* 文本内容居中 */
   font-size: 18px; /* 与app-title保持一致的字体大小 */
   font-weight: bold;
-  color: #fff;
 }
 
 /* 右侧占位元素，确保标题真正居中 */

@@ -1,7 +1,7 @@
 <template>
   <div class="daily-question-container">
     <!-- 使用Header组件的默认模式 -->
-    <Header mode="default" :title="$t('question.questionTitle')" />
+    <Header mode="default" :title="$t('question.questionTitle')" defaultColor="#000"/>
     <main class="question-main">
       <!-- 页面标题 -->
       <div class="question-header">

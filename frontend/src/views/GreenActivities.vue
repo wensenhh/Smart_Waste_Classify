@@ -1,7 +1,7 @@
 <template>
   <div class="green-activities-container">
     <!-- 使用Header组件的默认模式 -->
-    <Header mode="default" :title="$t('activities.title')" />
+    <Header mode="default" :title="$t('activities.title')" defaultColor="#000"/>
     <main class="activities-main">
       <!-- 页面标题 -->
       <div class="activities-header">

@@ -1,7 +1,7 @@
 <template>
   <div class="community-share-container">
     <!-- 使用Header组件的默认模式 -->
-    <Header mode="default" :title="$t('community.title')" />
+    <Header mode="default" :title="$t('community.title')" defaultColor="#000"/>
     <main class="community-main">
       <!-- 页面标题 -->
       <div class="community-header">
