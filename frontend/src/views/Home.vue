@@ -126,6 +126,7 @@ import { useI18n } from 'vue-i18n';
 import Header from '../components/Header.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import CameraCapture from '../components/CameraCapture.vue';
+import popupManager from '../utils/popup.js';
 
 const router = useRouter();
 const route = useRoute();
@@ -173,26 +174,34 @@ const handleScroll = async () => {
 };
 
 // 加载更多数据
-const loadMoreData = async () => {
-  try {
-    loadingMore.value = true;
-    currentPage.value++;
-    
-    const result = await recognitionStore.fetchHistoryRecognitions(
-      currentPage.value,
-      pageSize,
-      true // 追加模式
-    );
-    
-    // 根据返回结果判断是否还有更多数据
-    hasMore.value = result.hasMore;
-  } catch (error) {
-    console.error('加载更多数据失败:', error);
-    currentPage.value--; // 加载失败时恢复页码
-  } finally {
-    loadingMore.value = false;
-  }
-};
+    const loadMoreData = async () => {
+      try {
+        loadingMore.value = true;
+        currentPage.value++;
+        
+        const result = await recognitionStore.fetchHistoryRecognitions(
+          currentPage.value,
+          pageSize,
+          true // 追加模式
+        );
+        
+        // 根据返回结果判断是否还有更多数据
+        hasMore.value = result.hasMore;
+      } catch (error) {
+        console.error('加载更多数据失败:', error);
+        currentPage.value--; // 加载失败时恢复页码
+        // 当发生网络错误时，设置hasMore为false，避免死循环
+        hasMore.value = false;
+        // 显示错误提示
+        popupManager.error({
+          message: t('error.networkError'),
+          duration: 3000,
+          position: 'top-center'
+        });
+      } finally {
+        loadingMore.value = false;
+      }
+    };
 
 // 开始拍照识别
 const startScan = async () => {

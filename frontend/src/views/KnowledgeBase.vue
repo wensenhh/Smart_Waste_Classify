@@ -130,6 +130,7 @@ import NavBar from '../components/NavBar.vue';
 import BottomNavBar from '../components/BottomNavBar.vue';
 import Header from '../components/Header.vue';
 import wasteApi from '../services/wasteApi';
+import popupManager from '../utils/popup.js';
 
 const { t } = useI18n();
 
@@ -246,7 +247,17 @@ const fetchKnowledgeItems = async (categoryId = 'all', keyword = '', resetData =
   } catch (err) {
     error.value = $t('error.fetchKnowledgeFailed');
     console.error('Failed to fetch knowledge items:', err);
-    if (resetData) {
+    // 如果是上拉加载失败，回退页码并设置hasMoreData为false，避免死循环
+    if (!resetData) {
+      currentPage.value--;
+      hasMoreData.value = false;
+      // 显示错误提示
+      popupManager.error({
+        message: $t('error.networkError'),
+        duration: 3000,
+        position: 'top-center'
+      });
+    } else {
       filteredKnowledgeItems.value = [];
     }
   } finally {
