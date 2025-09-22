@@ -252,6 +252,9 @@ const formatTime = (timestamp) => {
   const days = Math.floor(diff / 86400000);
 
   if (minutes < 60) {
+    if(minutes < 1) {
+      return t('community.now');
+    }
     return t('community.minutesAgo', { minutes });
   } else if (hours < 24) {
     return t('community.hoursAgo', { hours });

@@ -405,7 +405,8 @@ const en = {
     addComment: 'Add comment...',
     minutesAgo: '{minutes} minutes ago',
     hoursAgo: '{hours} hours ago',
-    daysAgo: '{days} days ago'
+    daysAgo: '{days} days ago',
+    now: 'Just now'
   },
   register: {
     title: 'Smart Waste Classification System',
@@ -795,7 +796,8 @@ const ms = {
     addComment: 'Tambah komen...',
     minutesAgo: '{minutes} minit yang lalu',
     hoursAgo: '{hours} jam yang lalu',
-    daysAgo: '{days} hari yang lalu'
+    daysAgo: '{days} hari yang lalu',
+    now: 'Baru sahaja'
   },
   register: {
     title: 'Sistem Pengelasan Sisa Pintar',
